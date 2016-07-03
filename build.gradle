@@ -1,0 +1,13 @@
+apply plugin: 'groovy'
+sourceCompatibility = 8
+
+apply plugin: 'application'
+
+allprojects {
+    repositories {
+       flatDir {
+           dirs 'libs'
+       }
+    }
+}
+

@@ -1,0 +1,6 @@
+include ":mirchord"
+include ":converter"
+include ":demos"
+project(':mirchord').projectDir = new File('mirchord')
+project(':converter').projectDir = new File('converter')
+project(':demos').projectDir = new File('demos')

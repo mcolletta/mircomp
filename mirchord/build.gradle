@@ -1,0 +1,15 @@
+apply plugin: 'groovy'
+// sourceCompatibility = 6
+
+dependencies {
+    compile localGroovy()
+    compile fileTree(dir: '../libs', include: ['*.jar'])
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+    }
+}

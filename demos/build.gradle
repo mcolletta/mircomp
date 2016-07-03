@@ -1,0 +1,31 @@
+apply plugin: 'groovy'
+sourceCompatibility = 8
+
+apply plugin: 'application'
+
+dependencies {
+    compile localGroovy()
+    compile fileTree(dir: '../libs', include: ['*.jar'])
+    compile project(':mirchord')
+    compile project(':converter')
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+    }
+}
+
+task runScript(type: JavaExec) {
+    description 'Run Simple Application script'
+    main = 'io.github.mcolletta.mircomp.demos.SimpleGuiApp'
+    classpath = sourceSets.main.runtimeClasspath
+
+    if (project.hasProperty('custom_arg')) {
+        args project.getProperty('custom_arg')
+    }
+}
+
+defaultTasks 'runScript'

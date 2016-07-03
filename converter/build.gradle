@@ -1,0 +1,16 @@
+apply plugin: 'groovy'
+sourceCompatibility = 8
+
+dependencies {
+    compile localGroovy()
+    compile fileTree(dir: '../libs', include: ['*.jar'])
+    compile project(':mirchord')
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+    }
+}
