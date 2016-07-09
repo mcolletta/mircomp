@@ -4,8 +4,8 @@ builder.score() {
 		voice(id:"1") {
 			clef(type:ClefType.Treble)
 			key(fifths:1, mode:KeyMode.Major)
-			time(time:fr(4,4)) // PROBLEM
-			tempo(baseBeat:fr(1,4), beatsPerMinute:90, text:"Allegro.")	// PROBLEM	
+			time(time:fr(4,4))
+			tempo(baseBeat:fr(1,4), beatsPerMinute:90, text:"Allegro.")	// PROBLEM WITH TEXT
 			// 1
 			chord(midiPitch:74, duration:f8, stem:StemDirection.Down)
 			(1..3).each { chord(midiPitch:67, duration:f8, stem:StemDirection.Down) }
@@ -40,7 +40,7 @@ builder.score() {
 			chord(midiPitch:76, duration:f8, stem:StemDirection.Up)
 			// 2
 			chord(midiPitch:74, duration:f8, stem:StemDirection.Up)
-			rest(duration:f8, hidden:true)
+			rest(duration:f8, hidden:true) // hidden rest non curretly supported
 			rest(duration:f4, hidden:true)
 
 			rest(duration:f8, hidden:true)

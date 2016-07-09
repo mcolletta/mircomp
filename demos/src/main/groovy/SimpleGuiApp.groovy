@@ -284,6 +284,7 @@ class ZongModel implements PlaybackListener  {
         }
         catch (Exception ex) {
             println ex.getMessage()
+            ex.printStackTrace()
         }
     }
     
