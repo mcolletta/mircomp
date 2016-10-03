@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Editor</title>
+<style type="text/css" media="screen">
+    #editor { 
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+</style>
+</head>
+<body>
+
+<div id="editor"></div>
+    
+<!-- load ace -->
+<script src="src/ace.js" type="text/javascript" charset="utf-8"></script>
+<!-- load ace language tools -->
+<script src="src/ext-language_tools.js"></script>
+
+<script>
+
+    var editor;
+    var undoManager;
+
+    function initEditor() {
+        ace.require("ace/ext/language_tools")
+        editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.getSession().setMode("ace/mode/groovy");
+        editor.setOptions({
+            enableBasicAutocompletion: false,
+            enableSnippets: false,
+            enableLiveAutocompletion: false,
+            fontFamily: "Monospace", // Linux
+            //fontFamily: "Consolas", // Windows
+            //fontFamily: "Menlo-regular", // Mac
+            fontSize: "10pt"
+        });        
+        editor.setShowPrintMargin(false);
+        undoManager = editor.getSession().getUndoManager()
+    }
+
+    function getValue() {
+        return editor.getValue();
+    }
+
+    function setMode(newMode) {
+        editor.getSession().setMode(newMode);
+    }
+
+    function setTheme(newTheme) {
+        editor.setTheme(newTheme);
+    }
+
+    function cut() {
+        editor.insert("");
+    }
+
+    function copy() {
+        return editor.getCopyText();
+    }
+
+    function paste(text) {
+        editor.insert(text);
+    }
+
+    function find() {
+        editor.execCommand('find');
+    }
+
+    function replace() {
+        editor.execCommand('replace');
+    }
+
+    function undo(dontSelect) {
+        if (hasUndo())
+            undoManager.undo(dontSelect);
+    }
+
+    function redo(dontSelect) {
+        if (hasRedo())
+            undoManager.redo(dontSelect);
+    }
+
+    function hasUndo() {
+        return undoManager.hasUndo();
+    }
+
+    function hasRedo() {
+        return undoManager.hasRedo();
+    }
+
+    function setFontSize(size) {
+        editor.setOptions({fontSize: size});
+    }
+
+</script>
+</body>
+</html>

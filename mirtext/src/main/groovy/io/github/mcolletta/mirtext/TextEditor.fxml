@@ -1,0 +1,57 @@
+<!--
+ * Copyright (C) 2016 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.web.WebView?>
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml" stylesheets="@styles.css">
+	<ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+        <items>
+            <Button fx:id="cutButton"  onAction="#cut" styleClass="cut-button" text="Cut" mnemonicParsing="false"/>
+            <Button fx:id="copyButton" onAction="#copy" styleClass="copy-button" text="Copy" mnemonicParsing="false"/>
+            <Button fx:id="pasteButton" onAction="#paste" styleClass="paste-button" text="Paste" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="undoButton" onAction="#undo" styleClass="undo-button" text="Undo" mnemonicParsing="false"/>
+            <Button fx:id="redoButton" disable="true" onAction="#redo" styleClass="redo-button" text="Redo" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button onAction="#find" styleClass="find-button" text="Find" mnemonicParsing="false"/>
+            <Button onAction="#replace" styleClass="replace-button" text="Replace" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" /> 
+            <Label fx:id="modeIcon" styleClass="syntax-icon" />
+            <ComboBox fx:id="selectMode"  promptText="Syntax..." styleClass="mode-list" />
+            <Label fx:id="themeIcon" styleClass="theme-icon" />
+            <ComboBox fx:id="selectTheme" promptText="Theme..." styleClass="theme-list" />
+            <Label fx:id="fontsIcon" styleClass="fonts-icon" />
+            <ComboBox fx:id="selectFontSize" promptText="Font size...">
+				<items>
+				<FXCollections fx:factory="observableArrayList">
+				  <String fx:value="8pt" />
+				  <String fx:value="9pt" />
+				  <String fx:value="10pt" />
+				  <String fx:value="11pt" />
+				  <String fx:value="12pt" />
+				</FXCollections>
+				</items>
+			</ComboBox>
+        </items>
+    </ToolBar>
+    <WebView fx:id="editor" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS"/>
+</fx:root>
