@@ -1,0 +1,70 @@
+<!--
+ * Copyright (C) 2016 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.collections.*?>
+<?import io.github.mcolletta.mirscore.*?>
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml" stylesheets="@styles.css">
+	<ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+        <items>
+            <Button fx:id="fileopenButton"  onAction="#fileopen" styleClass="fileopen-button" text="Open..." mnemonicParsing="false"/>
+            <Button fx:id="filesaveButton"  onAction="#filesave" styleClass="filesave-button" text="Save" mnemonicParsing="false"/>
+            <Button fx:id="filesaveasButton"  onAction="#filesaveas" styleClass="filesaveas-button" text="Save as..." mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <fx:define>
+              <ToggleGroup fx:id="modeButtonsGroup"/>  
+            </fx:define>
+            <ToggleButton onAction="#panMode" toggleGroup="$modeButtonsGroup" styleClass="pan-button" text="Pan" selected="true" mnemonicParsing="false"/> 
+            <ToggleButton onAction="#selectMode" toggleGroup="$modeButtonsGroup" styleClass="select-button" text="Select" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="replayButton"  onAction="#replay" styleClass="replay-button" text="Cut" mnemonicParsing="false"/>
+            <Button fx:id="playButton" onAction="#play" styleClass="play-button" text="Copy" mnemonicParsing="false"/>
+            <Button fx:id="playPause" onAction="#pause" styleClass="pause-button" text="Copy" mnemonicParsing="false"/>
+            <Button fx:id="stopButton" onAction="#stop" styleClass="stop-button" text="Paste" mnemonicParsing="false"/>
+            <!-- <ToggleButton fx:id="metronomeButton" onAction="#metronome" styleClass="metronome-button" text="Metronome" selected="false" mnemonicParsing="false"/> -->
+            <ToggleButton fx:id="followPlaybackButton" onAction="#followPlayback" styleClass="followplayback-button" selected="true" text="Follow playbck" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="firstpageButton" onAction="#firstpage" styleClass="firstpage-button" text="First page" mnemonicParsing="false"/>
+            <Button fx:id="prevpageButton" onAction="#prevpage" styleClass="prevpage-button" text="Previous page" mnemonicParsing="false"/>
+            <TextField fx:id="currentPageField" prefWidth="30" />
+            <Label fx:id="currentPageLabel" />
+            <Button fx:id="nextpageButton" onAction="#nextpage" styleClass="nextpage-button" text="Next page" mnemonicParsing="false"/>
+            <Button fx:id="lastpageButton" onAction="#lastpage" styleClass="lastpage-button" text="Last page" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="zoom100Button" onAction="#zoom100" styleClass="zoom100-button" text="Zoom 1:1" mnemonicParsing="false"/>
+            <Button fx:id="zoomoutButton" onAction="#zoomout" styleClass="zoomout-button" text="Zoom out" mnemonicParsing="false"/>
+            <TextField fx:id="currentZoomField" prefWidth="50" /><Label text="\%" />
+            <Button fx:id="zoominButton" onAction="#zoomin" styleClass="zoomin-button" text="Zoom in" mnemonicParsing="false"/>           
+        </items>
+    </ToolBar>
+    <ScrollPane fx:id="scrollPane" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0">
+        <content>
+        <StackPane>
+           <children>
+              <ImageView fx:id="scoreImageView" fitHeight="200.0" fitWidth="200.0" onMouseClicked="#scoreImageClick" pickOnBounds="true" preserveRatio="true" />
+              <Canvas fx:id="canvas" />
+           </children>
+        </StackPane>
+        </content>
+    </ScrollPane>
+</fx:root>
