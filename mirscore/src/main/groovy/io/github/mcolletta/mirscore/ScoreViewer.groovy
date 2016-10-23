@@ -107,7 +107,16 @@ class ScoreViewer  extends VBox {
 	public ScoreViewer() {
 		loadControl()
         scrollPane.setPannable(true)
+        setMode(ScoreMode.PANNING)
         scoreModel = new ScoreModel()
+
+        /*scoreImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+             @Override
+             public void handle(MouseEvent event) {
+                scoreImageClick(event)
+                event.consume()
+             }
+        })*/
 
         currentPageField.textProperty().addListener(new ChangeListener(){
             @Override public void changed(ObservableValue o,Object oldVal, Object newVal){
@@ -301,6 +310,7 @@ class ScoreViewer  extends VBox {
     // actions
 
     @FXML void scoreImageClick(MouseEvent event) {
+        println "clicked at $event"
         if (getMode() == ScoreMode.SELECT) {
             scoreModel.pickMP(new Point2f((float) event.getX(), (float) event.getY()))
             draw()
@@ -399,6 +409,10 @@ class ScoreViewer  extends VBox {
 
     void stop() {
         scoreModel.stop()
+        canvas.setWidth(0)
+        canvas.setHeight(0)
+        GraphicsContext gc = canvas.getGraphicsContext2D()
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight())
     }
 
     void followPlayback() {

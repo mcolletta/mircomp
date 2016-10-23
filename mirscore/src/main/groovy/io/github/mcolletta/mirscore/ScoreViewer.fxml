@@ -62,7 +62,7 @@
         <StackPane>
            <children>
               <ImageView fx:id="scoreImageView" fitHeight="200.0" fitWidth="200.0" onMouseClicked="#scoreImageClick" pickOnBounds="true" preserveRatio="true" />
-              <Canvas fx:id="canvas" />
+              <Canvas fx:id="canvas" width="0" height="0" />
            </children>
         </StackPane>
         </content>

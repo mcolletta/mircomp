@@ -231,7 +231,7 @@ class ScoreModel implements PlaybackListener {
 		if (getLayout().getScoreFrames().size() == 0)
 			return
 		//get the layout of first score frame
-		ScoreFrame frame = getLayout().getScoreFrames().get(0)
+		ScoreFrame frame = getLayout().getScoreFrames().get(getCurrentPage())
 		ScoreFrameLayout frameLayout = frame.getScoreFrameLayout()
 		//convert position from screen space to page space, then from page space
 		//to frame space, and them from frame space to score frame space
@@ -366,7 +366,6 @@ class ScoreModel implements PlaybackListener {
                             systemRectPx = computeRectangleMm(systemRect2)
                         }
                     }
-                    println "needScroll=$needScroll   viewRect: $viewRect     systemRectPx: $systemRectPx "
                 }
             }
         }
