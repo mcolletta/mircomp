@@ -106,6 +106,10 @@
     -fx-graphic: url('resources/icons/sc_autoformat.png');
 }
 
+.table-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_selecttable.png');
+}
 .editcc-icon {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/sc_freeline.png');

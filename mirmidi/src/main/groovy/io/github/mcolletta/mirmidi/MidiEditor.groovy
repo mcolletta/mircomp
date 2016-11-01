@@ -30,9 +30,14 @@ import javafx.stage.Stage
 import javafx.stage.WindowEvent
 import javafx.stage.FileChooser
 import javafx.stage.FileChooser.ExtensionFilter
+import javafx.stage.Modality
+import javafx.stage.StageStyle
+
 import javafx.event.EventHandler
 import javafx.event.ActionEvent
 
+import javafx.scene.Scene
+import javafx.scene.Node
 import javafx.scene.Cursor
 import javafx.scene.paint.Color
 
@@ -40,6 +45,7 @@ import javafx.scene.input.KeyEvent
 import javafx.scene.input.KeyCode
 
 import javafx.scene.layout.VBox
+import javafx.scene.layout.Pane
 
 import javafx.scene.control.TextField
 import javafx.scene.control.ScrollBar
@@ -48,6 +54,7 @@ import javafx.scene.control.Label
 import javafx.scene.control.ComboBox
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
+import javafx.scene.control.Spinner
 
 import javafx.scene.shape.Rectangle
 
@@ -129,34 +136,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         midi = new MidiView()
         midi.registerListener(this)
 
-        List<TrackItem> trackList = []
-        for(int i = 0; i < midi.sequence.tracks.size(); i++) {
-            Track track = midi.sequence.tracks[i]
-            TrackItem item = new TrackItem(i, track)
-            trackList.add(item)
-        } 
-        tracks = FXCollections.observableArrayList(trackList)
-
-        List<ChannelItem> channelList = []
-        for(int i = 0; i < midi.channelColor.size(); i++) {
-            Color color = midi.channelColor[i]
-            ChannelItem item = new ChannelItem(i, color)
-            channelList.add(item)
-        }
-        channels = FXCollections.observableArrayList(channelList)
-        setChannelLabelColor(midi.channelColor[0])
-
-        List<MidiControllerInfo> controllerList = []
-        for(int i = 0; i < midi.controllersInfo.values().size(); i++) {
-            MidiControllerInfo controller = midi.controllersInfo.values()[i]
-            controllerList.add(controller)
-        }        
-        controllers = FXCollections.observableArrayList(controllerList)
-
-        loadSelectTrack()
-        loadSelectChannel()
-        loadSelectController()
-        loadSelectMuteTracks()
+        initComboBoxes()
 
         pianoRollEditor = new PianoRollEditor(midi, pianoCanvas)
         controllerEditor = new ControllerEditor(midi, controllerCanvas)
@@ -236,6 +216,37 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         }
     }
 
+    void initComboBoxes() {
+        List<TrackItem> trackList = []
+        for(int i = 0; i < midi.sequence.tracks.size(); i++) {
+            Track track = midi.sequence.tracks[i]
+            TrackItem item = new TrackItem(i, track)
+            trackList.add(item)
+        } 
+        tracks = FXCollections.observableArrayList(trackList)
+
+        List<ChannelItem> channelList = []
+        for(int i = 0; i < midi.channelColor.size(); i++) {
+            Color color = midi.channelColor[i]
+            ChannelItem item = new ChannelItem(i, color)
+            channelList.add(item)
+        }
+        channels = FXCollections.observableArrayList(channelList)
+        setChannelLabelColor(midi.channelColor[0])
+
+        List<MidiControllerInfo> controllerList = []
+        for(int i = 0; i < midi.controllersInfo.values().size(); i++) {
+            MidiControllerInfo controller = midi.controllersInfo.values()[i]
+            controllerList.add(controller)
+        }        
+        controllers = FXCollections.observableArrayList(controllerList)
+
+        loadSelectTrack()
+        loadSelectChannel()
+        loadSelectController()
+        loadSelectMuteTracks()
+    }
+
     private void loadSelectTrack() {
         selectTrack.setItems(tracks)
         selectTrack.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
@@ -287,6 +298,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     }
 
     private void loadSelectMuteTracks() {
+        selectMuteTracks.getItems().clear()
         selectMuteTracks.getItems().addAll(tracks)
         selectMuteTracks.getCheckModel().getCheckedItems().addListener(new ListChangeListener<TrackItem>() {
             public void onChanged(ListChangeListener.Change<? extends TrackItem> change) {
@@ -343,11 +355,31 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
     // actions
 
-    void newsequence() {
-        // TODO: GUI dialog for choosing how many tracks
-        midi.loadSequence(null, 16)
+    void newsequence(ActionEvent event) {
+        // GUI dialog for choosing how many tracks
+        Stage dialog = new Stage(StageStyle.TRANSPARENT)
+        dialog.initModality(Modality.WINDOW_MODAL)
+        dialog.initOwner(((Node)event.getSource()).getScene().getWindow())
+
+        VBox vbox = new VBox()
+        Label label = new Label("Select how many tracks:")
+        vbox.getChildren().add(label)
+        Spinner spinner = new Spinner(1,16,1,1)
+        vbox.getChildren().add(spinner)
+        Button button = new Button("OK")
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                dialog.close()
+            }
+        })
+        vbox.getChildren().add(button)
+        dialog.setScene(new Scene(vbox))
+        dialog.showAndWait()
+        // ---------------------------------------------
+        midi.loadSequence(null, (int)spinner.getValue())
         midi.setHorizontalOffset(0L)
         updateScrollBar()
+        initComboBoxes()
         draw()
     }
 
@@ -511,12 +543,61 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         currentZoomField.setText("" + (int)(midi.getCurrentZoom() * 100))
     }
 
-    void humanization() {
-        // TODO GUI dialog fro choosing eps
-        pianoRollEditor.humanization(0.3D)
+    void humanization(ActionEvent event) {
+        // GUI dialog for eps
+        Stage dialog = new Stage(StageStyle.TRANSPARENT)
+        dialog.initModality(Modality.WINDOW_MODAL)
+        dialog.initOwner(((Node)event.getSource()).getScene().getWindow())
+
+        VBox vbox = new VBox()
+        Label label = new Label("Select humanization factor:")
+        vbox.getChildren().add(label)
+        // Spinner(double min, double max, double initialValue, double amountToStepBy)
+        Spinner spinner = new Spinner(0.01D,2.0D,0.01D,0.01D)
+        vbox.getChildren().add(spinner)
+        Button button = new Button("OK")
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                dialog.close()
+            }
+        })
+        vbox.getChildren().add(button)
+        dialog.setScene(new Scene(vbox))
+        dialog.showAndWait()
+        // ---------------------------------------------
+        pianoRollEditor.humanization((double)spinner.getValue())
     }
 
     void quantization() {
         pianoRollEditor.quantization()
+    }
+
+
+    // show Table View
+
+    void showMidiTable(ActionEvent event) {
+        Stage stage = new Stage()
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("MidiTableView.fxml"))
+        //Pane root = (Pane)FXMLLoader.load(getClass().getResource("MidiTableView.fxml"))
+        Pane root = (Pane)loader.load()
+        MidiTableViewController ctrl = (MidiTableViewController)loader.getController()
+        if (pianoRollEditor.selectedNotes.size() > 0) {
+            long startTick = Long.MAX_VALUE
+            long endTick = Long.MIN_VALUE
+            for(MidiNote note : pianoRollEditor.selectedNotes) {
+                if (note.getStart() < startTick)
+                    startTick = note.getStart()
+                if (note.getEnd() > endTick)
+                    endTick = note.getEnd()
+            }
+            ctrl.setStartTick(startTick)
+            ctrl.setEndTick(endTick)
+        }
+        ctrl.setMidiView(midi)
+        stage.setScene(new Scene(root))
+        stage.setTitle("MidiEvent List View")
+        stage.initModality(Modality.WINDOW_MODAL)
+        stage.initOwner(((Node)event.getSource()).getScene().getWindow())
+        stage.show()
     }
 }
