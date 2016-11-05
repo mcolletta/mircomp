@@ -21,13 +21,13 @@
  * @author Mirco Colletta
  */
  
-.open-button {
+.fileopen-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/fileopen.png');
 }
-.save-button {
+.filesaveas-button {
     -fx-content-display: graphic-only;
-    -fx-graphic: url('resources/icons/filesave.png');
+    -fx-graphic: url('resources/icons/sc_saveas.png');
 }
 .reload-button {
     -fx-content-display: graphic-only;

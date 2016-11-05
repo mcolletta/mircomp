@@ -40,7 +40,7 @@ public class Demo extends Application {
 
         root.getChildren().add(editor)
         
-        Scene scene = new Scene(root, 800, 600)
+        Scene scene = new Scene(root, 1000, 700)
 
         stage.setScene(scene)
         stage.show()

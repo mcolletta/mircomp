@@ -30,6 +30,8 @@ import javafx.scene.layout.StackPane
 import javafx.scene.web.WebEngine
 import javafx.scene.web.WebView
 import javafx.stage.Stage
+import javafx.stage.FileChooser
+import javafx.stage.FileChooser.ExtensionFilter
 
 import javafx.collections.FXCollections
 import javafx.concurrent.Worker
@@ -164,13 +166,83 @@ class TextEditor extends VBox {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (newValue != null && oldValue != newValue) {
                     Mode mode = selectMode.getSelectionModel().getSelectedItem() as Mode
-                    engine.executeScript("setMode('" + mode.path + "')");
+                    engine.executeScript("setMode('" + mode.path + "')")
                 }
             }
         })
 	}
 
+    String getValue() {
+        return (String)engine.executeScript("getValue()")
+    }
+
+    void setValue(String content) {
+        jsEditor.call("setValue", content)
+    }
+
 	// actions
+
+    void fileopen() {
+        FileChooser fileChooser = new FileChooser()
+        fileChooser.setTitle("Open Source Code File")
+        fileChooser.getExtensionFilters().addAll(
+             new ExtensionFilter("Mirchord Files", "*.mirchord"),
+             new ExtensionFilter("Groovy Files", "*.groovy"),
+             new ExtensionFilter("XML Files", "*.xml"),
+             new ExtensionFilter("JSON Files", "*.json"),
+             new ExtensionFilter("All Files", "*.*"))
+        fileChooser.setInitialDirectory(
+            new File(System.getProperty("user.home"))
+        )
+        Stage stage = (Stage)getScene().getWindow()
+        File selectedFile = fileChooser.showOpenDialog(stage)
+        if (selectedFile != null) {
+            String fileContent = selectedFile.getText('UTF-8') // or .text
+            setValue(fileContent)
+            String filename = selectedFile.getName() 
+            String fileExt = filename[filename.lastIndexOf('.')..-1]
+            // TODO: engine.executeScript("setMode('" + mode.path + "')")
+            switch (fileExt) {
+                case ".mirchord":
+                    engine.executeScript("setMode('ace/mode/mirchord')")
+                    break
+                case '.groovy':
+                    engine.executeScript("setMode('ace/mode/groovy')")
+                    break
+                case ".java":
+                    engine.executeScript("setMode('ace/mode/java')")
+                case ".xml":
+                    engine.executeScript("setMode('ace/mode/xml')")
+                    break
+                case ".json":
+                    engine.executeScript("setMode('ace/mode/json')")
+                    break
+                default:
+                    engine.executeScript("setMode('ace/mode/text')")
+                    break
+            }    
+        }
+    }
+
+    void filesaveas() {
+        FileChooser fileChooser = new FileChooser()
+        fileChooser.setTitle("Save Source Code as...")        
+        fileChooser.getExtensionFilters().addAll(
+             new ExtensionFilter("Mirchord Files", "*.mirchord"),
+             new ExtensionFilter("Groovy Files", "*.groovy"),
+             new ExtensionFilter("XML Files", "*.xml"),
+             new ExtensionFilter("JSON Files", "*.json"))
+        fileChooser.setInitialFileName("song.mirchord")
+        Stage stage = (Stage)getScene().getWindow()
+        File file = fileChooser.showSaveDialog(stage)
+        if (file != null) {
+            try {
+                file.text = getValue()
+            } catch (IOException ex) {
+                println(ex.getMessage())
+            }
+        }
+    }
 
 	void cut() {
 		copy()

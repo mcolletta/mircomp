@@ -44,6 +44,10 @@
         undoManager = editor.getSession().getUndoManager()
     }
 
+    function setValue(text) {
+        return editor.setValue(text);
+    }
+
     function getValue() {
         return editor.getValue();
     }
