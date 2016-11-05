@@ -2,7 +2,11 @@ include ":mirchord"
 include ":converter"
 include ":demos"
 include ":mirtext"
+include ":mirscore"
+include ":mirmidi"
 project(':mirchord').projectDir = new File('mirchord')
 project(':converter').projectDir = new File('converter')
 project(':demos').projectDir = new File('demos')
 project(':mirtext').projectDir = new File('mirtext')
+project(':mirscore').projectDir = new File('mirscore')
+project(':mirmidi').projectDir = new File('mirmidi')

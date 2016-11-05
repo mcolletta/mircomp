@@ -8,6 +8,8 @@ dependencies {
     compile fileTree(dir: '../libs', include: ['*.jar'])
     compile project(':mirchord')
     compile project(':converter')
+    compile project(':mirscore')
+    compile project(':mirtext')
 }
 
 sourceSets {
@@ -15,11 +17,14 @@ sourceSets {
         groovy {
             srcDirs = ['src/main/groovy']
         }
+        resources {
+            srcDir 'resources'
+        }
     }
 }
 
-task runScript(type: JavaExec) {
-    description 'Run Simple Application script'
+task runNotationViewer(type: JavaExec) {
+    description 'Run Simple NotationViewer script'
     main = 'io.github.mcolletta.mircomp.demos.SimpleGuiApp'
     classpath = sourceSets.main.runtimeClasspath
 
@@ -28,4 +33,16 @@ task runScript(type: JavaExec) {
     }
 }
 
-defaultTasks 'runScript'
+task runNotationEditor(type: JavaExec) {
+    description 'Run Simple Notation Editor script'
+    main = 'io.github.mcolletta.mircomp.demos.SimpleNotationEditor'
+    classpath = sourceSets.main.runtimeClasspath
+
+    if (project.hasProperty('custom_arg')) {
+        args project.getProperty('custom_arg')
+    }
+}
+
+// defaultTasks 'runNotationViewer'
+
+defaultTasks 'runNotationEditor'

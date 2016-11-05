@@ -71,6 +71,8 @@ import com.xenoage.utils.math.geom.Rectangle2i
 import com.xenoage.utils.math.geom.Point2i
 import com.xenoage.utils.math.geom.Point2f
 
+import com.xenoage.zong.core.Score
+
 import com.xenoage.zong.renderer.javafx.JfxLayoutRenderer
 import com.xenoage.zong.renderer.awt.AwtLayoutRenderer
 import java.awt.image.BufferedImage
@@ -307,6 +309,19 @@ class ScoreViewer  extends VBox {
         } )
     }
 
+    // utils
+
+    void loadScore(Score score) {
+        scoreModel.loadScore(score)
+        initScoreButtons()
+    }
+
+    void initScoreButtons() {
+        currentPageField.setText("" + (scoreModel.getCurrentPage()+1))
+        currentZoomField.setText("" + (int)(scoreModel.getCurrentZoom() * 100))
+        handlePagesButtons()
+    }
+
     // actions
 
     @FXML void scoreImageClick(MouseEvent event) {
@@ -332,9 +347,7 @@ class ScoreViewer  extends VBox {
         if (selectedFile != null) {
             try {
                 scoreModel.loadScore(selectedFile)
-                currentPageField.setText("" + (scoreModel.getCurrentPage()+1))
-                currentZoomField.setText("" + (int)(scoreModel.getCurrentZoom() * 100))
-                handlePagesButtons()
+                initScoreButtons()
              } catch(Exception ex) {
                 println "Exception: " + ex.getMessage()
             }

@@ -177,6 +177,17 @@ class ScoreModel implements PlaybackListener {
             ex.printStackTrace()
         }
     }
+
+    void loadScore(Score score) {
+        try {
+            ScoreDoc scoreDoc = read(score)
+            loadScore(scoreDoc)
+        }
+        catch (Exception ex) {
+            println ex.getMessage()
+            ex.printStackTrace()
+        }
+    }
     
     void loadScore(ScoreDoc doc) {
         setCurrentPage(0)
