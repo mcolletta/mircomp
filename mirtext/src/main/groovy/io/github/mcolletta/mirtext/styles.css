@@ -45,6 +45,10 @@
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/editpaste.png');
 }
+.comment-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/comment.png');
+}
 .undo-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/undo.png');

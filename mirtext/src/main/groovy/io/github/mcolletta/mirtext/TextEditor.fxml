@@ -30,6 +30,7 @@
             <Button fx:id="cutButton"  onAction="#cut" styleClass="cut-button" text="Cut" mnemonicParsing="false"/>
             <Button fx:id="copyButton" onAction="#copy" styleClass="copy-button" text="Copy" mnemonicParsing="false"/>
             <Button fx:id="pasteButton" onAction="#paste" styleClass="paste-button" text="Paste" mnemonicParsing="false"/>
+            <Button fx:id="commentButton" onAction="#comment" styleClass="comment-button" text="Toggle Comment" mnemonicParsing="false"/>
             <Separator orientation="VERTICAL" />
             <Button fx:id="undoButton" onAction="#undo" styleClass="undo-button" text="Undo" mnemonicParsing="false"/>
             <Button fx:id="redoButton" disable="true" onAction="#redo" styleClass="redo-button" text="Redo" mnemonicParsing="false"/>

@@ -267,6 +267,10 @@ class TextEditor extends VBox {
         }
     }
 
+    void comment() {
+        engine.executeScript("toggleBlockComment()")
+    }
+
     void find() {
     	engine.executeScript("find()")
     }
