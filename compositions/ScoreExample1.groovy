@@ -2,53 +2,53 @@
 builder.score() {
 	part(id:"1") {
 		voice(id:"1") {
-			clef(type:ClefType.Treble)
-			key(fifths:1, mode:KeyMode.Major)
+			clef(type:ClefType.TREBLE)
+			key(fifths:1, mode:KeyMode.MAJOR)
 			time(time:fr(4,4))
-			tempo(baseBeat:fr(1,4), beatsPerMinute:90, text:"Allegro.")	// PROBLEM WITH TEXT
+			tempo(baseBeat:fr(1,4), bpm:90, text:"Allegro.")	// PROBLEM WITH TEXT
 			// 1
-			chord(midiPitch:74, duration:f8, stem:StemDirection.Down)
-			(1..3).each { chord(midiPitch:67, duration:f8, stem:StemDirection.Down) }
+			chord(midiPitch:74, duration:f8, stem:StemDirection.DOWN)
+			(1..3).each { chord(midiPitch:67, duration:f8, stem:StemDirection.DOWN) }
 			anchor(id:"1")
-			chord(midiPitch:67, duration:f8, stem:StemDirection.Down)			
-			chord(midiPitch:69, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:71, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:72, duration:f8, stem:StemDirection.Down)
+			chord(midiPitch:67, duration:f8, stem:StemDirection.DOWN)			
+			chord(midiPitch:69, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:71, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:72, duration:f8, stem:StemDirection.DOWN)
 			// 2
-			chord(midiPitch:71, duration:f8, stem:StemDirection.Down)
-			(1..4).each { chord(midiPitch:67, duration:f8, stem:StemDirection.Down) }
-			chord(midiPitch:71, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:72, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:69, duration:f8, stem:StemDirection.Down)
+			chord(midiPitch:71, duration:f8, stem:StemDirection.DOWN)
+			(1..4).each { chord(midiPitch:67, duration:f8, stem:StemDirection.DOWN) }
+			chord(midiPitch:71, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:72, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:69, duration:f8, stem:StemDirection.DOWN)
 			// 3
-			chord(midiPitch:67, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:67, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:71, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:74, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:79, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:74, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:79, duration:f8, stem:StemDirection.Down)
-			chord(midiPitch:81, duration:f16, stem:StemDirection.Down)
-			chord(midiPitch:83, duration:f16, stem:StemDirection.Down)
+			chord(midiPitch:67, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:67, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:71, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:74, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:79, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:74, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:79, duration:f8, stem:StemDirection.DOWN)
+			chord(midiPitch:81, duration:f16, stem:StemDirection.DOWN)
+			chord(midiPitch:83, duration:f16, stem:StemDirection.DOWN)
 		}
 		voice(id:"2") {
 			// 1
 			anchor(id:"1")
 			rest(duration:f8)
-			chord(midiPitch:78, duration:f8, stem:StemDirection.Up)
-			chord(midiPitch:79, duration:f8, stem:StemDirection.Up)
-			chord(midiPitch:76, duration:f8, stem:StemDirection.Up)
+			chord(midiPitch:78, duration:f8, stem:StemDirection.UP)
+			chord(midiPitch:79, duration:f8, stem:StemDirection.UP)
+			chord(midiPitch:76, duration:f8, stem:StemDirection.UP)
 			// 2
-			chord(midiPitch:74, duration:f8, stem:StemDirection.Up)
+			chord(midiPitch:74, duration:f8, stem:StemDirection.UP)
 			rest(duration:f8, hidden:true) // hidden rest non curretly supported
 			rest(duration:f4, hidden:true)
 
 			rest(duration:f8, hidden:true)
-			chord(midiPitch:74, duration:f8, stem:StemDirection.Up)
-			chord(midiPitch:76, duration:f8, stem:StemDirection.Up)
-			chord(midiPitch:72, duration:f8, stem:StemDirection.Up)
+			chord(midiPitch:74, duration:f8, stem:StemDirection.UP)
+			chord(midiPitch:76, duration:f8, stem:StemDirection.UP)
+			chord(midiPitch:72, duration:f8, stem:StemDirection.UP)
 			// 3
-			chord(midiPitch:71, duration:f8, stem:StemDirection.Up)
+			chord(midiPitch:71, duration:f8, stem:StemDirection.UP)
 			rest(duration:f8, hidden:true)
 			rest(duration:f3, hidden:true)
 		}
@@ -56,8 +56,8 @@ builder.score() {
 
 	part(id:"2") {
 		voice(id:"1") {
-			clef(type:ClefType.Bass)
-			key(fifths:1, mode:KeyMode.Major)
+			clef(type:ClefType.BASS)
+			key(fifths:1, mode:KeyMode.MAJOR)
 			time(time:fr(4,4))		
 			(1..2).each {
 				rest(duration:f8)  // REST not shown at the start of a measure
@@ -74,8 +74,8 @@ builder.score() {
 
 	part(id:"3") {
 		voice(id:"1") {
-			instrument(id:"Drums 1", midiProgram:35, unpitched:true)
-			clef(type:ClefType.Percussion)
+			instrument(id:"Drums 1", program:35, unpitched:true)
+			clef(type:ClefType.PERCUSSION)
 			(1..3).each {
 				(1..16).each {
 					chord(midiPitch:67, duration:f16, unpitched:true)
@@ -83,7 +83,7 @@ builder.score() {
 			}
 		}
 		voice(id:"2") {
-			instrument(id:"Drums 2", midiProgram:51, unpitched:true)
+			instrument(id:"Drums 2", program:51, unpitched:true)
 			(1..3).each {
 				(1..4).each {
 					chord(midiPitch:60, duration:f4, unpitched:true)

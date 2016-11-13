@@ -168,9 +168,9 @@ import com.xenoage.zong.io.musiclayout.LayoutSettingsReader;
 import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.codehaus.groovy.control.CompilerConfiguration
 
-import io.github.mcolletta.mircomp.converter.ZongConverter
-import io.github.mcolletta.mircomp.mirchord.ScoreBuilder
-import io.github.mcolletta.mircomp.mirchord.Score as MirScore
+import io.github.mcolletta.mirconverter.ZongConverter
+import io.github.mcolletta.mirchord.core.ScoreBuilder
+import io.github.mcolletta.mirchord.core.Score as MirScore
 
 import javax.sound.midi.Soundbank
 import javax.sound.midi.Synthesizer
@@ -220,7 +220,7 @@ class ZongModel implements PlaybackListener  {
         importCustomizer.addStaticStars 'com.xenoage.utils.math.Fraction'
         importCustomizer.addImports 'com.xenoage.utils.math.Fraction'
         importCustomizer.addStaticStars 'io.github.mcolletta.mircomp.utils.Utils'
-        importCustomizer.addStarImports 'io.github.mcolletta.mircomp.mirchord'
+        importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core'
         def configuration = new CompilerConfiguration()
         configuration.addCompilationCustomizers(importCustomizer)
         def binding = new Binding()

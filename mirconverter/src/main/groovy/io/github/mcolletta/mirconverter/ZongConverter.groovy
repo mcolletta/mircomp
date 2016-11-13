@@ -21,29 +21,31 @@
  * @author Mirco Colletta
  */
 
-package io.github.mcolletta.mircomp.converter
+package io.github.mcolletta.mirconverter
 
 import com.xenoage.zong.io.midi.out.MidiTools
 
 import static io.github.mcolletta.mircomp.utils.Utils.*
 
-import io.github.mcolletta.mircomp.mirchord.Phrase
-import io.github.mcolletta.mircomp.mirchord.Anchor
-import io.github.mcolletta.mircomp.mirchord.Repeat
+import io.github.mcolletta.mirchord.core.Phrase
+import io.github.mcolletta.mirchord.core.Anchor
+import io.github.mcolletta.mirchord.core.Repeat
 // http://groovy-lang.org/structure.html#_import_aliasing
-import io.github.mcolletta.mircomp.mirchord.Score as MirScore
-import io.github.mcolletta.mircomp.mirchord.Rest as MirRest
-import io.github.mcolletta.mircomp.mirchord.Chord as MirChord
-import io.github.mcolletta.mircomp.mirchord.Part as MirPart
-import io.github.mcolletta.mircomp.mirchord.Voice as MirVoice
-import io.github.mcolletta.mircomp.mirchord.Instrument as MirInstrument
-import io.github.mcolletta.mircomp.mirchord.Key as MirKey
-import io.github.mcolletta.mircomp.mirchord.Time as MirTime
-import io.github.mcolletta.mircomp.mirchord.Tempo as MirTempo
-import io.github.mcolletta.mircomp.mirchord.ClefType as MirClefType
-import io.github.mcolletta.mircomp.mirchord.Clef as MirClef
-import io.github.mcolletta.mircomp.mirchord.Tuplet as MirTuplet
-import io.github.mcolletta.mircomp.mirchord.StemDirection as MirStemDirection
+import io.github.mcolletta.mirchord.core.Score as MirScore
+import io.github.mcolletta.mirchord.core.Rest as MirRest
+import io.github.mcolletta.mirchord.core.Pitch as MirPitch
+import io.github.mcolletta.mirchord.core.Chord as MirChord
+import io.github.mcolletta.mirchord.core.ChordSymbol
+import io.github.mcolletta.mirchord.core.Part as MirPart
+import io.github.mcolletta.mirchord.core.Voice as MirVoice
+import io.github.mcolletta.mirchord.core.Instrument as MirInstrument
+import io.github.mcolletta.mirchord.core.KeySignature as MirKey
+import io.github.mcolletta.mirchord.core.TimeSignature as MirTime
+import io.github.mcolletta.mirchord.core.Tempo as MirTempo
+import io.github.mcolletta.mirchord.core.ClefType as MirClefType
+import io.github.mcolletta.mirchord.core.Clef as MirClef
+import io.github.mcolletta.mirchord.core.Tuplet as MirTuplet
+import io.github.mcolletta.mirchord.core.StemDirection as MirStemDirection
 
 import com.xenoage.zong.core.Score
 import com.xenoage.zong.core.position.MP
@@ -191,6 +193,9 @@ class ZongConverter {
 			case { it instanceof MirChord}:
 				addChord(el)
 				break
+			case { it instanceof ChordSymbol}:
+				addChord(el.getChord())
+				break
 			case { it instanceof MirClef }:
 				addClef(el)
 				break
@@ -286,7 +291,7 @@ class ZongConverter {
 	}
 
 	void addTempo(MirTempo mirtempo) {
-		Tempo tempo = new Tempo(mirtempo.baseBeat, mirtempo.beatsPerMinute)
+		Tempo tempo = new Tempo(mirtempo.baseBeat, mirtempo.bpm)
 		if (mirtempo.text != null)
 			tempo.setText(ut(mirtempo.text))
 		write((ColumnElement) tempo)
@@ -302,7 +307,7 @@ class ZongConverter {
 			instrument = new UnpitchedInstrument(mirinstrument.id)
 		else
 			instrument = new PitchedInstrument(mirinstrument.id)
-		instrument.setMidiProgram(mirinstrument.midiProgram)
+		instrument.setMidiProgram(mirinstrument.getProgram())
 		StavesList stavesList = score.getStavesList() //stavesList.getParts()
 		Part part = stavesList.getPartByStaffIndex(currentStaff)		
 		if (instrumentsDefault[currentStaff] && mpos.measure < 1) {
@@ -319,13 +324,13 @@ class ZongConverter {
 	void addClef(MirClef mirclef) {
 		ClefType cleftype
 		switch (mirclef.type) {
-			case { it == MirClefType.Treble}:
+			case { it == MirClefType.TREBLE}:
 				cleftype = ClefType.clefTreble
 				break
-			case { it == MirClefType.Bass}:
+			case { it == MirClefType.BASS}:
 				cleftype = ClefType.clefBass
 				break
-			case { it == MirClefType.Percussion}:
+			case { it == MirClefType.PERCUSSION}:
 				cleftype = ClefType.clefPercTwoRects
 				break
 			default:
@@ -392,8 +397,9 @@ class ZongConverter {
 
 		if ((remain == _0 && actualDuration <= msize) || remain >= actualDuration) {			
 			def zpitches = []
-			mirchord.midiPitches.each { pitch ->
-				zpitches <<	((Pitch)MidiTools.getPitchFromNoteNumber(pitch))
+			mirchord.pitches.each { MirPitch pitch ->
+				int midiVal = pitch.getMidiValue()
+				zpitches <<	((Pitch)MidiTools.getPitchFromNoteNumber(midiVal))
 			}
 			List<Fraction> durations = [actualDuration]
 			if (mirtuplet == null && isPowerOfTwo(actualDuration.denominator)) // split only if chord not part of a tuplet
@@ -403,7 +409,7 @@ class ZongConverter {
 			int last = durations.size()-1
 			durations.eachWithIndex { zduration, i ->
 				// use spread operator to sort pitches asc as required by Zong
-				zchord = chord(zduration, mirchord.unpitched, mirchord.stem, *(zpitches.toSorted()))
+				zchord = chord(zduration, mirchord.isUnpitched(), mirchord.stem, *(zpitches.toSorted()))
 				write(zchord)
 				// chord part of tuplet
 				if (mirtuplet != null && tuplet_chords != null) {
@@ -431,8 +437,9 @@ class ZongConverter {
 			Fraction d2 = actualDuration.sub(d1)
 			//MirChord new_mirchord1 = mirchord.copyWith(duration: remain, tieStart: true)
 			//MirChord new_mirchord2 = mirchord.copyWith(duration: new_remain, tieEnd: true)
-			MirChord new_mirchord1 = [midiPitches:mirchord.midiPitches, duration:d1, stem:mirchord.stem, tieStart:true]
-			MirChord new_mirchord2 = [midiPitches:mirchord.midiPitches, duration:d2, stem:mirchord.stem, tieEnd:true]
+			// TODO
+			MirChord new_mirchord1 = [pitches:mirchord.pitches, duration:d1, stem:mirchord.stem, tieStart:true]
+			MirChord new_mirchord2 = [pitches:mirchord.pitches, duration:d2, stem:mirchord.stem, tieEnd:true]
 			addChord(new_mirchord1, mirtuplet, tuplet_chords)
 			addChord(new_mirchord2, mirtuplet, tuplet_chords)
 		}
@@ -551,7 +558,10 @@ class ZongConverter {
         	pitches.each { pitch -> 
         		Note note = new Note(pitch)
         		note.unpitched = true
-        		note.instrument = instr
+        		if (instr == null)
+        			println "NULL instrument for staff $currentStaff  voice $currentVoice"
+        		note.setInstrument(instr)
+        		//note.instrument = instr
         		notes << note
         	}
         	chord = new Chord(notes, fraction)
@@ -562,13 +572,13 @@ class ZongConverter {
         if (mirStemDir != null) {
 			StemDirection stemDir = StemDirection.Default
 			switch (mirStemDir) {
-				case { it == MirStemDirection.Up}:
+				case { it == MirStemDirection.UP}:
 					stemDir = StemDirection.Up
 					break
-				case { it == MirStemDirection.Down}:
+				case { it == MirStemDirection.DOWN}:
 					stemDir = StemDirection.Down
 					break
-				case { it == MirStemDirection.Auto}:
+				case { it == MirStemDirection.AUTO}:
 					stemDir = StemDirection.Default
 					break
 				default:

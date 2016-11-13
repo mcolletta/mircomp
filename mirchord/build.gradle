@@ -1,5 +1,7 @@
 apply plugin: 'groovy'
 // sourceCompatibility = 6
+apply plugin: 'application'
+
 
 dependencies {
     compile localGroovy()
@@ -11,5 +13,20 @@ sourceSets {
         groovy {
             srcDirs = ['src/main/groovy']
         }
+        resources {
+            srcDir 'resources'
+        }
     }
 }
+
+task runScript(type: JavaExec) {
+    description 'Run Simple Demo'
+    main = 'io.github.mcolletta.mirchord.interpreter.MirChordInterpreter'
+    classpath = sourceSets.main.runtimeClasspath
+
+    if (project.hasProperty('custom_arg')) {
+        args project.getProperty('custom_arg')
+    }
+}
+
+defaultTasks 'runScript'

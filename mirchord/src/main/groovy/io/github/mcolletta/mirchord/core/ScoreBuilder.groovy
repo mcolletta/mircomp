@@ -21,7 +21,7 @@
  * @author Mirco Colletta
  */
 
-package io.github.mcolletta.mircomp.mirchord
+package io.github.mcolletta.mirchord.core
 
 import groovy.transform.*
 
@@ -105,7 +105,15 @@ class ChordNode extends AbstractFactory {
         return new Chord()
     }
 
-    //public boolean onHandleNodeAttributes(FactoryBuilderSupport builder, Object node, Map attributes) {}
+    public boolean onHandleNodeAttributes(FactoryBuilderSupport builder, Object node, Map attributes) {
+    	if (attributes.containsKey('midiPitch')) {
+    		def midiPitch = attributes['midiPitch']
+    		attributes.remove('midiPitch')
+    		Pitch pitch = new Pitch()
+    		pitch.setMidiValue(midiPitch)
+    		attributes['pitch'] = pitch
+    	}
+    }
 
     public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
         parentNode.elements.add(childNode)
@@ -204,7 +212,7 @@ class ClefNode extends AbstractFactory {
 
 class KeyNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Key()
+        return new KeySignature()
     }
 
     public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
@@ -218,7 +226,7 @@ class KeyNode extends AbstractFactory {
 
 class TimeNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Time()
+        return new TimeSignature()
     }
 
     public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {

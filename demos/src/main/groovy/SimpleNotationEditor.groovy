@@ -44,9 +44,9 @@ import javafx.event.EventHandler
 import io.github.mcolletta.mirtext.TextEditor
 import io.github.mcolletta.mirscore.ScoreViewer
 
-import io.github.mcolletta.mircomp.converter.ZongConverter
-import io.github.mcolletta.mircomp.mirchord.ScoreBuilder
-import io.github.mcolletta.mircomp.mirchord.Score as MirScore
+import io.github.mcolletta.mirconverter.ZongConverter
+import io.github.mcolletta.mirchord.core.Score as MirScore
+import io.github.mcolletta.mirchord.interpreter.MirChordInterpreter
 
 import com.xenoage.zong.core.Score
 
@@ -76,9 +76,8 @@ public class SimpleNotationEditor extends Application {
             }
         })
 
-        /*root.getChildren().add(editor)
-        root.getChildren().add(viewer)*/
-        splitPane.setOrientation(Orientation.HORIZONTAL)
+        //splitPane.setOrientation(Orientation.HORIZONTAL)
+        splitPane.setOrientation(Orientation.VERTICAL)
         splitPane.getItems().add(editor)
         splitPane.getItems().add(viewer)
         root.getChildren().add(splitPane)
@@ -104,18 +103,9 @@ public class SimpleNotationEditor extends Application {
 
     public Score createScore(String source) {
         ZongConverter zconverter = new ZongConverter()
-        // Add imports for script.
-        def importCustomizer = new ImportCustomizer()
-        importCustomizer.addStaticStars 'com.xenoage.utils.math.Fraction'
-        importCustomizer.addImports 'com.xenoage.utils.math.Fraction'
-        importCustomizer.addStaticStars 'io.github.mcolletta.mircomp.utils.Utils'
-        importCustomizer.addStarImports 'io.github.mcolletta.mircomp.mirchord'
-        def configuration = new CompilerConfiguration()
-        configuration.addCompilationCustomizers(importCustomizer)
-        def binding = new Binding()
-        binding.setProperty('builder', new ScoreBuilder()) 
-        def mirscore = new GroovyShell(binding, configuration).evaluate(source)
-        Score score =zconverter.convert((MirScore)mirscore)
+        MirChordInterpreter interpreter = new MirChordInterpreter()
+        MirScore mirscore = interpreter.evaluate(source)
+        Score score = zconverter.convert(mirscore)
         return score
     }
 
