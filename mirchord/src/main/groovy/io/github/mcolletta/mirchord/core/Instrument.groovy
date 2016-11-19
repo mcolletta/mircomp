@@ -34,6 +34,8 @@ class Instrument implements MusicElement {
 	int bank = 0
 	boolean unpitched = false
 
+	Pitch displayPitch
+
 	public Instrument() {}
 	
 	public Instrument(String name, boolean unpitched=false) {

@@ -33,12 +33,16 @@ import groovy.transform.Canonical
 import groovy.transform.ToString
 import groovy.transform.TupleConstructor
 
+
+@CompileStatic
 enum ClefType { 
 		TREBLE, 
 		BASS, 
 		PERCUSSION 
 	}
 
+
+@CompileStatic
 public enum KeyMode {
 			MAJOR,
 			MINOR,
@@ -51,24 +55,42 @@ public enum KeyMode {
 			LOCRIAN
 		}
 
+
+@CompileStatic
 public enum StemDirection {
 			UP,
 			DOWN,
 			AUTO
 		}
 
+
+@CompileStatic
 public enum ChordsMode { 
 		LEADSHEET, 
 		STAFF, 
 		BOTH 
 	}
 
-// Marker interface
-interface MusicElement {}
+
+trait MusicElement {
+
+	String getMusicElementType() {
+		return "MusicElement"
+	}
+
+	boolean isCopyable() {
+		return false
+	}
+
+	MusicElement copy() {
+		throw new Exception("This element cannot be copied")
+	}
+}
 
 @Canonical
 class Score {
 	Map<String, Part> parts = [:]
+	CompositionInfo info = null
 }
 
 @CompileStatic
@@ -92,7 +114,28 @@ class Voice {
 @CompileStatic
 @Canonical
 class Phrase implements MusicElement {
-	List<Chord> elements = []
+	List<MusicElement> elements = []
+
+	Phrase() {}
+
+	Phrase(Phrase phrase) {
+		for(MusicElement element : phrase.elements) {
+			if (element.isCopyable())
+				this.elements.add(element.copy())
+		}
+	}
+
+	String getMusicElementType() {
+		return "Phrase"
+	}
+
+	boolean isCopyable() {
+		return true
+	}
+
+	Phrase copy() {
+		Phrase clone = new Phrase(this)
+	}
 }
 
 @CompileStatic
@@ -100,11 +143,34 @@ class Phrase implements MusicElement {
 class Tuplet implements MusicElement {
 	// fr(3, 2) as in lilypond means a ratio of 2/3
 	Fraction fraction
-	//Phrase phrase
-	List<Chord> elements = []
+	List<Chord> chords = []
+
+	Tuplet(Fraction fraction, List<Chord> chords) {
+		this.fraction = fraction
+		this.chords = chords
+	}
+
+	Tuplet(Tuplet tuplet) {
+		this.fraction = fr(tuplet.fraction.numerator, tuplet.fraction.denominator)
+		for(Chord chord : tuplet.chords) {
+			this.chords.add(chord.copy())
+		}
+	}
 
 	Fraction getBaseDuration() {
-		return elements[0].duration // TODO min duration?
+		return chords[0].duration // TODO min duration?
+	}
+
+	String getMusicElementType() {
+		return "Tuplet"
+	}
+
+	boolean isCopyable() {
+		return true
+	}
+
+	Tuplet copy() {
+		Tuplet clone = new Tuplet(this)
 	}
 }
 

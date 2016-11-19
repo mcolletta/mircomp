@@ -31,6 +31,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.ToString
 import groovy.transform.TupleConstructor
 
+@CompileStatic
 enum ChordAltType { ADD, SUB, ALT }
 
 @CompileStatic
@@ -166,8 +167,21 @@ class ChordSymbol implements MusicElement {
 			str += kind.toString()
 		return str
 	}
+
+	String getMusicElementType() {
+		return "ChordSymbol"
+	}
+
+	boolean isCopyable() {
+		return true
+	}
+
+	ChordSymbol copy() {
+		ChordSymbol clone = new ChordSymbol(this)
+	}
 }
 
+@CompileStatic
 enum ChordKind {
 	MAJOR,
 	MINOR,

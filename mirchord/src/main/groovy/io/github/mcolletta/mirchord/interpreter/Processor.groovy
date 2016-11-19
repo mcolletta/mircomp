@@ -48,11 +48,13 @@ import java.lang.annotation.ElementType
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
+
 @Target([ElementType.METHOD])
 @Retention(RetentionPolicy.RUNTIME)
 @interface MirChord {
     String info() default "MirChord method used by the interpreter"
 }
+
 
 @CompileStatic
 @Processes(MirChordGrammar.class)
@@ -61,6 +63,7 @@ class MirChordProcessor extends AbstractProcessor {
 	Score score
 	String currentPart
 	Map<String, String> currentVoice = [:]
+	Map<String, Map<String, Instrument>> currentInstrument = [:]
 
     Stack environments //scopes
     Map<String, Integer> pitchMap = [C:0, D:2, E:4, F:5, G:7, A:9, B:11]
@@ -72,13 +75,16 @@ class MirChordProcessor extends AbstractProcessor {
 		]
 
 	Map<String, String> commands_abbr = [
+		"info": "scoreInfo",
 		"rel": "relative", 
 		"def": "define",
-		"part": "part",
+		"p": "part",
 		"v": "voice",
 		"time": "timeSignature",
 		"key": "keySignature",
+		"i": "instrument",
 		"instr": "instrument",
+		"tp": "tuplet",
 		"cc": "controlChange",
 		"call": "callSymbol", 
 		"expand": "callSymbol"
@@ -115,7 +121,7 @@ class MirChordProcessor extends AbstractProcessor {
 	private void processExtMethods(Object xobj) {
 		Method[] methods = xobj.getClass().getDeclaredMethods()
 		for(Method method : methods) {
-			//println method.getName() + " " + method.isSynthetic()+ " " + method.getModifiers() + " " + method.getAnnotation(MirChord)
+			// println method.getName() + " " + method.isSynthetic()+ " " + method.getModifiers() + " " + method.getAnnotation(MirChord)
 			if (!method.isSynthetic() && (method.getModifiers() == Modifier.PUBLIC) 
             		&& (method.getAnnotation(MirChord) != null)) {
 				Map<String, Object> map = [:]
@@ -169,11 +175,31 @@ class MirChordProcessor extends AbstractProcessor {
 		println "addToScore $element  in  $currentPart    $voiceId"
 	}
 
+	private updateCurrentInstrument(Instrument instrument) {
+		String partId = getVarFromScopes("part")
+		String voiceId = getVarFromScopes("voice")
+		if (!currentInstrument.containsKey(partId)) 
+			currentInstrument.put(partId, [:])
+		if (!currentInstrument[partId].containsKey(voiceId)) 
+			currentInstrument[partId].put(voiceId, instrument)
+		else
+			currentInstrument[partId][voiceId] = instrument
+	}
+
+	private Instrument getPercussionInstrument() {
+		String partId = getVarFromScopes("part")
+		String voiceId = getVarFromScopes("voice")
+		if (currentInstrument.containsKey(partId) &&
+			currentInstrument[partId].containsKey(voiceId))
+			return currentInstrument[partId][voiceId]
+		return null
+	}
+
 	// COMMANDS
 
 	@MirChord 
 	void setCurrentVoice(String id) {
-		// println "SETTING VOICE " + id
+		println "SETTING VOICE " + id
 		if (!score.parts[currentPart].voices.containsKey(id)) {
 			score.parts[currentPart].voices.put(id, new Voice(id))
 			score.parts[currentPart].voices[id].elements = []
@@ -184,7 +210,7 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	@MirChord
 	void setCurrentPart(String id) {
-		// println "SETTING PART " + id
+		println "SETTING PART " + id
 		if (!score.parts.containsKey(id)) {			
 			score.parts.put(id, new Part(id))
 		}
@@ -206,7 +232,8 @@ class MirChordProcessor extends AbstractProcessor {
 		// update scope
 		Map scope = getScope()
 		Pitch pitch = new Pitch(letter, alteration, octave)
-		scope['displayPitch'] = pitch
+		instr.setDisplayPitch(pitch)
+		updateCurrentInstrument(instr)
 		return instr
 	}
 	
@@ -238,8 +265,7 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	@MirChord
-	CompositionInfo header(Map... args) {
-		// Collection maps = args.flatten()
+	CompositionInfo scoreInfo(List<Map> args) {
 		CompositionInfo info =  new CompositionInfo()
 		for(Map map : args) {
 			if (map.containsKey('title'))
@@ -251,25 +277,21 @@ class MirChordProcessor extends AbstractProcessor {
 			if (map.containsKey('chordsMode'))
 				info.chordsMode = (ChordsMode)map['chordsMode']
 		}
-		/*info.title =  maps.find { Map it -> it.containsKey('title') }?.title
-		info.composer =  maps.find { Map it -> it.containsKey('composer') }?.composer
-		info.poet =  maps.find { Map it -> it.containsKey('poet') }?.poet
-		info.chordsMode = maps.find { Map it -> it.containsKey('chordsMode') }?.chordsMode*/
 		return info
 	}
 	
 	@MirChord
-	Map<String, String> title(val) {
+	Map<String, String> title(String val) {
 		return ['title':val]
 	}
 	
 	@MirChord
-	Map<String, String> composer(val) {
+	Map<String, String> composer(String val) {
 		return ['composer':val]
 	}
 	
 	@MirChord
-	Map<String, String> poet(val) {
+	Map<String, String> poet(String val) {
 		return ['poet':val]
 	}
 	
@@ -310,11 +332,11 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	@MirChord
-	// TODO
+	// TODO: List<MusicElement> ???
 	Phrase repeat(int n, Phrase phrase) {
-		Phrase rep = phrase // TODO deepcopy(phrase)
+		Phrase rep = new Phrase()
 		(1..n-1).each { 
-			rep.elements.addAll(phrase.elements)
+			rep.elements.addAll(phrase.copy().elements)
 		}
 		return rep
 	}
@@ -325,11 +347,13 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	@MirChord
-	Tuplet tuplet(String ratio, List<Chord> chords) {
+	Tuplet tuplet(List args) {
+		String ratio = (String)args[0]
 		String[] parts =  ratio.split('/')
 		int num = Integer.parseInt(parts[0])
 		int den = Integer.parseInt(parts[1])
 		Fraction fraction = fr(num, den)
+		List<Chord> chords = (List<Chord>)args[1..-1]
 		return new Tuplet(fraction, chords)
 	}
 
@@ -355,7 +379,7 @@ class MirChordProcessor extends AbstractProcessor {
 			cmd = commands_abbr[cmd]
 		
 		if (extMethods.containsKey(cmd)) {
-			// println parms
+			// println "calling $cmd with $parms"
 			Method meth = (Method)extMethods[cmd]["method"]
 			if (meth.getReturnType() == void)
 				extMethods[cmd]["object"].invokeMethod(cmd, parms)
@@ -366,6 +390,16 @@ class MirChordProcessor extends AbstractProcessor {
 		} else
 			throw new Exception("not found command named $cmd")
     }
+
+    void completeStem(Match match) {
+		Match child = match.getFirstChild()
+		String dir = "AUTO"
+		if (child.parser == grammar.stemUp)
+			dir = "UP"
+		if (child.parser == grammar.stemDown)
+			dir = "DOWN"
+		stem(dir)
+	}
 	
 	static int getAlterationFromAccidentals(List<ACCIDENTALS> accidentals) {
 		int alteration = 0
@@ -465,15 +499,9 @@ class MirChordProcessor extends AbstractProcessor {
 			pitch.octave += octaveSteps
 			scope['octave'] = pitch.octave
 		}
-		// TODO
-		/*if (phraseType == EventListType.SIMULTANEOUS) {
-			scope['octave'] = pitch.octave
-			scope['symbol'] = pitch.symbol
-		}
-		else {*/
-			setVarFromScopes('octave', pitch.octave)
-			setVarFromScopes('symbol', pitch.symbol)
-		/*}*/
+		
+		setVarFromScopes('octave', pitch.octave)
+		setVarFromScopes('symbol', pitch.symbol)
 		
 		if (alterations != 0)
 			pitch.alteration = alterations
@@ -496,12 +524,7 @@ class MirChordProcessor extends AbstractProcessor {
 			
 		String pitchLetter = ((String)getResult(match.findMatchByType(grammar.pitchName))).toUpperCase()
 		Pitch pitch
-		if (pitchLetter == "X") {
-			pitch = (Pitch)getVarFromScopes('displayPitch')
-			// println "Try to get displayPitch from scope " + pitch
-			if (pitch == null)
-				pitch = new Pitch()
-		} else {
+		if (!(pitchLetter == "X")) { // later set by completeChord to DisplayPitch
 			pitch = new Pitch(pitchLetter)
 			Match octaves_match = match.findMatchByType(grammar.octaves)
 			List<Integer> octaveSteps = (List<Integer>)getResult(octaves_match)
@@ -584,7 +607,16 @@ class MirChordProcessor extends AbstractProcessor {
 		StemDirection stemDir = (StemDirection)getVarFromScopes('stem')
 		if (stemDir)
 			chord.setStem(stemDir)
+		CheckUnpitchedChord(chord)
 		putResult(chord)
+	}
+
+	private void CheckUnpitchedChord(Chord chord) {
+		Instrument instr = getPercussionInstrument()
+		if (instr != null) {
+			chord.setInstrument(instr)
+			chord.setPitch(instr.getDisplayPitch())
+		}
 	}
 
 	void completeRest(Match match) {
@@ -632,43 +664,46 @@ class MirChordProcessor extends AbstractProcessor {
 		}
 	}
 
-	void completeMusicElement(Match match) {
-		Phrase phrase = (Phrase)getResult(match.findMatchByType(grammar.phrase))
-		if (phrase != null) {
-			putResult(phrase)
-		}
-		MusicElement element = (MusicElement)getResult(match.findMatchByType(grammar.atom))
-		if (element != null) {
-			putResult(element)
-		}
-	}
+	boolean processPhrase(Match match) {
+        environments.add([:])
+        return true
+    }
 
 	void completePhrase(Match match) {
-		List<Match> children = match.findAllMatchByType(grammar.atom)
+		List<Match> children = match.findAllMatchByType(grammar.musicElement)
 		Phrase phrase = new Phrase()
 		for(Match child : children) {
-			Chord res = (Chord)getResult(child) // MusicElement
+			MusicElement res = (MusicElement)getResult(child)
 			if (res != null)
 				phrase.elements << res
 		}
 		putResult(phrase)
+		environments.pop()
+	}
+
+	void completeMusicElement(Match match) {
+		Match child = match.getFirstChild()
+		putResult(getResult(child))
+	}
+
+	void completeScorePosition(Match match) {
+		Match child = match.getFirstChild()
+		// update scope for instrument
+		if (child.parser == grammar.part)
+			scope['part'] = child.getText()[1..-1]
+		if (child.parser == grammar.voice)
+			scope['voice'] = child.getText()[1..-1]
+
+		putResult(child)
+	}
+
+	void completeAnchor(Match match) {
+		putResult(new Anchor(match.getText()[1..-1]))
 	}
 
 	void completeScoreElement(Match match) {
 		Match child = match.getFirstChild()
-		if (child.parser == grammar.contextElement) {
-			putResult(getResult(child))
-		}
-		if (child.parser == grammar.musicElement) {
-			MusicElement element = (MusicElement)getResult(child)
-			putResult(element)
-		}
-		if (child.parser == grammar.sexpr) {
-			def obj = getResult(child)
-			// if (obj instanceof MusicElement) { ... }
-			if (obj != null)
-				putResult(obj)
-		}
+		putResult(getResult(child))
 	}
 
 	void completeScore(Match match) {
@@ -683,36 +718,24 @@ class MirChordProcessor extends AbstractProcessor {
 					if (m.parser == grammar.voice)
 						setCurrentVoice(m.getText()[1..-1])
 				} else {
-					try {
-						MusicElement element = (MusicElement)obj
-						if (element != null)
-							addToScore(element)
-					}
-					catch(Exception ex) {
-						throw new Exception("Object $obj not a MusicElement")
+					if (obj instanceof CompositionInfo) {
+						score.setInfo((CompositionInfo)obj)
+					} 
+					else
+					{
+						try {
+							MusicElement element = (MusicElement)obj
+							if (element != null) {
+								addToScore(element)
+							}
+						}
+						catch(Exception ex) {
+							throw new Exception("Object " + obj + ": " + ex.getMessage())
+						}
 					}
 				}
 			}
 		}
-	}
-
-	void completeContextElement(Match match) {
-		Match child = match.getFirstChild()
-		putResult(child)
-	}
-
-	void completeStem(Match match) {
-		Match child = match.getFirstChild()
-		String dir = "AUTO"
-		if (child.parser == grammar.stemUp)
-			dir = "UP"
-		if (child.parser == grammar.stemDown)
-			dir = "DOWN"
-		stem(dir)
-	}
-
-	void completeAnchor(Match match) {
-		putResult(new Anchor(match.getText()[1..-1]))
 	}
 
 	// CHORD SYMBOLS------------------
@@ -845,10 +868,10 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	void completeIdentifier(Match match) {
-		def sym = match.getText()[1..-1]
-		def scope = getScope()
+		String sym = match.getText()[1..-1]
+		Map scope = getScope()
 		if (scope.containsKey(sym)) {
-			def clone = scope[sym] // TODO: deepcopy(scope[sym])
+			Phrase clone = ((Phrase)scope[sym]).copy()
 			putResult(clone)
 		}
 		else

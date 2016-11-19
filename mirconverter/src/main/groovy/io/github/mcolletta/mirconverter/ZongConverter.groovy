@@ -27,9 +27,11 @@ import com.xenoage.zong.io.midi.out.MidiTools
 
 import static io.github.mcolletta.mircomp.utils.Utils.*
 
+import io.github.mcolletta.mirchord.core.MusicElement
 import io.github.mcolletta.mirchord.core.Phrase
 import io.github.mcolletta.mirchord.core.Anchor
 import io.github.mcolletta.mirchord.core.Repeat
+import io.github.mcolletta.mirchord.core.CompositionInfo
 // http://groovy-lang.org/structure.html#_import_aliasing
 import io.github.mcolletta.mirchord.core.Score as MirScore
 import io.github.mcolletta.mirchord.core.Rest as MirRest
@@ -94,6 +96,7 @@ import static com.xenoage.zong.core.music.format.SP.sp;
 import static com.xenoage.zong.core.position.MP.mp;
 import static com.xenoage.zong.core.text.UnformattedText.ut;
 
+import com.xenoage.zong.core.info.Creator
 import com.xenoage.zong.commands.core.music.StaffAdd
 import com.xenoage.zong.commands.core.music.VoiceAdd
 import com.xenoage.zong.commands.core.music.VoiceAdd
@@ -162,6 +165,13 @@ class ZongConverter {
 		// context[staff][measure][voice]
 		context = [:].withDefault { [:].withDefault { [:] } }
 
+		CompositionInfo info = mirscore.getInfo()
+		if (info != null) {			
+			score.getInfo().setWorkTitle(info.getTitle())
+			Creator composer = new Creator(info.getComposer(), "composer")
+			score.getInfo().getCreators().add(composer)
+		}
+
 		mirscore.parts.each { idp, part ->
 			currentStaff = score.getStavesCount()
 			addPart(idp, part)
@@ -176,6 +186,8 @@ class ZongConverter {
 				closeBeam() // be sure every beam closed
 			}
 		}
+
+		println score.getInfo()
 		return score
 	}
 
@@ -185,7 +197,7 @@ class ZongConverter {
 		new PartAdd(score, zpart, currentStaff, null).execute()
 	}
 
-	void addElement(el) {
+	void addElement(MusicElement el) {
 		switch (el) {
 			case { it instanceof MirRest}:
 				addRest(el)
@@ -303,7 +315,7 @@ class ZongConverter {
 		VoiceContext ctx = getContext()
 		MP mpos = ctx.mp
 		Instrument instrument
-		if (mirinstrument.unpitched)
+		if (mirinstrument.isUnpitched())
 			instrument = new UnpitchedInstrument(mirinstrument.id)
 		else
 			instrument = new PitchedInstrument(mirinstrument.id)
@@ -344,7 +356,7 @@ class ZongConverter {
 	void addTuplet(MirTuplet mirtuplet) {
 		Fraction fraction = mirtuplet.fraction		
 		def tuplet_chords = []
-		mirtuplet.elements.each { el -> 
+		mirtuplet.chords.each { el -> 
 			def ratio = fr(mirtuplet.fraction.denominator, mirtuplet.fraction.numerator)
 			def actualDuration = el.duration.mult(ratio)
 			el.duration = actualDuration
@@ -358,7 +370,9 @@ class ZongConverter {
 	}
 
 	void addPhrase(Phrase phrase) {
-		phrase.elements.each { el -> addChord(el) }
+		for(MusicElement el : phrase.elements) {
+			addElement(el)
+		}
 	}
 
 	void addRest(MirRest mirrest) {
@@ -557,11 +571,10 @@ class ZongConverter {
         	List<Note> notes = []
         	pitches.each { pitch -> 
         		Note note = new Note(pitch)
-        		note.unpitched = true
+        		note.setUnpitched(true)
         		if (instr == null)
         			println "NULL instrument for staff $currentStaff  voice $currentVoice"
         		note.setInstrument(instr)
-        		//note.instrument = instr
         		notes << note
         	}
         	chord = new Chord(notes, fraction)

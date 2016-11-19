@@ -204,6 +204,28 @@ enum ACCIDENTALS {
 class Rest implements MusicElement  {
 	Fraction duration
 	boolean hidden
+
+	Rest() {
+		duration = fr(1,4)
+		hidden = false
+	}
+
+	Rest(Rest rest) {
+		this.duration = rest.duration
+		this.hidden = rest.hidden
+	}
+
+	String getMusicElementType() {
+		return "Rest"
+	}
+
+	boolean isCopyable() {
+		return true
+	}
+
+	Rest copy() {
+		Rest clone = new Rest(this)
+	}
 }
 
 @CompileStatic
@@ -219,7 +241,7 @@ class Chord implements MusicElement {
 
 	StemDirection stem = StemDirection.AUTO
 
-	boolean unpitched
+	Instrument instrument;
 	
 	// Use a Map constructor
 	Chord() {
@@ -229,7 +251,7 @@ class Chord implements MusicElement {
 	Chord(Chord chord) {
 		List<Pitch> chord_pitches = []
 		for (Pitch p : chord.getPitches()) {
-			def newPitch = new Pitch(p.symbol, p.alteration, p.octave)
+			Pitch newPitch = new Pitch(p.symbol, p.alteration, p.octave)
 			chord_pitches.add(newPitch)
 		}
 		this.pitches = chord_pitches
@@ -240,6 +262,10 @@ class Chord implements MusicElement {
 		this.tieEnd = chord.tieEnd
 	}
 
+	boolean isUnpitched() {
+		return (instrument != null)
+	}
+
 	Pitch getPitch() { // getRoot
 		if (pitches && pitches.size() > 0)
 			return pitches[0]
@@ -248,10 +274,6 @@ class Chord implements MusicElement {
 
 	void setPitch(Pitch pitch) {
 		pitches = [pitch]
-	}
-	
-	boolean isChordSymbol() {
-		return false
 	}
 	
 	void setDynamicMark(String dynamic) {
@@ -268,13 +290,25 @@ class Chord implements MusicElement {
 	}
 	
 	public String toString() {
-		def str = ""
+		String str = ""
 		if (tieEnd)
 			str += "-"
 		pitches.each { Pitch p -> str += p.toString()}
 		if (tieStart)
 			str += "-"
 		return "<" + str + ", " + duration + ">"
+	}
+
+	String getMusicElementType() {
+		return "Chord"
+	}
+
+	boolean isCopyable() {
+		return true
+	}
+
+	Chord copy() {
+		Chord clone = new Chord(this)
 	}
 }
 

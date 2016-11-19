@@ -314,6 +314,7 @@ class ScoreViewer  extends VBox {
     void loadScore(Score score) {
         scoreModel.loadScore(score)
         initScoreButtons()
+        draw()
     }
 
     void initScoreButtons() {
@@ -325,7 +326,7 @@ class ScoreViewer  extends VBox {
     // actions
 
     @FXML void scoreImageClick(MouseEvent event) {
-        println "clicked at $event"
+        // println "clicked at $event"
         if (getMode() == ScoreMode.SELECT) {
             scoreModel.pickMP(new Point2f((float) event.getX(), (float) event.getY()))
             draw()

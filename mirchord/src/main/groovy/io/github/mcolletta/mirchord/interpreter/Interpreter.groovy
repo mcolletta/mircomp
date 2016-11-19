@@ -69,12 +69,16 @@ class MirChordInterpreter {
 class Utils {
 
 	@MirChord 
-	public Phrase transpose(Phrase phrase) {
+	public Phrase transpose(int halfSteps, Phrase phrase) {
 		// TODO maybe Phrase could become List<MusicElement> ???
-		println "transposing phrase " + phrase
-		Phrase newPhrase = new Phrase()
-		for(Chord el : phrase.elements) {
-			newPhrase.elements << el
+		Phrase newPhrase = phrase.copy()
+		for(MusicElement el : phrase.elements) {
+			if (el.getMusicElementType() == "Chord") {
+				Chord chord = (Chord)el
+				for(Pitch pitch : chord.getPitches()) {
+					pitch.setMidiValue(pitch.getMidiValue() + halfSteps)
+				}
+			}
 		}
 		return newPhrase
 	}

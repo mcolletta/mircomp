@@ -115,23 +115,23 @@ public class MirChordGrammar extends Grammar {
 		public final Parser chordSymbol = seq(chordRoot, chordKind, opt(chordAlteration), opt(seq(chordBassSeparator, chordBass)))
 
 		public final Parser atom = seq(opt(tieEnd), cho(rest, chord, chordSymbol, sameChordSymbol), opt(velocity), opt(tieStart))
-		public final Parser atoms = oneOrMore(atom).separatedBy(opt(ws))
 		public final ParserReference phrase = ref() 
-		public final Parser musicElement = cho(atom, phrase)
-		public final Parser contextElement = cho(part, voice, anchor, relativeOctave, stickyDuration, stem, measure)
-		
 		public final ParserReference sexpr = ref()
-		
+		public final Parser contextElement = cho(relativeOctave, stickyDuration, stem, measure)
+		public final Parser musicElement = cho(contextElement, sexpr, atom, phrase)
+		public final Parser elements = oneOrMore(musicElement).separatedBy(opt(ws))
+
 		public final Parser parm = cho(stringa, identifier, number, decimal, musicElement, sexpr)
 		public final Parser parms = oneOrMore(parm).separatedBy(ws)
 
-		public final Parser scoreElement = cho(contextElement, musicElement, sexpr)
+		public final Parser scorePosition = cho(part, voice, anchor)
+		public final Parser scoreElement = cho(scorePosition, musicElement)
 		public final Parser score = oneOrMore(scoreElement).separatedBy(opt(ws))
 		
 		private MirChordGrammar() {
 				init()
 				sexpr.define(seq(str("("), command, parms, str(")")).separatedBy(opt(ws)))
-				phrase.define(seq(str("{"), atoms, str("}")).separatedBy(opt(ws)))
+				phrase.define(seq(str("{"), elements, str("}")).separatedBy(opt(ws)))
 				pitchList.define(seq(str("["), pitches, str("]")).separatedBy(opt(ws)))
 		}
 		
