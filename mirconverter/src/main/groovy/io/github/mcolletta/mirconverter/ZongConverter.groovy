@@ -48,6 +48,7 @@ import io.github.mcolletta.mirchord.core.ClefType as MirClefType
 import io.github.mcolletta.mirchord.core.Clef as MirClef
 import io.github.mcolletta.mirchord.core.Tuplet as MirTuplet
 import io.github.mcolletta.mirchord.core.StemDirection as MirStemDirection
+import io.github.mcolletta.mirchord.core.KeyMode
 
 import com.xenoage.zong.core.Score
 import com.xenoage.zong.core.position.MP
@@ -170,7 +171,7 @@ class ZongConverter {
 		CompositionInfo info = mirscore.getInfo()
 		if (info != null) {			
 			score.getInfo().setWorkTitle(info.getTitle())
-			score.getInfo().setMovementTitle(info.getTitle())
+			//score.getInfo().setMovementTitle(info.getTitle())
 			Creator composer = new Creator(info.getComposer(), "composer")
 			score.getInfo().getCreators().add(composer)
 		}
@@ -202,7 +203,7 @@ class ZongConverter {
 
 	void addElement(MusicElement el) {
 		switch (el) {
-			// TODO: use getMusicElementType() for perfomance
+			// TODO: use getMusicElementType() for performance
 			case { it instanceof MirRest}:
 				addRest((MirRest)el)
 				break
@@ -278,24 +279,37 @@ class ZongConverter {
 	}
 
 	void addKey(MirKey mirkey) {
-		// TODO mode
-		//cursor.write((ColumnElement) new TraditionalKey(mirkey.fifths, Mode.Minor));
-		write((ColumnElement) new TraditionalKey(mirkey.fifths))
+		Mode mode
+		switch (mirkey.mode) {
+			case { mirkey.mode == KeyMode.MAJOR}:
+				mode = Mode.Major
+				break
+			case { mirkey.mode == KeyMode.MINOR}:
+				mode = Mode.Minor
+				break
+			default:
+				mode = Mode.Major
+				break
+		}
+		/*println mirkey
+		println "TraditionalKey ${mirkey.fifths} $mode"*/
+		write((ColumnElement) new TraditionalKey(mirkey.fifths, mode));
+		//write((ColumnElement) new TraditionalKey(mirkey.fifths))
 	}
 
 	void addTime(MirTime mirtime) {
 		Time ztime = null
 		switch (mirtime.time) {
-			case { it == null}:
+			case { mirtime.time == null}:
 				ztime = new Time(TimeType.timeCommon)
 				break
-			case { it == f1}:
+			case { mirtime.time == f1}:
 				ztime = new Time(TimeType.timeCommon)
 				break
-			case { it == f2}:
+			case { mirtime.time == f2}:
 				ztime = new Time(TimeType.time_2_4)
 				break
-			case { it == f3}:
+			case { mirtime.time == f3}:
 				ztime = new Time(TimeType.time_6_8)
 				break
 			default:
@@ -416,8 +430,9 @@ class ZongConverter {
 		if ((remain == _0 && actualDuration <= msize) || remain >= actualDuration) {			
 			List<Pitch> zpitches = []
 			mirchord.pitches.each { MirPitch pitch ->
-				int midiVal = pitch.getMidiValue()
-				zpitches <<	((Pitch)MidiTools.getPitchFromNoteNumber(midiVal))
+				// int midiVal = pitch.getMidiValue()
+				// zpitches <<	((Pitch)MidiTools.getPitchFromNoteNumber(midiVal))
+				zpitches <<	convertPitch(pitch)
 			}
 			List<Fraction> durations = [actualDuration]
 			if (mirtuplet == null && isPowerOfTwo(actualDuration.denominator)) // split only if chord not part of a tuplet
@@ -462,6 +477,21 @@ class ZongConverter {
 			addChord(new_mirchord2, mirtuplet, tuplet_chords)
 		}
 		
+	}
+
+	static Pitch convertPitch(MirPitch mirpitch) {
+		String sym = mirpitch.symbol
+		int step = 0
+	    switch (sym) {
+	      case 'C': step = 0; break;
+	      case 'D': step = 1; break;
+	      case 'E': step = 2; break;
+	      case 'F': step = 3; break;
+	      case 'G': step = 4; break;
+	      case 'A': step = 5; break;
+	      case 'B': step = 6; break;
+	    }
+		return pi(step, mirpitch.alteration, mirpitch.octave)
 	}
 
 	static boolean checkFractionList(List<Fraction>list, Fraction fr) {

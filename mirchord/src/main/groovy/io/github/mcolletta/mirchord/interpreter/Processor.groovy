@@ -621,9 +621,21 @@ class MirChordProcessor extends AbstractProcessor {
 
 	void completeRest(Match match) {
 		Rest rest = new Rest()
+		Fraction scopeDuration = (Fraction)getVarFromScopes('duration')
+		if (scopeDuration)
+			rest.duration = scopeDuration			
 		Match duration_match = match.findMatchByType(grammar.duration)
 		Fraction duration = (Fraction)getResult(duration_match)
-		rest.duration = duration
+		if (duration != null) {
+			rest.duration = duration
+			// update sticky duration
+			if (scopeDuration)
+				setVarFromScopes('duration', duration)
+			else {
+				Map scope = getScope()
+				scope['duration'] = duration
+			}
+		}
 		putResult(rest)
 	}
     

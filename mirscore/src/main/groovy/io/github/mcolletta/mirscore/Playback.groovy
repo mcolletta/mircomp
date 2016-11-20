@@ -25,6 +25,8 @@ package io.github.mcolletta.mirscore
 
 import javax.sound.midi.MidiUnavailableException
 
+import static com.xenoage.zong.core.position.MP.mp0
+
 import com.xenoage.zong.core.Score
 import com.xenoage.zong.core.position.MP
 import com.xenoage.zong.io.midi.out.PlaybackListener
@@ -69,8 +71,11 @@ class Playback {
     }
 
     static void stop() {
-        if (player != null)
+        if (player != null) {
             player.stop()
+            /*if (player.isPlaybackFinished())
+                player.setMP(mp0)*/
+        }
     }
     
     public static void registerListener(PlaybackListener listener) {
