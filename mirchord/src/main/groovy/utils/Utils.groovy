@@ -30,7 +30,9 @@ import com.xenoage.utils.math.Fraction
 import static com.xenoage.utils.math.Fraction.fr
 import static com.xenoage.utils.math.Fraction._0
 
+import groovy.transform.CompileStatic
 
+@CompileStatic
 class Utils {
 
 	static Fraction f1 = fr(4, 4)
@@ -58,58 +60,58 @@ class Utils {
 		return (n != 0) && ((n & (n - 1)) == 0)
 	}
 
-	static def allowedDurations = [
-		0.00390625: f256,
-		0.0078125: f128,
-		0.015625: f64,
-		0.0625: f16,
-		0.083: f12, // triplet?
-		0.125: f8,
-		0.17: f6, // triplet?
-		0.1875: f8dot,
-		0.25: f4,
-		0.375: f4dot,		
-		0.5: f2,
-		0.75: f3,
-		1.0: f1
+	static Map<Float,Fraction> allowedDurations = [
+		0.00390625f: f256,
+		0.0078125f: f128,
+		0.015625f: f64,
+		0.0625f: f16,
+		0.083f: f12, // triplet?
+		0.125f: f8,
+		0.17f: f6, // triplet?
+		0.1875f: f8dot,
+		0.25f: f4,
+		0.375f: f4dot,		
+		0.5f: f2,
+		0.75f: f3,
+		1.0f: f1
  	]
 
 
-	static def nearest(list, number) {
-		list.sort { (it - number).abs() }.first()
+	static float nearest(Set<Float> list, float number) {
+		return list.sort { (it - number).abs() }.first()
 	}
 
-	static Fraction getDurationFromDecimal(num) {
-		def key = nearest(allowedDurations.keySet(), num)
+	static Fraction getDurationFromDecimal(float num) {
+		float key = nearest(allowedDurations.keySet(), num)
 		return allowedDurations[key]
 	}
 
 	
 	// AUTOMATIC BEAMING
-	static def pulses_4_4 = [1: [l: _0, r: f4], 
-						     2: [l: f4, r: f2], 
-						     3: [l: f2, r: f3], 
-						     4: [l: f3, r: f1]]
+	static Map<Integer, Map<String, Fraction>> pulses_4_4 = (Map<Integer, Map<String, Fraction>>)[1: ['l': _0, 'r': f4], 
+																							      2: ['l': f4, 'r': f2], 
+																							      3: ['l': f2, 'r': f3], 
+																							      4: ['l': f3, 'r': f1]]
 
-	static def pulses_2_4 = [1: [l: _0, r: f4], 
-						     2: [l: f4, r: f2]]
+	static Map<Integer, Map<String, Fraction>> pulses_2_4 = (Map<Integer, Map<String, Fraction>>)[1: ['l': _0, 'r': f4], 
+						     								 									  2: ['l': f4, 'r': f2]]
 
-	static def pulses_3_4 = [1: [l: _0, r: f4dot], 
-						     2: [l: f4dot, r: f3]]	
+	static Map<Integer, Map<String, Fraction>> pulses_3_4 = (Map<Integer, Map<String, Fraction>>)[1: ['l': _0, 'r': f4dot], 
+						     								 									  2: ['l': f4dot, 'r': f3]]	
 
 
-	static def getPulses(Time time) {
-		def pulses = [:]
+	static Map<Integer, Map<String, Fraction>> getPulses(Time time) {
+		Map<Integer, Map<String, Fraction>> pulses = [:]
 		TimeType timeType = time.getType()
 		float ratio = (float)(timeType.numerator / timeType.denominator)
 		switch(timeType) {
-			case { it == TimeType.time_4_4 || ratio == 1.0f}:
+			case { timeType == TimeType.time_4_4 || ratio == 1.0f}:
 				pulses = pulses_4_4
 				break
-			case { it == TimeType.time_2_4 || ratio == 0.5f}:
+			case { timeType == TimeType.time_2_4 || ratio == 0.5f}:
 				pulses = pulses_2_4
 				break
-			case { it == TimeType.time_3_4 || ratio == 0.75f}:
+			case { timeType == TimeType.time_3_4 || ratio == 0.75f}:
 				pulses = pulses_3_4
 				break
 			default:
@@ -118,32 +120,33 @@ class Utils {
 		return pulses
 	}
 
-	static def getChordPulse(startBeat, endBeat, pulses) {
-		def pulse
-		for (entry in pulses.entrySet()) {
-			def k = entry.getKey()
-			def v = entry.getValue()
-		    if(startBeat >= v.l && endBeat <= v.r) {
+	static int getChordPulse(Fraction startBeat, Fraction endBeat, 
+							 Map<Integer, Map<String, Fraction>> pulses) {
+		int pulse = -1
+		for (Map.Entry<Integer, Map<String, Fraction>> entry : pulses.entrySet()) {
+			int k = entry.getKey()
+			Map<String, Fraction> v = entry.getValue()
+		    if(startBeat >= v['l'] && endBeat <= v['r']) {
 		    	pulse = k
 		    	continue
 		    }
 		}
-		if (pulse == null)
+		if (pulse < 0)
 			pulse = pulses.keySet().last()
 		return pulse
 	}
 
-	static def getBeatPulse(beat, pulses) {
-		def pulse
-		for (entry in pulses.entrySet()) {
-			def k = entry.getKey()
-			def v = entry.getValue()
-		    if(beat >= v.l && beat < v.r) {
+	static int getBeatPulse(Fraction beat, Map<Integer, Map<String, Fraction>> pulses) {
+		int pulse = -1
+		for (Map.Entry<Integer, Map<String, Fraction>> entry : pulses.entrySet()) {
+			int k = entry.getKey()
+			Map<String, Fraction> v = entry.getValue()
+		    if(beat >= v['l'] && beat < v['r']) {
 		    	pulse = k
 		    	continue
 		    }
 		}
-		if (pulse == null)
+		if (pulse < 0)
 			pulse = pulses.keySet().last()
 		return pulse
 	}    

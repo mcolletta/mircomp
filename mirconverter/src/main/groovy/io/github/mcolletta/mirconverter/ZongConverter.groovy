@@ -131,7 +131,9 @@ import com.xenoage.zong.utils.exceptions.MeasureFullException
 
 import com.xenoage.utils.math.Fraction
 
+import groovy.transform.CompileStatic
 
+@CompileStatic
 class ZongConverter {
 
 	Score score
@@ -139,11 +141,11 @@ class ZongConverter {
 	int currentMeasure
 	String currentVoice
 
-	def context
-	def slurMap
-	def anchors
-	def instrumentsDefault
-	def currentInstrument
+	Map<Integer, Map<Integer, Map<String, VoiceContext>>> context
+	Map<String, SlurWaypoint> slurMap
+	Map<Integer, Map<String, MP>> anchors
+	Map<Integer, Boolean> instrumentsDefault
+	Map<Integer, Map<String, Instrument>> currentInstrument
 
 	ArrayList<BeamWaypoint> openBeamWaypoints
 
@@ -199,41 +201,42 @@ class ZongConverter {
 
 	void addElement(MusicElement el) {
 		switch (el) {
+			// TODO: use getMusicElementType() for perfomance
 			case { it instanceof MirRest}:
-				addRest(el)
+				addRest((MirRest)el)
 				break
 			case { it instanceof MirChord}:
-				addChord(el)
+				addChord((MirChord)el)
 				break
 			case { it instanceof ChordSymbol}:
-				addChord(el.getChord())
+				addChord(((ChordSymbol)el).getChord())
 				break
 			case { it instanceof MirClef }:
-				addClef(el)
+				addClef((MirClef)el)
 				break
 			case { it instanceof MirKey }:
-				addKey(el)
+				addKey((MirKey)el)
 				break
 			case { it instanceof MirTime }:
-				addTime(el)
+				addTime((MirTime)el)
 				break
 			case { it instanceof MirTempo }:
-				addTempo(el)
+				addTempo((MirTempo)el)
 				break
 			case { it instanceof Phrase }:
-				addPhrase(el)
+				addPhrase((Phrase)el)
 				break
 			case { it instanceof Repeat }:
-				addRepeat(el)
+				addRepeat((Repeat)el)
 				break
 			case { it instanceof Anchor }:
-				addAnchor(el)
+				addAnchor((Anchor)el)
 				break
 			case { it instanceof MirTuplet }:
-				addTuplet(el)
+				addTuplet((MirTuplet)el)
 				break
 			case { it instanceof MirInstrument }:
-				addInstrument(el)
+				addInstrument((MirInstrument)el)
 				break
 			default:
 				break
@@ -260,14 +263,14 @@ class ZongConverter {
 		if (repeat.start) {
 			ColumnElement barline = barlineForwardRepeat(BarlineStyle.HeavyLight)
 			if (remain == 0)
-				score.getColumnHeader(mp.measure).setStartBarline(barline)
+				score.getColumnHeader(ctx.mp.measure).setStartBarline(barline)
 			else
 				write(barline)
 		}	
 		if (repeat.stop) {
 			ColumnElement barline = barlineBackwardRepeat(BarlineStyle.HeavyLight, repeat.times)
 			if (remain == 0)
-				score.getColumnHeader(mp.measure).setEndBarline(barline)
+				score.getColumnHeader(ctx.mp.measure).setEndBarline(barline)
 			else
 				write(barline)
 		}
@@ -355,10 +358,10 @@ class ZongConverter {
 
 	void addTuplet(MirTuplet mirtuplet) {
 		Fraction fraction = mirtuplet.fraction		
-		def tuplet_chords = []
+		List<Chord> tuplet_chords = []
 		mirtuplet.chords.each { el -> 
-			def ratio = fr(mirtuplet.fraction.denominator, mirtuplet.fraction.numerator)
-			def actualDuration = el.duration.mult(ratio)
+			Fraction ratio = fr(mirtuplet.fraction.denominator, mirtuplet.fraction.numerator)
+			Fraction actualDuration = el.duration.mult(ratio)
 			el.duration = actualDuration
 			addChord(el, mirtuplet, tuplet_chords) 
 		}
@@ -394,8 +397,8 @@ class ZongConverter {
 		}
 		else {		
 			Fraction new_remain = actualDuration.sub(remain)
-			MirRest new_mirrest1 = [duration: remain]
-			MirRest new_mirrestd2 = [duration: new_remain]
+			MirRest new_mirrest1 = [duration: remain] as MirRest
+			MirRest new_mirrestd2 = [duration: new_remain] as MirRest
 			addElement(new_mirrest1)
 			addElement(new_mirrestd2)
 		}
@@ -410,7 +413,7 @@ class ZongConverter {
 		Fraction actualDuration = mirchord.duration
 
 		if ((remain == _0 && actualDuration <= msize) || remain >= actualDuration) {			
-			def zpitches = []
+			List<Pitch> zpitches = []
 			mirchord.pitches.each { MirPitch pitch ->
 				int midiVal = pitch.getMidiValue()
 				zpitches <<	((Pitch)MidiTools.getPitchFromNoteNumber(midiVal))
@@ -423,7 +426,7 @@ class ZongConverter {
 			int last = durations.size()-1
 			durations.eachWithIndex { zduration, i ->
 				// use spread operator to sort pitches asc as required by Zong
-				zchord = chord(zduration, mirchord.isUnpitched(), mirchord.stem, *(zpitches.toSorted()))
+				zchord = chord(zduration, mirchord.isUnpitched(), mirchord.stem, zpitches.toSorted())
 				write(zchord)
 				// chord part of tuplet
 				if (mirtuplet != null && tuplet_chords != null) {
@@ -452,18 +455,18 @@ class ZongConverter {
 			//MirChord new_mirchord1 = mirchord.copyWith(duration: remain, tieStart: true)
 			//MirChord new_mirchord2 = mirchord.copyWith(duration: new_remain, tieEnd: true)
 			// TODO
-			MirChord new_mirchord1 = [pitches:mirchord.pitches, duration:d1, stem:mirchord.stem, tieStart:true]
-			MirChord new_mirchord2 = [pitches:mirchord.pitches, duration:d2, stem:mirchord.stem, tieEnd:true]
+			MirChord new_mirchord1 = [pitches:mirchord.pitches, duration:d1, stem:mirchord.stem, tieStart:true] as MirChord
+			MirChord new_mirchord2 = [pitches:mirchord.pitches, duration:d2, stem:mirchord.stem, tieEnd:true] as MirChord
 			addChord(new_mirchord1, mirtuplet, tuplet_chords)
 			addChord(new_mirchord2, mirtuplet, tuplet_chords)
 		}
 		
 	}
 
-	static boolean checkFractionList(list, fr) {
+	static boolean checkFractionList(List<Fraction>list, Fraction fr) {
 		Fraction sum = _0
-		list.each {
-			sum = sum.add(it)
+		for(Fraction item : list) {
+			sum = (Fraction)sum.add(item)
 		}
 		return (sum == fr)
 	}
@@ -493,57 +496,57 @@ class ZongConverter {
 			list << fr
 		} else {
 			switch (fr) {
-				case { it > f2dotdot }:
+				case { fr > f2dotdot }:
 					Fraction new_fr = fr.sub(f2dotdot)
 					list << f2dotdot
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f3 }:  // f2dot
+				case { fr > f3 }:  // f2dot
 					Fraction new_fr = fr.sub(f3)
 					list << f3
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f2 }:
+				case { fr > f2 }:
 					Fraction new_fr = fr.sub(f2)
 					list << f2
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f4dot }:
+				case { fr > f4dot }:
 					Fraction new_fr = fr.sub(f4dot)
 					list << f4dot
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f4 }:
+				case { fr > f4 }:
 					Fraction new_fr = fr.sub(f4)
 					list << f4
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f8 }:
+				case { fr > f8 }:
 					Fraction new_fr = fr.sub(f8)
 					list << f8
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f16 }:
+				case { fr > f16 }:
 					Fraction new_fr = fr.sub(f16)
 					list << f16
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f32 }:
+				case { fr > f32 }:
 					Fraction new_fr = fr.sub(f32)
 					list << f32
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f64 }:
+				case { fr > f64 }:
 					Fraction new_fr = fr.sub(f64)
 					list << f64
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f128 }:
+				case { fr > f128 }:
 					Fraction new_fr = fr.sub(f128)
 					list << f128
 					splitFractionRecur(new_fr, list)
 					break
-				case { it > f256 }:
+				case { fr > f256 }:
 					Fraction new_fr = fr.sub(f256)
 					list << f256
 					splitFractionRecur(new_fr, list)
@@ -564,12 +567,12 @@ class ZongConverter {
 	}
 
 
-	Chord chord(Fraction fraction, boolean unpitched, MirStemDirection mirStemDir, Pitch... pitches) {
+	Chord chord(Fraction fraction, boolean unpitched, MirStemDirection mirStemDir, List<Pitch> pitches) {
         Chord chord
         if (unpitched) {
-        	UnpitchedInstrument instr = currentInstrument[currentStaff][currentVoice]
+        	UnpitchedInstrument instr = (UnpitchedInstrument)currentInstrument[currentStaff][currentVoice]
         	List<Note> notes = []
-        	pitches.each { pitch -> 
+        	for(Pitch pitch : pitches) {
         		Note note = new Note(pitch)
         		note.setUnpitched(true)
         		if (instr == null)
@@ -577,21 +580,21 @@ class ZongConverter {
         		note.setInstrument(instr)
         		notes << note
         	}
-        	chord = new Chord(notes, fraction)
+        	chord = new Chord((ArrayList<Note>)notes, fraction)
         } else {
-        	chord = new Chord(Note.notes(pitches), fraction)
+        	chord = new Chord(Note.notes(pitches.toArray(new Pitch[pitches.size()])), fraction)
         }
 
         if (mirStemDir != null) {
 			StemDirection stemDir = StemDirection.Default
 			switch (mirStemDir) {
-				case { it == MirStemDirection.UP}:
+				case { mirStemDir == MirStemDirection.UP}:
 					stemDir = StemDirection.Up
 					break
-				case { it == MirStemDirection.DOWN}:
+				case { mirStemDir == MirStemDirection.DOWN}:
 					stemDir = StemDirection.Down
 					break
-				case { it == MirStemDirection.AUTO}:
+				case { mirStemDir == MirStemDirection.AUTO}:
 					stemDir = StemDirection.Default
 					break
 				default:
@@ -630,9 +633,9 @@ class ZongConverter {
 			measureDuration = time.getType().getMeasureBeats()
 		}
 		// automatic beaming
-		def pulses = getPulses(time)
+		Map<Integer, Map<String, Fraction>> pulses = getPulses(time)
 		// --------------------
-		VoiceContext voiceContext = [measureSize: measureDuration, mp: new_mpos, pulses:pulses]
+		VoiceContext voiceContext = [measureSize: measureDuration, mp: new_mpos, pulses:pulses] as VoiceContext
 		context[mpos.staff][mpos.measure][currentVoice] = voiceContext
 		return voiceContext
     }
@@ -682,7 +685,7 @@ class ZongConverter {
 		// automatic beaming
 		if (element instanceof Chord) {
 			Chord chord = (Chord) element
-			def pulse = getChordPulse(mpos.beat, newBeat, ctx.pulses)
+			int pulse = getChordPulse(mpos.beat, newBeat, ctx.pulses)
 			// println "ctx.lastPulse=${ctx.lastPulse}        ChordPulse for $chord = $pulse"
 			if (pulse != ctx.lastPulse) 
 				closeBeam()				
@@ -728,7 +731,7 @@ class ZongConverter {
 			new VoiceAdd(measure, mp.voice).execute()
 	}
 
-	void openBeam(chord) {
+	void openBeam(Chord chord) {
 		if (openBeamWaypoints == null)
 			openBeamWaypoints = new ArrayList<BeamWaypoint>()
 		openBeamWaypoints.add(new BeamWaypoint(chord, false))
@@ -748,8 +751,8 @@ class ZongConverter {
 	private class VoiceContext {
 		Fraction measureSize		
 		MP mp
-		def pulses
-		def lastPulse = 1
+		Map pulses
+		int lastPulse = 1
 
 		def getCurrentPulse() {
 			return getBeatPulse(mp.beat, pulses)

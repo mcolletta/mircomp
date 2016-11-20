@@ -210,6 +210,10 @@ class Rest implements MusicElement  {
 		hidden = false
 	}
 
+	Rest(Fraction duration) {
+		this.duration = duration
+	}
+
 	Rest(Rest rest) {
 		this.duration = rest.duration
 		this.hidden = rest.hidden
@@ -246,6 +250,11 @@ class Chord implements MusicElement {
 	// Use a Map constructor
 	Chord() {
 		this.pitches = [new Pitch()]
+	}
+
+	Chord(List<Pitch> pitches, Fraction duration) {
+		this.pitches = pitches
+		this.duration = duration
 	}
 	
 	Chord(Chord chord) {
