@@ -25,7 +25,7 @@ package io.github.mcolletta.mirconverter
 
 import com.xenoage.zong.io.midi.out.MidiTools
 
-import static io.github.mcolletta.mircomp.utils.Utils.*
+import static io.github.mcolletta.mirconverter.Utils.*
 
 import io.github.mcolletta.mirchord.core.MusicElement
 import io.github.mcolletta.mirchord.core.Phrase
@@ -170,6 +170,7 @@ class ZongConverter {
 		CompositionInfo info = mirscore.getInfo()
 		if (info != null) {			
 			score.getInfo().setWorkTitle(info.getTitle())
+			score.getInfo().setMovementTitle(info.getTitle())
 			Creator composer = new Creator(info.getComposer(), "composer")
 			score.getInfo().getCreators().add(composer)
 		}

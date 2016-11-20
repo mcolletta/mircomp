@@ -21,7 +21,7 @@
  * @author Mirco Colletta
  */
 
-package io.github.mcolletta.mircomp.utils
+package io.github.mcolletta.mirconverter
 
 import com.xenoage.zong.core.music.time.Time
 import com.xenoage.zong.core.music.time.TimeType
