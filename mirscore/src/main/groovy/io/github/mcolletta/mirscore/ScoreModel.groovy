@@ -96,9 +96,11 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class ScoreModel implements PlaybackListener {
 
+    float DEFAULT_ZOOM = 2.0f
+
     @Bindable MP currentMP
     @Bindable int currentPage = 0
-    @Bindable float currentZoom = 2
+    @Bindable float currentZoom
 
 	Layout layout
     PlaybackLayouter playbackLayouter
@@ -209,7 +211,9 @@ class ScoreModel implements PlaybackListener {
         layout.updateScoreLayouts(score)
         scoreLayout = layout.getScoreFrameChain(score).getScoreLayout()
         playbackLayouter = new PlaybackLayouter(scoreLayout)
-        Playback.openScore(scoreDoc.getScore())       
+        Playback.openScore(scoreDoc.getScore())
+        // updatePageDimensions
+        setCurrentZoom(DEFAULT_ZOOM)
     }
 
     void saveAs(File file) {
@@ -311,6 +315,7 @@ class ScoreModel implements PlaybackListener {
     // Playback
 
     void play() {
+        lastSystemIndex = -1
         Playback.start(getCurrentMP())
     }
 
