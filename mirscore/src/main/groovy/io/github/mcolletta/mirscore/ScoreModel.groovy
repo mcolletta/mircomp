@@ -52,9 +52,17 @@ import com.xenoage.zong.core.music.MusicElement
 import com.xenoage.zong.core.position.MP
 import com.xenoage.zong.core.position.MPElement
 
+import com.xenoage.utils.math.Fraction;
 import static com.xenoage.utils.math.Fraction._0
 import static com.xenoage.zong.core.position.MP.mp0
 // import static com.xenoage.zong.core.position.MP.mp
+import static com.xenoage.zong.core.position.MP.atBeat;
+import static com.xenoage.zong.core.position.MP.unknown;
+import static com.xenoage.zong.core.position.MP.unknownMp;
+
+import static com.xenoage.utils.collections.CollectionUtils.getFirst;
+import static com.xenoage.utils.collections.CollectionUtils.getLast;
+import static com.xenoage.utils.kernel.Range.range;
 
 import static com.xenoage.utils.jse.JsePlatformUtils.jsePlatformUtils
 
@@ -73,6 +81,9 @@ import com.xenoage.zong.layout.frames.ScoreFrame
 import com.xenoage.zong.musiclayout.ScoreFrameLayout
 import com.xenoage.zong.musiclayout.layouter.PlaybackLayouter
 import com.xenoage.zong.musiclayout.stampings.Stamping
+import com.xenoage.zong.musiclayout.stampings.StaffStamping;
+import com.xenoage.zong.musiclayout.spacing.ColumnSpacing
+import com.xenoage.zong.musiclayout.spacing.SystemSpacing;
 
 import static com.xenoage.zong.core.format.LayoutFormat.defaultLayoutFormat
 import static com.xenoage.zong.musiclayout.settings.LayoutSettings.defaultLayoutSettings
@@ -237,7 +248,6 @@ class ScoreModel implements PlaybackListener {
 		}
 	}
 
-	// adapted from the OnClick Zong! demo
 	public void pickMP(Point2f positionPx) {
 		if (getLayout().getScoreFrames().size() == 0)
 			return
@@ -249,26 +259,46 @@ class ScoreModel implements PlaybackListener {
 		Point2f positionMm = positionPx.scale(Units.pxToMm(1, getCurrentZoom()))
 		Point2f framePositionMm = positionMm.sub(frame.getAbsolutePosition())
 		Point2f scorePositionMm = frame.getScoreLayoutPosition(framePositionMm)
-		//find elements under this position
-		for (Stamping stamping : frameLayout.getAllStampings()) {
-			if (stamping.getBoundingShape() != null &&
-				stamping.getBoundingShape().contains(scorePositionMm)) {
-				MusicElement element = stamping.getMusicElement()
-				if (element != null) {
-					//music element found
-					println "Selected element: " + element
-					if (element instanceof MPElement) {
-						//music element with a known musical position found
-						MPElement mpElement = (MPElement) element
-						if (mpElement.getParent() != null) {
-							setCurrentMP(mpElement.getMP())
-							playbackLayouter.setCursorAt(getCurrentMP())
-						}
-					}
-				}
-			}
-		}
+
+        try {
+            // MP scorePositionMP = frameLayout.computeMP(scorePositionMm)
+            MP scorePositionMP = unknownMp
+            StaffStamping staff = frameLayout.getStaffStampingAt(scorePositionMm)
+            if (staff != null) {
+                float xMm = scorePositionMm.x - staff.positionMm.x
+                SystemSpacing system =  staff.system
+                int staffIndex = staff.staffIndex
+                List<ColumnSpacing> columns = system.columns
+                // measureIndex is relative to the selected system
+                int measureIndex = getSystemMeasureIndexAt(xMm, columns)
+                // systemMeasure is relative to the score
+                int systemMeasure = measureIndex + system.getStartMeasureIndex()
+                float xMmInMeasure = xMm - system.getMeasureStartMm(measureIndex) - columns.get(measureIndex).getLeadingWidthMm()
+                if (measureIndex != unknown) {
+                    Fraction beat = columns.get(measureIndex).getBeatAt(xMmInMeasure, staffIndex)
+                    scorePositionMP = atBeat(staffIndex, systemMeasure, unknown, beat)
+                }
+                if (scorePositionMP != unknownMp) {
+                    setCurrentMP(scorePositionMP)
+                    playbackLayouter.setCursorAt(getCurrentMP())
+                }
+            }
+        } catch(Exception ex) {
+            println "Exception in ScoreModel::pickMP: " + ex
+        }
 	}
+
+    private int getSystemMeasureIndexAt(float xMm, List<ColumnSpacing> columns) {
+        if (xMm < 0)
+            return unknown;
+        float x = 0;
+        for (int iMeasure : range(columns)) {
+            x += columns.get(iMeasure).getWidthMm();
+            if (xMm < x)
+                return iMeasure;
+        }
+        return unknown;
+    }
 
     int getNumPages() {
     	return layout.getPages().size()
