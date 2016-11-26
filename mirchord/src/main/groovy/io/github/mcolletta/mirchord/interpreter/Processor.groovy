@@ -63,9 +63,10 @@ class MirChordProcessor extends AbstractProcessor {
 	Score score
 	String currentPart
 	Map<String, String> currentVoice = [:]
-	Map<String, Map<String, Instrument>> currentInstrument = [:]
+	//Map<String, Map<String, Instrument>> currentInstrument = [:]
+    //Stack environments //scopes
+    Map<String, Map<String, Stack>> environments = [:]
 
-    Stack environments //scopes
     Map<String, Integer> pitchMap = [C:0, D:2, E:4, F:5, G:7, A:9, B:11]
 	Map<String, Integer> NOTE_NAMES = [C: 1, D: 2, E: 3, F: 4, G: 5, A: 6, B: 7]
 	
@@ -100,8 +101,8 @@ class MirChordProcessor extends AbstractProcessor {
 		extensions.each { ext ->
     		processExtMethods(ext)
     	}
-        environments = new Stack()
-        environments.add([:].withDefault{[:]})
+        /*environments = new Stack()
+        environments.add([:].withDefault{[:]})*/
     }
 	
 	void printChildren(name, children) {
@@ -131,17 +132,33 @@ class MirChordProcessor extends AbstractProcessor {
 			}
 		}
 	}
+
+	private String getVoice() {
+		String voiceId = currentVoice[currentPart]
+		return voiceId
+	}
+
+	private Stack getEnvironment() {
+		if (!environments.containsKey(currentPart))
+			environments.put(currentPart,[:])
+		if (!environments[currentPart].containsKey(getVoice()))
+			environments[currentPart].put(getVoice(), new Stack())
+		return environments[currentPart][getVoice()]
+	}
 	
 	private Map getScope() {
-		if (environments.size() > 0)
-			return environments.peek()
+		Stack env = getEnvironment()
+		if (env.size() < 1)
+			env.add([:]) 
+		return env.peek()
 	}
 	
 	private Object getVarFromScopes(name) {
+		Stack env = getEnvironment()
 		Object obj = null
-		for(Map env : environments[-1..0]) {
-			if (env.containsKey(name)) {
-				obj = env[name]
+		for(Map sc : env[-1..0]) {
+			if (sc.containsKey(name)) {
+				obj = sc[name]
 				break
 			}
 		}
@@ -149,9 +166,10 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	private void setVarFromScopes(String name, Object value) {
-		for(Map env : environments[-1..0]) {
-			if (env.containsKey(name)) {
-				env[name] = value
+		Stack env = getEnvironment()
+		for(Map sc : env[-1..0]) {
+			if (sc.containsKey(name)) {
+				sc[name] = value
 				break
 			}
 		}
@@ -169,30 +187,32 @@ class MirChordProcessor extends AbstractProcessor {
 		scope['relative'] = null
 	}
 
-	private void addToScore(MusicElement element) {		
-		String voiceId = currentVoice[currentPart]
-		score.parts[currentPart].voices[voiceId].elements << element
-		println "addToScore $element  in  $currentPart    $voiceId"
+	private void addToScore(MusicElement element) {
+		score.parts[currentPart].voices[getVoice()].elements << element
+		println "addToScore $element  in  $currentPart    ${getVoice()}"
 	}
 
-	private updateCurrentInstrument(Instrument instrument) {
-		String partId = getVarFromScopes("part")
+	private void updateCurrentInstrument(Instrument instrument) {
+		/*String partId = getVarFromScopes("part")
 		String voiceId = getVarFromScopes("voice")
 		if (!currentInstrument.containsKey(partId)) 
 			currentInstrument.put(partId, [:])
 		if (!currentInstrument[partId].containsKey(voiceId)) 
 			currentInstrument[partId].put(voiceId, instrument)
 		else
-			currentInstrument[partId][voiceId] = instrument
+			currentInstrument[partId][voiceId] = instrument*/
+		Map scope = getScope()
+		scope["instrument"] = instrument
 	}
 
 	private Instrument getPercussionInstrument() {
-		String partId = getVarFromScopes("part")
+		/*String partId = getVarFromScopes("part")
 		String voiceId = getVarFromScopes("voice")
 		if (currentInstrument.containsKey(partId) &&
 			currentInstrument[partId].containsKey(voiceId))
 			return currentInstrument[partId][voiceId]
-		return null
+		return null*/
+		return (Instrument)getVarFromScopes("instrument")
 	}
 
 	// COMMANDS
@@ -304,7 +324,7 @@ class MirChordProcessor extends AbstractProcessor {
 	@MirChord
 	void define(String id, Phrase phrase) { // List<MusicElement> elements
 		Map scope = getScope()
-		scope[id] = phrase
+		scope.put(id, phrase)
 	}
 	
 	@MirChord
@@ -322,7 +342,7 @@ class MirChordProcessor extends AbstractProcessor {
 	KeySignature keySignature(String key, String mode) {
 		KeySignature keySig = new KeySignature(key, mode)
 		Map scope = getScope()
-		scope['keySignature'] = keySig
+		scope.put('keySignature', keySig)
 		return keySig
 	}
 	
@@ -677,7 +697,8 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	boolean processPhrase(Match match) {
-        environments.add([:])
+        // environments.add([:])
+        getEnvironment().add([:])
         return true
     }
 
@@ -690,7 +711,8 @@ class MirChordProcessor extends AbstractProcessor {
 				phrase.elements << res
 		}
 		putResult(phrase)
-		environments.pop()
+		// environments.pop()
+		getEnvironment().pop()
 	}
 
 	void completeMusicElement(Match match) {
@@ -699,14 +721,13 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	void completeScorePosition(Match match) {
-		Match child = match.getFirstChild()
-		// update scope for instrument
-		if (child.parser == grammar.part)
-			scope['part'] = child.getText()[1..-1]
-		if (child.parser == grammar.voice)
-			scope['voice'] = child.getText()[1..-1]
+		Match m = match.getFirstChild()
+		if (m.parser == grammar.part)
+			setCurrentPart(m.getText()[1..-1])
+		if (m.parser == grammar.voice)
+			setCurrentVoice(m.getText()[1..-1])
 
-		putResult(child)
+		putResult(m)
 	}
 
 	void completeAnchor(Match match) {
