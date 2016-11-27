@@ -277,7 +277,7 @@ class ScoreModel implements PlaybackListener {
                 int measureIndex = getSystemMeasureIndexAt(xMm, columns)
                 // systemMeasure is relative to the score
                 int systemMeasure = measureIndex + system.getStartMeasureIndex()
-                float xMmInMeasure = xMm - system.getMeasureStartMm(measureIndex) - columns.get(measureIndex).getLeadingWidthMm()
+                float xMmInMeasure = xMm - system.getMeasureStartMm(systemMeasure) - columns.get(measureIndex).getLeadingWidthMm()
                 if (measureIndex != unknown) {
                     Fraction beat = columns.get(measureIndex).getBeatAt(xMmInMeasure, staffIndex)
                     scorePositionMP = atBeat(staffIndex, systemMeasure, unknown, beat)
