@@ -172,6 +172,10 @@ class TextEditor extends VBox {
         })
 	}
 
+    Mode getMode() {
+        return (Mode)selectMode.getSelectionModel().getSelectedItem()
+    }
+
     String getValue() {
         return (String)engine.executeScript("getValue()")
     }

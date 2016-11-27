@@ -50,7 +50,7 @@ class MirChordInterpreter {
 		ParseResults parseResults= ctx.getParseResults(PARSER.score, 0)
 		if (!parseResults.success())
 				throw parseResults.getError()
-		MirChordProcessor processor = new MirChordProcessor([new Utils()])
+		MirChordProcessor processor = new MirChordProcessor([new MirchordAddon()])
 		Score score = processor.process(parseResults)
 		
 		return score
@@ -66,7 +66,7 @@ class MirChordInterpreter {
 }
 
 @CompileStatic
-class Utils {
+class MirchordAddon {
 
 	@MirChord 
 	public Phrase transpose(int halfSteps, Phrase phrase) {
@@ -80,6 +80,13 @@ class Utils {
 				}
 			}
 		}
+		return newPhrase
+	}
+
+	@MirChord 
+	public Phrase retrograde(Phrase phrase) {
+		Phrase newPhrase = phrase.copy()
+		newPhrase.elements = phrase.elements.reverse()
 		return newPhrase
 	}
 
