@@ -269,6 +269,7 @@ class Chord implements MusicElement {
 		this.velocity = chord.velocity
 		this.tieStart = chord.tieStart
 		this.tieEnd = chord.tieEnd
+		this.unpitched = chord.unpitched
 	}
 
 	Pitch getPitch() { // getRoot
