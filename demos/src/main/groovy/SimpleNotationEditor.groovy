@@ -103,10 +103,12 @@ public class SimpleNotationEditor extends Application {
         Score score = null
         Mode mode = editor.getMode()
         String source = editor.getValue()
-        if (mode == Mode.MirChord)
-            score = createScoreFromMirchord(source)
+        /*if (mode == Mode.MirChord)
+            score = createScoreFromMirchord(source)*/
         if (mode == Mode.Groovy)
             score = createScoreFromGroovyBuilder(source)
+        else
+            score = createScoreFromMirchord(source)
         viewer.loadScore(score)
     }
 
@@ -119,6 +121,7 @@ public class SimpleNotationEditor extends Application {
     }
 
     public Score createScoreFromGroovyBuilder(String source) {
+        ZongConverter zconverter = new ZongConverter()
         // Add imports for script.
         def importCustomizer = new ImportCustomizer()
         importCustomizer.addStaticStars 'com.xenoage.utils.math.Fraction'

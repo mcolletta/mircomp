@@ -616,7 +616,7 @@ class MirChordProcessor extends AbstractProcessor {
 	private void CheckUnpitchedChord(Chord chord) {
 		Instrument instr = getPercussionInstrument()
 		if (instr != null) {
-			chord.setInstrument(instr)
+			chord.setUnpitched(true)
 			chord.setPitch(instr.getDisplayPitch())
 		}
 	}

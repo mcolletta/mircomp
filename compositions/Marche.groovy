@@ -2,8 +2,8 @@
 builder.score() {
 	part(id:"1") {
 		voice(id:"1") {
+		    key(fifths:1, mode:KeyMode.MAJOR)
 			clef(type:ClefType.TREBLE)
-			key(fifths:1, mode:KeyMode.MAJOR)
 			time(time:fr(4,4))
 			tempo(baseBeat:fr(1,4), bpm:90, text:"Allegro.")	// PROBLEM WITH TEXT
 			// 1
@@ -56,8 +56,8 @@ builder.score() {
 
 	part(id:"2") {
 		voice(id:"1") {
+		    key(fifths:1, mode:KeyMode.MAJOR)
 			clef(type:ClefType.BASS)
-			key(fifths:1, mode:KeyMode.MAJOR)
 			time(time:fr(4,4))		
 			(1..2).each {
 				rest(duration:f8)  // REST not shown at the start of a measure
@@ -68,21 +68,26 @@ builder.score() {
 			rest(duration:f4)
 			chord(midiPitch:43, duration:f4)
 			chord(midiPitch:47, duration:f4)
-			chord(midiPitch:43, duration:f4)
+			chord(duration:f4) {
+				pitch(symbol:'G', octave:2)
+			}
 		}
 	}
 
 	part(id:"3") {
 		voice(id:"1") {
-			instrument(id:"Drums 1", program:35, unpitched:true)
+		    key(fifths:1, mode:KeyMode.MAJOR)
 			clef(type:ClefType.PERCUSSION)
+			time(time:fr(4,4))
+			instrument(id:"Drums 1", program:35, displayPitch: new Pitch('G'), unpitched:true)
 			(1..3).each {
 				(1..16).each {
-					chord(midiPitch:67, duration:f16, unpitched:true)
+					chord(duration:f16, refId:"Drums 1")
 				}
 			}
 		}
 		voice(id:"2") {
+			key(fifths:1, mode:KeyMode.MAJOR)
 			instrument(id:"Drums 2", program:51, unpitched:true)
 			(1..3).each {
 				(1..4).each {

@@ -42,10 +42,10 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 	
 	static Map<String,Integer> mapping = ['C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11]
     
-	Pitch(String symbol='C', int alteration=0, int octave=5) {
+	Pitch(String symbol='C', int octave=4, int alteration=0) {
 		this.symbol = symbol
-		this.alteration = alteration
 		this.octave = octave
+		this.alteration = alteration		
 		this.symbolSemitones = mapping[symbol]
 	}
 	
@@ -117,7 +117,7 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 	}
 	
 	void setMidiValue(int value) {
-		octave = (int)(value / 12)
+		octave = (int)(value / 12) - 1
 		int chromatic = value % 12
 		// ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"]
 		switch(chromatic) {
@@ -176,7 +176,7 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 	}
 	
 	int getMidiValue() {
-		return (symbolSemitones + (octave * 12)) + alteration
+		return (symbolSemitones + ((octave+1) * 12)) + alteration
 	}
 	
 	public String toString() {
@@ -235,7 +235,7 @@ class Rest implements MusicElement  {
 @CompileStatic
 class Chord implements MusicElement {
 	
-	List<Pitch> pitches
+	List<Pitch> pitches = []
 	Fraction duration = fr(1,4)
 	float velocity = 90
 	String dynamicMark = ""
@@ -245,11 +245,11 @@ class Chord implements MusicElement {
 
 	StemDirection stem = StemDirection.AUTO
 
-	Instrument instrument;
+	boolean unpitched;
 	
 	// Use a Map constructor
 	Chord() {
-		this.pitches = [new Pitch()]
+		//this.pitches = [new Pitch()]
 	}
 
 	Chord(List<Pitch> pitches, Fraction duration) {
@@ -269,10 +269,6 @@ class Chord implements MusicElement {
 		this.velocity = chord.velocity
 		this.tieStart = chord.tieStart
 		this.tieEnd = chord.tieEnd
-	}
-
-	boolean isUnpitched() {
-		return (instrument != null)
 	}
 
 	Pitch getPitch() { // getRoot

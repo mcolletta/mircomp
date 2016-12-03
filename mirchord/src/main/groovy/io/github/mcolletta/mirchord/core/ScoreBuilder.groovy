@@ -29,6 +29,8 @@ import com.xenoage.utils.math.Fraction
 
 
 class ScoreBuilder extends FactoryBuilderSupport {
+
+    def nodeReferences = [:]
     
     def ScoreBuilder() {
         registerFactories()
@@ -39,6 +41,7 @@ class ScoreBuilder extends FactoryBuilderSupport {
         registerFactory("part", new PartNode())
         registerFactory("voice", new VoiceNode())
         registerFactory("chord", new ChordNode())
+        registerFactory("pitch", new PitchNode())
         registerFactory("rest", new RestNode())
         registerFactory("phrase", new PhraseNode())
         registerFactory("anchor", new AnchorNode())
@@ -106,17 +109,38 @@ class ChordNode extends AbstractFactory {
     }
 
     public boolean onHandleNodeAttributes(FactoryBuilderSupport builder, Object node, Map attributes) {
+        if (attributes.containsKey("refId")) {
+            def refId = attributes.remove("refId")
+            def instrument = builder.nodeReferences[refId]
+            def pitch = instrument.displayPitch
+            attributes['pitch'] = pitch
+            attributes ['unpitched'] = true
+        }
     	if (attributes.containsKey('midiPitch')) {
-    		def midiPitch = attributes['midiPitch']
-    		attributes.remove('midiPitch')
+    		def midiPitch = attributes.remove('midiPitch')    		
     		Pitch pitch = new Pitch()
     		pitch.setMidiValue(midiPitch)
     		attributes['pitch'] = pitch
     	}
+        super.onHandleNodeAttributes(builder, node, attributes)
     }
 
     public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
         parentNode.elements.add(childNode)
+    }
+    
+    public boolean isLeaf() {
+        return false
+    }
+}
+
+class PitchNode extends AbstractFactory {
+    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
+        return new Pitch()
+    }
+
+    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
+        parentNode.pitches.add(childNode)
     }
     
     public boolean isLeaf() {
@@ -184,7 +208,12 @@ class RepeatNode extends AbstractFactory {
 
 class InstrumentNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Instrument()
+        def instrument = new Instrument()
+        if (nodeAttribs.containsKey("id")) {
+            def id = nodeAttribs["id"]
+            builder.nodeReferences[id] = instrument
+        }
+        return instrument
     }
 
     public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
