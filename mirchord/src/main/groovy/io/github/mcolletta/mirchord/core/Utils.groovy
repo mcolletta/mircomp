@@ -26,6 +26,10 @@ package io.github.mcolletta.mirchord.core
 import static java.lang.Math.*
 import javax.sound.midi.*
 
+import com.xenoage.utils.math.Fraction
+import static com.xenoage.utils.math.Fraction.fr
+import static com.xenoage.utils.math.Fraction._0
+
 import static ChordKind.*
 
 import groovy.transform.CompileStatic
@@ -42,8 +46,6 @@ class Utils {
 	     return ois.readObject()
 	}
 	
-	static List<String> NOTES = ["C", "C#", "D", "E&", "E", "F", "F#", "G", "G#", "A", "B&", "B"]
-	
 	static void play(Sequence sequence, float bpm=120.0f) {
 		Sequencer sequencer
 		sequencer = MidiSystem.getSequencer()
@@ -57,6 +59,40 @@ class Utils {
 		long millisToSleep = secsLength * 1000
 		Thread.sleep(millisToSleep + 1000)
 		sequencer.close()
+	}
+
+	static Fraction parseFraction(String ratio) {
+		String[] parts =  ratio.split('/')
+		if (parts.size() > 1) {
+			int num = Integer.parseInt(parts[0])
+			int den = Integer.parseInt(parts[1])
+			return fr(num, den)
+		} else {
+			return fr(Integer.parseInt(parts[0]), 1)
+		}
+		return _0
+	}
+
+
+	static List<String> NOTES = ["C", "C#", "D", "E&", "E", "F", "F#", "G", "G#", "A", "B&", "B"]
+
+	static Map<String, Integer> PITCH_MAP = [C:0, D:2, E:4, F:5, G:7, A:9, B:11]
+	static Map<String, Integer> NOTE_NAMES = [C: 1, D: 2, E: 3, F: 4, G: 5, A: 6, B: 7]
+
+	static Map<KeyMode, List<Integer>> MODE_INTERVALS = [
+											(KeyMode.MAJOR): [2, 2, 1, 2, 2, 2, 1],
+											(KeyMode.MINOR): [2, 1, 2, 2, 1, 2, 2]
+										]
+
+	static int getHalfStepsFromDiatonic(String symbol, int diatonicSteps, KeyMode mode) {
+		int start = NOTE_NAMES[symbol] - 1
+		List<Integer> scale = MODE_INTERVALS[mode]
+		int halfSteps = 0
+		for(int i = 0; i < diatonicSteps; i++) {
+			halfSteps += scale[start % scale.size()]
+			start++
+		}
+		return halfSteps
 	}
 	
 //	static def DynamicsToMidi =

@@ -70,6 +70,7 @@ public class SimpleNotationEditor extends Application {
         splitPane = new SplitPane()
 
         editor = new TextEditor()
+        //editor.setMode(Mode.MirChord)
         viewer = new ScoreViewer()
 
         Button convertBtn = new Button("Convert")
@@ -103,12 +104,10 @@ public class SimpleNotationEditor extends Application {
         Score score = null
         Mode mode = editor.getMode()
         String source = editor.getValue()
-        /*if (mode == Mode.MirChord)
-            score = createScoreFromMirchord(source)*/
+        if (mode == Mode.MirChord)
+            score = createScoreFromMirchord(source)
         if (mode == Mode.Groovy)
             score = createScoreFromGroovyBuilder(source)
-        else
-            score = createScoreFromMirchord(source)
         viewer.loadScore(score)
     }
 

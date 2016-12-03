@@ -249,7 +249,7 @@ class Chord implements MusicElement {
 	
 	// Use a Map constructor
 	Chord() {
-		//this.pitches = [new Pitch()]
+		this.pitches = []
 	}
 
 	Chord(List<Pitch> pitches, Fraction duration) {
@@ -299,7 +299,9 @@ class Chord implements MusicElement {
 		String str = ""
 		if (tieEnd)
 			str += "-"
-		pitches.each { Pitch p -> str += p.toString()}
+		for(Pitch p : pitches) {
+			str += p.toString()
+		}
 		if (tieStart)
 			str += "-"
 		return "<" + str + ", " + duration + ">"

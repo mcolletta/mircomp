@@ -189,8 +189,6 @@ class Clef implements MusicElement {
 @CompileStatic
 @Canonical
 class KeySignature implements MusicElement {
-	String keyText
-	String modeText
 
 	int fifths
 	KeyMode mode
@@ -200,9 +198,12 @@ class KeySignature implements MusicElement {
 		mode = KeyMode.MAJOR
 	}
 
-	KeySignature(String k, String m) {
-		keyText = k
-		modeText = m
+	KeySignature(int f, String modeText) {
+		this.fifths = fifths
+		mode = Utils.ModeFromName(modeText)
+	}
+
+	KeySignature(String keyText, String modeText) {
 		fifths = Utils.FifthsFromName(keyText, modeText)
 		mode = Utils.ModeFromName(modeText)
 	}

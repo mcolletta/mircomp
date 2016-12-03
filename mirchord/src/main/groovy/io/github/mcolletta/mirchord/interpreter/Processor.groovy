@@ -65,14 +65,6 @@ class MirChordProcessor extends AbstractProcessor {
 	Map<String, String> currentVoice = [:]
     Map<String, Map<String, Stack>> environments = [:]
 
-    Map<String, Integer> pitchMap = [C:0, D:2, E:4, F:5, G:7, A:9, B:11]
-	Map<String, Integer> NOTE_NAMES = [C: 1, D: 2, E: 3, F: 4, G: 5, A: 6, B: 7]
-	
-	def modes = [
-		0: [2, 2, 1, 2, 2, 2, 1], //maj
-		1: [2, 1, 2, 2, 1, 2, 2]  //min
-		]
-
 	Map<String, String> commands_abbr = [
 		"info": "scoreInfo",
 		"rel": "relative", 
@@ -80,7 +72,8 @@ class MirChordProcessor extends AbstractProcessor {
 		"p": "part",
 		"v": "voice",
 		"time": "timeSignature",
-		"key": "keySignature",
+		"keysig": "keySignature",
+		"key": "keySignatureFifths",
 		"i": "instrument",
 		"instr": "instrument",
 		"tp": "tuplet",
@@ -327,6 +320,14 @@ class MirChordProcessor extends AbstractProcessor {
 		scope.put('keySignature', keySig)
 		return keySig
 	}
+
+	@MirChord	
+	KeySignature keySignatureFifths(int fifths, String mode) {
+		KeySignature keySig = new KeySignature(fifths, mode)
+		Map scope = getScope()
+		scope.put('keySignature', keySig)
+		return keySig
+	}
 	
 	@MirChord
 	ControlChange controlChange(int index, int value) {
@@ -351,10 +352,7 @@ class MirChordProcessor extends AbstractProcessor {
 	@MirChord
 	Tuplet tuplet(List args) {
 		String ratio = (String)args[0]
-		String[] parts =  ratio.split('/')
-		int num = Integer.parseInt(parts[0])
-		int den = Integer.parseInt(parts[1])
-		Fraction fraction = fr(num, den)
+		Fraction fraction = parseFraction(ratio)
 		List<Chord> chords = (List<Chord>)args[1..-1]
 		return new Tuplet(fraction, chords)
 	}
@@ -381,7 +379,7 @@ class MirChordProcessor extends AbstractProcessor {
 			cmd = commands_abbr[cmd]
 		
 		if (extMethods.containsKey(cmd)) {
-			// println "calling $cmd with $parms"
+			println "calling $cmd with $parms"
 			Method meth = (Method)extMethods[cmd]["method"]
 			if (meth.getReturnType() == void)
 				extMethods[cmd]["object"].invokeMethod(cmd, parms)
@@ -555,10 +553,12 @@ class MirChordProcessor extends AbstractProcessor {
 	void completeDuration(Match match) {
 		int base_duration = (int)getResult(match.findMatchByType(grammar.number))
 		List<Match> dots = match.findAllMatchByType(grammar.dot)
+		Fraction duration = fr(1,base_duration)
 		for(Match dot : dots) {
-			base_duration += (int)(base_duration / 2)
+			Fraction more_duration = duration.mult(fr(1,2))
+			duration = duration.add(more_duration)
 		}
-		putResult(fr(1,base_duration))
+		putResult(duration)
 	}
 	
 	void completeVelocity(Match match) {

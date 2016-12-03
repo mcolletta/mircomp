@@ -28,6 +28,10 @@ import groovy.transform.CompileStatic
 import io.github.mcolletta.mirchord.core.*
 import static io.github.mcolletta.mirchord.core.Utils.*
 
+import com.xenoage.utils.math.Fraction
+import static com.xenoage.utils.math.Fraction.fr
+import static com.xenoage.utils.math.Fraction._0
+
 import com.googlecode.lingwah.Document
 import com.googlecode.lingwah.ParseContext
 import com.googlecode.lingwah.ParseResults
@@ -70,9 +74,8 @@ class MirchordAddon {
 
 	@MirChord 
 	public Phrase transpose(int halfSteps, Phrase phrase) {
-		// TODO maybe Phrase could become List<MusicElement> ???
 		Phrase newPhrase = phrase.copy()
-		for(MusicElement el : phrase.elements) {
+		for(MusicElement el : newPhrase.elements) {
 			if (el.getMusicElementType() == "Chord") {
 				Chord chord = (Chord)el
 				for(Pitch pitch : chord.getPitches()) {
@@ -83,10 +86,100 @@ class MirchordAddon {
 		return newPhrase
 	}
 
+	@MirChord
+	public Phrase transposeDiatonic(int diatonicSteps, String modeText, Phrase phrase) {
+		KeyMode mode = ModeFromName(modeText)
+		Phrase newPhrase = phrase.copy()
+		for(MusicElement el : newPhrase.elements) {
+			if (el.getMusicElementType() == "Chord") {
+				Chord chord = (Chord)el
+				int halfSteps = getHalfStepsFromDiatonic(chord.getPitch().symbol, diatonicSteps, mode)
+				for(Pitch pitch : chord.getPitches()) {
+					pitch.setMidiValue(pitch.getMidiValue() + halfSteps)
+				}
+			}
+		}
+		return newPhrase
+	}
+
+	@MirChord
+	public Phrase invert(Phrase phrase) {
+		Phrase newPhrase = phrase.copy()
+		List<MusicElement> chords = newPhrase.elements.findAll { it.getMusicElementType() == "Chord" }
+		Chord mirror = (Chord)chords[0]
+		for(MusicElement el : newPhrase.elements) {
+			if (el.getMusicElementType() == "Chord") {
+				Chord chord = (Chord)el
+				int interval = mirror.getPitch().getMidiValue() - chord.getPitch().getMidiValue()
+				chord.getPitch().setMidiValue(mirror.getPitch().getMidiValue() + interval)
+			}
+		}
+		return newPhrase
+	}
+
+	@MirChord
+	public Phrase invertDiatonic(String modeText, Phrase phrase) {
+		KeyMode mode = ModeFromName(modeText)
+		Phrase newPhrase = phrase.copy()
+		List<MusicElement> chords = newPhrase.elements.findAll { it.getMusicElementType() == "Chord" }
+		Chord mirror = (Chord)chords[0]
+		for(MusicElement el : newPhrase.elements) {
+			if (el.getMusicElementType() == "Chord") {
+				Chord chord = (Chord)el
+				int interval = NOTE_NAMES[mirror.getPitch().symbol] - NOTE_NAMES[chord.getPitch().symbol]
+				int halfSteps = getHalfStepsFromDiatonic(chord.getPitch().symbol, interval, mode)
+				chord.getPitch().midiValue = mirror.getPitch().midiValue + halfSteps
+			}
+		}
+		return newPhrase
+	}
+
 	@MirChord 
 	public Phrase retrograde(Phrase phrase) {
 		Phrase newPhrase = phrase.copy()
 		newPhrase.elements = phrase.elements.reverse()
+		return newPhrase
+	}
+
+	@MirChord 
+	public Phrase augment(String ratio, Phrase phrase) {
+		Fraction fraction = parseFraction(ratio)
+		Phrase newPhrase = phrase.copy()
+		for(MusicElement el : newPhrase.elements) {
+			if (el.getMusicElementType() == "Chord") {
+				Chord chord = (Chord)el
+				chord.duration = chord.duration.mult(fraction)
+			}
+		}
+		return newPhrase
+	}
+
+	@MirChord 
+	public Phrase diminuition(String ratio, Phrase phrase) {
+		Fraction fraction = parseFraction(ratio)
+		Phrase newPhrase = phrase.copy()
+		for(MusicElement el : newPhrase.elements) {
+			if (el.getMusicElementType() == "Chord") {
+				Chord chord = (Chord)el
+				chord.duration = chord.duration.divideBy(fraction)
+			}
+		}
+		return newPhrase
+	}
+
+	@MirChord 
+	public Phrase chain(Phrase phrase, Phrase pattern) {
+		Phrase newPhrase = phrase.copy()
+		List<MusicElement> rhythm = pattern.elements.findAll { it.getMusicElementType() == "Chord" }
+
+		int i = 0;
+		for(MusicElement el : newPhrase.elements) {
+			if (el.getMusicElementType() == "Chord") {
+				Chord chord = (Chord)el
+				chord.duration = (rhythm.size() < i) ? ((Chord)rhythm[i]).duration : ((Chord)rhythm[i % rhythm.size()]).duration
+				i++
+			}
+		}
 		return newPhrase
 	}
 
