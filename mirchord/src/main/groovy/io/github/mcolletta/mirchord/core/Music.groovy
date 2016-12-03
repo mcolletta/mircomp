@@ -198,7 +198,7 @@ class KeySignature implements MusicElement {
 		mode = KeyMode.MAJOR
 	}
 
-	KeySignature(int f, String modeText) {
+	KeySignature(int fifths, String modeText) {
 		this.fifths = fifths
 		mode = Utils.ModeFromName(modeText)
 	}
