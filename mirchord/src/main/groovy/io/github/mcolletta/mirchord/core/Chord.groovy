@@ -260,7 +260,7 @@ class Chord implements MusicElement {
 	Chord(Chord chord) {
 		List<Pitch> chord_pitches = []
 		for (Pitch p : chord.getPitches()) {
-			Pitch newPitch = new Pitch(p.symbol, p.alteration, p.octave)
+			Pitch newPitch = new Pitch(p.symbol, p.octave, p.alteration)
 			chord_pitches.add(newPitch)
 		}
 		this.pitches = chord_pitches

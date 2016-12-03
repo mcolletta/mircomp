@@ -233,7 +233,7 @@ class MirChordProcessor extends AbstractProcessor {
 		}
 		// update scope
 		Map scope = getScope()
-		Pitch pitch = new Pitch(letter, alteration, octave)
+		Pitch pitch = new Pitch(letter, octave, alteration)
 		instr.setDisplayPitch(pitch)
 		updateCurrentInstrument(instr)
 		return instr
