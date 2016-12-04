@@ -79,7 +79,8 @@ class MirChordProcessor extends AbstractProcessor {
 		"tp": "tuplet",
 		"cc": "controlChange",
 		"call": "callSymbol", 
-		"expand": "callSymbol"
+		"expand": "callSymbol",
+		"*": "copyTimes"
 		]
 	
 	Map<String, Map<String, Object>> extMethods = [:]
@@ -335,10 +336,9 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	@MirChord
-	// TODO: List<MusicElement> ???
-	Phrase repeat(int n, Phrase phrase) {
+	Phrase copyTimes(int n, Phrase phrase) {
 		Phrase rep = new Phrase()
-		(1..n-1).each { 
+		for(int i=0; i<n; i++) {
 			rep.elements.addAll(phrase.copy().elements)
 		}
 		return rep
@@ -723,14 +723,14 @@ class MirChordProcessor extends AbstractProcessor {
 		putResult(new Anchor(match.getText()[1..-1]))
 	}
 
-	void completeRepeatStart(Match match) {
-		String strTimes = match.getText()[2..-1]
-		int times = Integer.parseInt(strTimes)
-		putResult(new Repeat(true, times))
+	void completeRepeatStart(Match match) {		
+		putResult(new Repeat(true))
 	}
 
 	void completeRepeatEnd(Match match) {
-		putResult(new Repeat(false))
+		Match m = match.findMatchByType(grammar.number)
+		int times = (int)getResult(m)
+		putResult(new Repeat(false, times))
 	}
 
 	void completeScoreElement(Match match) {
