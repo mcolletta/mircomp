@@ -126,7 +126,6 @@ class MirChordProcessor extends AbstractProcessor {
 	                paramsType.add("" + unboxingWrapper(param.getType()))
 	            }
 				String methodSignature = method.getName() + "(" + String.join(",", paramsType) + ")"
-				println "methodSignature: " + methodSignature
 				extMethods.put(methodSignature, map)
 				// special case of method with generic List as param
 				// ex: tuplet(interface java.util.List)
@@ -400,7 +399,6 @@ class MirChordProcessor extends AbstractProcessor {
             paramsType.add("" + unboxingWrapper(param.getClass()))
         }
 		String methodSignature = cmd + "(" + String.join(",", paramsType) + ")"
-		println "CALL methodSignature: " + methodSignature
 		boolean foundMethod = extMethods.containsKey(methodSignature)
 		if (!foundMethod) {
 			methodSignature = cmd
@@ -408,7 +406,7 @@ class MirChordProcessor extends AbstractProcessor {
 		}
 		
 		if (foundMethod) {
-			println "calling $cmd with $parms"
+			//println "calling $cmd with $parms"
 			Method meth = (Method)extMethods[methodSignature]["method"]
 			def obj = extMethods[methodSignature]["object"]
 			if (meth.getReturnType() == void)
