@@ -41,6 +41,7 @@ import com.googlecode.lingwah.annotations.Processes
 
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import java.lang.reflect.Type
 import java.lang.reflect.Modifier
 
 import java.lang.annotation.Target
@@ -72,8 +73,7 @@ class MirChordProcessor extends AbstractProcessor {
 		"p": "part",
 		"v": "voice",
 		"time": "timeSignature",
-		"keysig": "keySignature",
-		"key": "keySignatureFifths",
+		"key": "keySignature",
 		"i": "instrument",
 		"instr": "instrument",
 		"tp": "tuplet",
@@ -118,7 +118,23 @@ class MirChordProcessor extends AbstractProcessor {
 				Map<String, Object> map = [:]
 				map.put("method", method)
 				map.put("object", xobj)
-				extMethods.put(method.getName(), map)
+				// standard case
+				// es. keySignature(class java.lang.String,class java.lang.String)
+				// keySignature(int,class java.lang.String)
+				List<String> paramsType = []
+				for(Parameter param : method.getParameters()) {
+	                paramsType.add("" + unboxingWrapper(param.getType()))
+	            }
+				String methodSignature = method.getName() + "(" + String.join(",", paramsType) + ")"
+				println "methodSignature: " + methodSignature
+				extMethods.put(methodSignature, map)
+				// special case of method with generic List as param
+				// ex: tuplet(interface java.util.List)
+				if (method.getParameters().size() == 1) {
+					Type t = method.getParameters()[0].getType()
+					if (Collection.class.isAssignableFrom(t))
+						extMethods.put(method.getName(), map)
+				}
 			}
 		}
 	}
@@ -323,7 +339,7 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	@MirChord	
-	KeySignature keySignatureFifths(int fifths, String mode) {
+	KeySignature keySignature(int fifths, String mode) {
 		KeySignature keySig = new KeySignature(fifths, mode)
 		Map scope = getScope()
 		scope.put('keySignature', keySig)
@@ -377,14 +393,28 @@ class MirChordProcessor extends AbstractProcessor {
 
 		if (commands_abbr.containsKey(cmd))
 			cmd = commands_abbr[cmd]
+
+		// signature
+		List<String> paramsType = []
+		for(Object param : parms) {
+            paramsType.add("" + unboxingWrapper(param.getClass()))
+        }
+		String methodSignature = cmd + "(" + String.join(",", paramsType) + ")"
+		println "CALL methodSignature: " + methodSignature
+		boolean foundMethod = extMethods.containsKey(methodSignature)
+		if (!foundMethod) {
+			methodSignature = cmd
+			foundMethod = extMethods.containsKey(methodSignature)
+		}
 		
-		if (extMethods.containsKey(cmd)) {
+		if (foundMethod) {
 			println "calling $cmd with $parms"
-			Method meth = (Method)extMethods[cmd]["method"]
+			Method meth = (Method)extMethods[methodSignature]["method"]
+			def obj = extMethods[methodSignature]["object"]
 			if (meth.getReturnType() == void)
-				extMethods[cmd]["object"].invokeMethod(cmd, parms)
+				obj.invokeMethod(cmd, parms)
 			else {
-				def res = extMethods[cmd]["object"].invokeMethod(cmd, parms)
+				def res = obj.invokeMethod(cmd, parms)
 				putResult(res)
 			} 
 		} else

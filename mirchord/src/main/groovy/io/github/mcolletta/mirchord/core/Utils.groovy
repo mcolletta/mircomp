@@ -37,6 +37,7 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class Utils {
 
+	// it works only for object that implements Serializable
 	static def deepcopy(orig) {
 	     def bos = new ByteArrayOutputStream()
 	     def oos = new ObjectOutputStream(bos)
@@ -44,6 +45,25 @@ class Utils {
 	     def bin = new ByteArrayInputStream(bos.toByteArray())
 	     def ois = new ObjectInputStream(bin)
 	     return ois.readObject()
+	}
+
+	static Map<Class<?>, Class<?>> PRIMITIVE_WRAPPERS = [
+											(Void.class): void.class,
+											(Boolean.class): boolean.class,
+											(Short.class): short.class,
+											(Integer.class): int.class,
+											(Long.class): long.class,
+											(Float.class): float.class,
+											(Double.class): double.class,
+											(Character.class): char.class,
+											(Byte.class): byte.class
+										]
+
+	static unboxingWrapper(Class<?> klass) {
+		if (PRIMITIVE_WRAPPERS.containsKey(klass)) {
+			return PRIMITIVE_WRAPPERS[klass]
+		}
+		return klass
 	}
 	
 	static void play(Sequence sequence, float bpm=120.0f) {
