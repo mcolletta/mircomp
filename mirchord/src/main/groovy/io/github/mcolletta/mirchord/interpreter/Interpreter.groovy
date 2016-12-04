@@ -126,9 +126,10 @@ class MirchordAddon {
 		for(MusicElement el : newPhrase.elements) {
 			if (el.getMusicElementType() == "Chord") {
 				Chord chord = (Chord)el
+				int octaves = (int)((mirror.getPitch().getMidiValue() - chord.getPitch().getMidiValue()) / 12) * 12
 				int interval = NOTE_NAMES[mirror.getPitch().symbol] - NOTE_NAMES[chord.getPitch().symbol]
 				int halfSteps = getHalfStepsFromDiatonic(chord.getPitch().symbol, interval, mode)
-				chord.getPitch().midiValue = mirror.getPitch().midiValue + halfSteps
+				chord.getPitch().midiValue = mirror.getPitch().midiValue + halfSteps + octaves
 			}
 		}
 		return newPhrase

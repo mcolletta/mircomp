@@ -105,13 +105,16 @@ class Utils {
 										]
 
 	static int getHalfStepsFromDiatonic(String symbol, int diatonicSteps, KeyMode mode) {
+		int interval = abs(diatonicSteps)
 		int start = NOTE_NAMES[symbol] - 1
 		List<Integer> scale = MODE_INTERVALS[mode]
 		int halfSteps = 0
-		for(int i = 0; i < diatonicSteps; i++) {
+		for(int i = 0; i < interval; i++) {
 			halfSteps += scale[start % scale.size()]
 			start++
 		}
+		if (diatonicSteps < 0)
+			halfSteps = -halfSteps
 		return halfSteps
 	}
 	

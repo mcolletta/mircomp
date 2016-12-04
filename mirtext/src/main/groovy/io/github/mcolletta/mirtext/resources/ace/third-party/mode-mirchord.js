@@ -9,8 +9,11 @@ var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var MirchordHighlightRules = function() {
 
     var builtinFunctions = (
-        'key mode ' +
-        'transpose invert retrograde ' +        
+        'key mode clef time tempo instr instrument tp tuplet define call relative unpitched ' +
+        'keySignature copyTimes callSymbol ' +
+        'info title composer poet chordsMode lyrics label ' +
+        'stemUp stemDown stemAuto ' +
+        'transpose transposeDiatonic invert invertDiatonic augment diminuition retrograde chain ' +        
         'zero? list zipmap'
     );
 
@@ -30,7 +33,7 @@ var MirchordHighlightRules = function() {
         "start" : [
             {
                 token : "constant.language", 
-                regex : /[A-G]{1}[\#\&]*(maj|min|aug|sus)*[0-9]{0,2}/
+                regex : /[A-G]{1}[\#\&]*(M|maj|m|min|mM|minMaj|\+|aug|°|dim|sus){0,1}[0-9]{0,2}[\(]{0,1}(add|sub){0,1}[\#\&]*[0-9]{0,2}[\)]{0,1}/
             },
             {
                 token : "constant.language",
