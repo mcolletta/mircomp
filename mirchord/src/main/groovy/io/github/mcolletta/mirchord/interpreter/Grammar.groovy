@@ -47,6 +47,7 @@ public class MirChordGrammar extends Grammar {
 		public final Parser ws  = oneOrMore(cho(oneOrMore(regex("[ \\\t\n\f\r]")), inline_comment))
 		public final Parser digit = regex("[0-9]")
 		public final Parser number = oneOrMore(digit)
+		public final Parser integerNumber = seq(opt(str('-')), number)
 		public final Parser decimal = seq(opt(str('-')), seq(number, opt(seq(str('.'), number))))
 		public final Parser symbol = regex("^[_A-Za-z](?:_?[A-Za-z0-9])*")
 		public final Parser stringa = regex("\"[^\"]*\"")
@@ -58,7 +59,8 @@ public class MirChordGrammar extends Grammar {
 		public final Parser natural = str("§")
 		public final Parser accidental = cho(sharp, flat, natural)
 		public final Parser accidentals = oneOrMore(accidental)
-		public final Parser pitchName = regex("[xa-g]")
+		public final Parser unpitched = regex("[xo]")
+		public final Parser pitchName = regex("[a-g]")
 		public final Parser chordPitchName = regex("[A-G]")
 		public final Parser octaveUp = str("'")
 		public final Parser octaveDown = str(",")
@@ -79,11 +81,13 @@ public class MirChordGrammar extends Grammar {
 		public final Parser rest = seq(str("r"), opt(duration))
 		public final ParserReference pitchList = ref()
 		public final Parser pitches = oneOrMore(pitch).separatedBy(ws)
-		public final Parser chord = seq(cho(pitchList, pitch), opt(duration))
+		public final Parser chord = seq(cho(pitchList, pitch, unpitched), opt(duration))
 
 		public final Parser part = seq(str("="), number)  // staff
 		public final Parser voice = seq(str("~"), number)
 		public final Parser anchor = seq(str("@"), symbol)
+		public final Parser repeatStart = seq(str("|:"),number)
+		public final Parser repeatEnd = str(":|")
 
 		public final Parser relativeOctave = seq(str("^"), digit)
 		public final Parser stickyDuration = seq(str("%"), duration)
@@ -118,10 +122,10 @@ public class MirChordGrammar extends Grammar {
 		public final ParserReference phrase = ref() 
 		public final ParserReference sexpr = ref()
 		public final Parser contextElement = cho(relativeOctave, stickyDuration, stem, measure)
-		public final Parser musicElement = cho(contextElement, sexpr, atom, phrase)
+		public final Parser musicElement = cho(contextElement, repeatStart, repeatEnd, sexpr, atom, phrase)
 		public final Parser elements = oneOrMore(musicElement).separatedBy(opt(ws))
 
-		public final Parser parm = cho(stringa, identifier, number, decimal, musicElement, sexpr)
+		public final Parser parm = cho(stringa, identifier, number, integerNumber, decimal, musicElement, sexpr)
 		public final Parser parms = oneOrMore(parm).separatedBy(ws)
 
 		public final Parser scorePosition = cho(part, voice, anchor)

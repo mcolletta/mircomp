@@ -523,33 +523,29 @@ class MirChordProcessor extends AbstractProcessor {
 		}
 			
 		String pitchLetter = ((String)getResult(match.findMatchByType(grammar.pitchName))).toUpperCase()
-		Pitch pitch
-		if (!(pitchLetter == "X")) { // later set by completeChord to DisplayPitch
-			pitch = new Pitch(pitchLetter)
-			Match octaves_match = match.findMatchByType(grammar.octaves)
-			List<Integer> octaveSteps = (List<Integer>)getResult(octaves_match)
-			if (octaveSteps == null || octaveSteps.size() == 0)
-				octaveSteps = [0]			
-			/*
-			 first check rel octave in scope
-			 if present check symbol (C, A, ecc..) in scope
-			 if both present then as usual (lilypond - fifth distance)
-			 otherwise set the octave as the one from scope 
-			 
-			 if the octave is not present find in parent scope 
-			 if simultan then create octave in local scope
-			 
-			 for duration similar thing with stickyDuration in scope
-			*/
-				
-			int alterations = (accidentals != null) ? getAlterationFromAccidentals(accidentals) : 0
-			processPitch(pitch, (int)octaveSteps.sum(), alterations)	
-		}			
+		Pitch pitch = new Pitch(pitchLetter)
+		Match octaves_match = match.findMatchByType(grammar.octaves)
+		List<Integer> octaveSteps = (List<Integer>)getResult(octaves_match)
+		if (octaveSteps == null || octaveSteps.size() == 0)
+			octaveSteps = [0]			
+		/*
+		 first check rel octave in scope
+		 if present check symbol (C, A, ecc..) in scope
+		 if both present then as usual (lilypond - fifth distance)
+		 otherwise set the octave as the one from scope 
+		 
+		 if the octave is not present find in parent scope 
+		 if simultan then create octave in local scope
+		 
+		 for duration similar thing with stickyDuration in scope
+		*/
+			
+		int alterations = (accidentals != null) ? getAlterationFromAccidentals(accidentals) : 0
+		processPitch(pitch, (int)octaveSteps.sum(), alterations)
 		
 		putResult(pitch)
     }
-	
-	// TODO: verify
+
 	void completeDuration(Match match) {
 		int base_duration = (int)getResult(match.findMatchByType(grammar.number))
 		List<Match> dots = match.findAllMatchByType(grammar.dot)
@@ -582,15 +578,27 @@ class MirChordProcessor extends AbstractProcessor {
 		}
         putResult(pitches)
     }
+
+    void completeUnpitched(Match match) {
+    	// later set by completeChord to DisplayPitch
+    	putResult(match.getText())
+    }
 	
 	void completeChord(Match match) {
-		List<Pitch> pitchList = (List<Pitch>)getResult(match.findMatchByType(grammar.pitchList))
-		if (pitchList == null || pitchList.size() == 0) {
-			Pitch pitch = (Pitch)getResult(match.findMatchByType(grammar.pitch))
-			pitchList = [pitch]
+		Chord chord = new Chord()
+		String unpitchedSymbol = getResult(match.findMatchByType(grammar.unpitched))
+		if (!(unpitchedSymbol == null)) { // unpitched chord
+			chord.unpitched = true
+			CheckUnpitchedChord(chord)
+		} else { // actual chord or note
+			List<Pitch> pitchList = (List<Pitch>)getResult(match.findMatchByType(grammar.pitchList))
+			if (pitchList == null || pitchList.size() == 0) {
+				Pitch pitch = (Pitch)getResult(match.findMatchByType(grammar.pitch))
+				pitchList = [pitch]
+			}				
+			chord.pitches = pitchList
 		}
-		Chord chord = new Chord()	
-		chord.pitches = pitchList	
+		// duration
 		Fraction scopeDuration = (Fraction)getVarFromScopes('duration')
 		if (scopeDuration)
 			chord.duration = scopeDuration			
@@ -606,10 +614,11 @@ class MirChordProcessor extends AbstractProcessor {
 				scope['duration'] = duration
 			}
 		}
+		// stem
 		StemDirection stemDir = (StemDirection)getVarFromScopes('stem')
 		if (stemDir)
 			chord.setStem(stemDir)
-		CheckUnpitchedChord(chord)
+		
 		putResult(chord)
 	}
 
@@ -712,6 +721,16 @@ class MirChordProcessor extends AbstractProcessor {
 
 	void completeAnchor(Match match) {
 		putResult(new Anchor(match.getText()[1..-1]))
+	}
+
+	void completeRepeatStart(Match match) {
+		String strTimes = match.getText()[2..-1]
+		int times = Integer.parseInt(strTimes)
+		putResult(new Repeat(true, times))
+	}
+
+	void completeRepeatEnd(Match match) {
+		putResult(new Repeat(false))
 	}
 
 	void completeScoreElement(Match match) {
@@ -869,6 +888,10 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	void completeNumber(Match match) {
+		putResult(Integer.parseInt(match.getText()))
+	}
+
+	void completeIntegerNumber(Match match) {
 		putResult(Integer.parseInt(match.getText()))
 	}
 	
