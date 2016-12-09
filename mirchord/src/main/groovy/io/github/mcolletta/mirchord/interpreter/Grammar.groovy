@@ -122,7 +122,7 @@ public class MirChordGrammar extends Grammar {
 		public final ParserReference phrase = ref() 
 		public final ParserReference sexpr = ref()
 		public final Parser contextElement = cho(relativeOctave, stickyDuration, stem, measure)
-		public final Parser musicElement = cho(contextElement, anchor, repeatStart, repeatEnd, sexpr, atom, phrase)
+		public final Parser musicElement = cho(contextElement, anchor, repeatStart, repeatEnd, sexpr, atom, phrase, identifier)
 		public final Parser elements = oneOrMore(musicElement).separatedBy(opt(ws))
 
 		public final Parser parm = cho(stringa, identifier, number, integerNumber, decimal, musicElement, sexpr)

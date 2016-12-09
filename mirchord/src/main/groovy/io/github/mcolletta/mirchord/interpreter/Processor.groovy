@@ -67,6 +67,7 @@ class MirChordProcessor extends AbstractProcessor {
 	String currentPart
 	Map<String, String> currentVoice = [:]
     Map<String, Map<String, Stack>> environments = [:]
+    Map<String, Object> symbolsTable = [:]
 
 	Map<String, String> commands_abbr = [
 		"info": "scoreInfo",
@@ -327,8 +328,7 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	@MirChord
 	void define(String id, Phrase phrase) { // List<MusicElement> elements
-		Map scope = getScope()
-		scope.put(id, phrase)
+		symbolsTable.put(id, phrase)
 	}
 	
 	@MirChord
@@ -932,9 +932,8 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	void completeIdentifier(Match match) {
 		String sym = match.getText()[1..-1]
-		Map scope = getScope()
-		if (scope.containsKey(sym)) {
-			Phrase clone = ((Phrase)scope[sym]).copy()
+		if (symbolsTable.containsKey(sym)) {
+			Phrase clone = ((Phrase)symbolsTable[sym]).copy()
 			putResult(clone)
 		}
 		else
