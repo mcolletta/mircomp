@@ -75,10 +75,10 @@ class Instrument implements MusicElement {
 	
 	static Map<String,Integer> GM = [
 		// INSTRUMENTS
-		"acoustic grand": 0,
-		"bright acoustic": 1,
-		"electric grand": 2,
-		"honky-tonk": 3,
+		"acoustic grand piano": 0,
+		"bright acoustic piano": 1,
+		"electric grand piano": 2,
+		"honky-tonk piano": 3,
 		"electric piano 1": 4,
 		"electric piano 2": 5,
 		"harpsichord": 6,
