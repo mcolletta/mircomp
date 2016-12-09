@@ -4,10 +4,61 @@ clojure mode used as a starting point
 This file has the same licence of the other ACE modes - see https://github.com/ajaxorg/ace/blob/master/LICENSE
 */
 
+ace.define("ace/mode/doc_comment_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
+"use strict";
+
+var oop = require("../lib/oop");
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+
+var DocCommentHighlightRules = function() {
+    this.$rules = {
+        "start" : [ {
+            token : "comment.doc.tag",
+            regex : "@[\\w\\d_]+" // TODO: fix email addresses
+        }, 
+        DocCommentHighlightRules.getTagRule(),
+        {
+            defaultToken : "comment.doc",
+            caseInsensitive: true
+        }]
+    };
+};
+
+oop.inherits(DocCommentHighlightRules, TextHighlightRules);
+
+DocCommentHighlightRules.getTagRule = function(start) {
+    return {
+        token : "comment.doc.tag.storage.type",
+        regex : "\\b(?:TODO|FIXME|XXX|HACK)\\b"
+    };
+}
+
+DocCommentHighlightRules.getStartRule = function(start) {
+    return {
+        token : "comment.doc", // doc comment
+        regex : "\\/\\*(?=\\*)",
+        next  : start
+    };
+};
+
+DocCommentHighlightRules.getEndRule = function (start) {
+    return {
+        token : "comment.doc", // closing comment
+        regex : "\\*\\/",
+        next  : start
+    };
+};
+
+
+exports.DocCommentHighlightRules = DocCommentHighlightRules;
+
+});
+
 ace.define("ace/mode/mirchord_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
 var oop = require("../lib/oop");
+var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
 
@@ -38,6 +89,15 @@ var MirchordHighlightRules = function() {
     this.$rules = {
         "start" : [
             {
+                token : "comment",
+                regex : "\\/\\/.*$"
+            },
+            DocCommentHighlightRules.getStartRule("doc-start"),            
+            {
+                token : "comment", // multi line comment
+                regex : "\\/\\*",
+                next : "comment"
+            }, {
                 token : "constant.language", 
                 regex : /[A-G]{1}[\#\&]*(M|maj|m|min|mM|minMaj|\+|aug|°|dim|sus){0,1}[0-9]{0,2}[\(]{0,1}(add|sub){0,1}[\#\&]*[0-9]{0,2}[\)]{0,1}/
             },
@@ -71,6 +131,16 @@ var MirchordHighlightRules = function() {
                 regex : /:[^()\[\]{}'"\^%`,;\s]+/
             }
         ],
+        "comment" : [
+            {
+                token : "comment", // closing comment
+                regex : ".*?\\*\\/",
+                next : "start"
+            }, {
+                token : "comment", // comment spanning whole line
+                regex : ".+"
+            }
+        ],
         "string" : [
             {
                 token : "constant.language.escape",                
@@ -85,6 +155,9 @@ var MirchordHighlightRules = function() {
             }
         ]
     };
+
+    this.embedRules(DocCommentHighlightRules, "doc-",
+        [ DocCommentHighlightRules.getEndRule("start") ]);
 };
 
 oop.inherits(MirchordHighlightRules, TextHighlightRules);

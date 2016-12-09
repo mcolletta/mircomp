@@ -104,7 +104,8 @@ class Utils {
 											(KeyMode.MINOR): [2, 1, 2, 2, 1, 2, 2]
 										]
 
-	static int getHalfStepsFromDiatonic(String symbol, int diatonicSteps, KeyMode mode) {
+	static int getHalfStepsFromDiatonic(Pitch pitch, int diatonicSteps, KeyMode mode) {
+		String symbol = pitch.symbol
 		int interval = abs(diatonicSteps)
 		int start = NOTE_NAMES[symbol] - 1
 		List<Integer> scale = MODE_INTERVALS[mode]
@@ -116,6 +117,10 @@ class Utils {
 		if (diatonicSteps < 0)
 			halfSteps = -halfSteps
 		return halfSteps
+	}
+
+	static int getDiatonicPitchesInterval(Pitch from, Pitch to) {
+		return NOTE_NAMES[from.symbol] - NOTE_NAMES[to.symbol]
 	}
 	
 //	static def DynamicsToMidi =
