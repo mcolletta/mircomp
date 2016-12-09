@@ -61,6 +61,8 @@ import java.lang.annotation.RetentionPolicy
 @Processes(MirChordGrammar.class)
 class MirChordProcessor extends AbstractProcessor {
 
+	boolean DEBUG = true
+
 	Score score
 	String currentPart
 	Map<String, String> currentVoice = [:]
@@ -118,21 +120,30 @@ class MirChordProcessor extends AbstractProcessor {
 				Map<String, Object> map = [:]
 				map.put("method", method)
 				map.put("object", xobj)
-				// standard case
-				// es. keySignature(class java.lang.String,class java.lang.String)
-				// keySignature(int,class java.lang.String)
-				List<String> paramsType = []
-				for(Parameter param : method.getParameters()) {
-	                paramsType.add("" + unboxingWrapper(param.getType()))
-	            }
-				String methodSignature = method.getName() + "(" + String.join(",", paramsType) + ")"
-				extMethods.put(methodSignature, map)
-				// special case of method with generic List as param
-				// ex: tuplet(interface java.util.List)
-				if (method.getParameters().size() == 1) {
-					Type t = method.getParameters()[0].getType()
-					if (Collection.class.isAssignableFrom(t))
-						extMethods.put(method.getName(), map)
+				if (!extMethods.containsKey(method.getName())) {
+					extMethods.put(method.getName(), map)
+				} else {
+					if (xobj != extMethods[method.getName()]["object"])
+						throw new Exception("The Mirchord method " + method.getName() + " is already in use")
+				}
+
+				if (DEBUG) {
+					// standard case
+					// es. keySignature(class java.lang.String,class java.lang.String)
+					// keySignature(int,class java.lang.String)
+					List<String> paramsType = []
+					for(Parameter param : method.getParameters()) {
+		                paramsType.add("" + unboxingWrapper(param.getType()))
+		            }
+					String methodSignature = "" + method.getReturnType() + " " + method.getName() + "(" + String.join(",", paramsType) + ")"
+					println "processExtMethods: methodSignature= " + methodSignature
+					// special case of method with generic List as param
+					// ex: tuplet(interface java.util.List)
+					if (method.getParameters().size() == 1) {
+						Type t = method.getParameters()[0].getType()
+						if (Collection.class.isAssignableFrom(t))
+							println "processExtMethods: Collection as parameter for " + method.getName()
+					}
 				}
 			}
 		}
@@ -210,7 +221,8 @@ class MirChordProcessor extends AbstractProcessor {
 
 	@MirChord 
 	void setCurrentVoice(String id) {
-		println "SETTING VOICE " + id
+		if (DEBUG)
+			println "SETTING VOICE " + id
 		if (!score.parts[currentPart].voices.containsKey(id)) {
 			score.parts[currentPart].voices.put(id, new Voice(id))
 			score.parts[currentPart].voices[id].elements = []
@@ -221,7 +233,8 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	@MirChord
 	void setCurrentPart(String id) {
-		println "SETTING PART " + id
+		if (DEBUG)
+			println "SETTING PART " + id
 		if (!score.parts.containsKey(id)) {			
 			score.parts.put(id, new Part(id))
 		}
@@ -392,29 +405,15 @@ class MirChordProcessor extends AbstractProcessor {
 
 		if (commands_abbr.containsKey(cmd))
 			cmd = commands_abbr[cmd]
-
-		// signature
-		List<String> paramsType = []
-		for(Object param : parms) {
-            paramsType.add("" + unboxingWrapper(param.getClass()))
-        }
-		String methodSignature = cmd + "(" + String.join(",", paramsType) + ")"
-		boolean foundMethod = extMethods.containsKey(methodSignature)
-		if (!foundMethod) {
-			methodSignature = cmd
-			foundMethod = extMethods.containsKey(methodSignature)
-		}
 		
-		if (foundMethod) {
-			//println "calling $cmd with $parms"
-			Method meth = (Method)extMethods[methodSignature]["method"]
-			def obj = extMethods[methodSignature]["object"]
-			if (meth.getReturnType() == void)
-				obj.invokeMethod(cmd, parms)
-			else {
-				def res = obj.invokeMethod(cmd, parms)
+		if (extMethods.containsKey(cmd)) {
+			if (DEBUG)
+				println "calling $cmd with $parms"
+			Method meth = (Method)extMethods[cmd]["method"]
+			def obj = extMethods[cmd]["object"]
+			def res = obj.invokeMethod(cmd, parms)
+			if (res != null)
 				putResult(res)
-			} 
 		} else
 			throw new Exception("not found command named $cmd")
     }

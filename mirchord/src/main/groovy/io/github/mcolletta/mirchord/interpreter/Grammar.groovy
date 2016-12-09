@@ -39,9 +39,9 @@ import com.googlecode.lingwah.ParseContext
 
 @CompileStatic
 public class MirChordGrammar extends Grammar {
-		//public final Parser inline_comment = seq(str(";;"), zeroOrMore(anyChar()), str(";;"))
+		public final Parser inline_comment = seq(str(";;"), zeroOrMore(anyChar()), str(";;"))
 		//public final Parser inline_comment = seq(str(";"), zeroOrMore(regex("[^;]+")), str(";"))
-		public final Parser inline_comment = seq(str(";"), zeroOrMore(regex("[^\n]+")))
+		//public final Parser inline_comment = seq(str(";"), zeroOrMore(regex("[^\n]+")))
 		public final Parser measure = str("|")
 		public final Parser slash = str("/")
 		public final Parser ws  = oneOrMore(cho(oneOrMore(regex("[ \\\t\n\f\r]")), inline_comment))
