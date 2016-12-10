@@ -162,6 +162,28 @@ var MirchordHighlightRules = function() {
 
 oop.inherits(MirchordHighlightRules, TextHighlightRules);
 
+function comments(next) {
+    return [
+        {
+            token : "comment", // multi line comment
+            regex : /\/\*/,
+            next: [
+                DocCommentHighlightRules.getTagRule(),
+                {token : "comment", regex : "\\*\\/", next : next || "pop"},
+                {defaultToken : "comment", caseInsensitive: true}
+            ]
+        }, {
+            token : "comment",
+            regex : "\\/\\/",
+            next: [
+                DocCommentHighlightRules.getTagRule(),
+                {token : "comment", regex : "$|^", next : next || "pop"},
+                {defaultToken : "comment", caseInsensitive: true}
+            ]
+        }
+    ];
+}
+
 exports.MirchordHighlightRules = MirchordHighlightRules;
 });
 
@@ -1052,7 +1074,7 @@ var functionMap = {
             "Key signature \"D minor\" with 1 flats"
         ],
     "key Bb major": [
-            "(key \"Bb\" \"maj\")",
+            "(key \"B&\" \"maj\")",
             "Key signature \"B&#9837; major\" with 2 flats"
         ],
     "key G minor": [
@@ -1060,7 +1082,7 @@ var functionMap = {
             "Key signature \"G minor\" with 2 flats"
         ],
     "key Eb major": [
-            "(key \"Eb\" \"maj\")",
+            "(key \"E&\" \"maj\")",
             "Key signature \"E&#9837; major\" with 3 flats"
         ],
     "key C minor": [
@@ -1068,7 +1090,7 @@ var functionMap = {
             "Key signature \"C minor\" with 3 flats"
         ],
     "key Ab major": [
-            "(key \"Ab\" \"maj\")",
+            "(key \"A&\" \"maj\")",
             "Key signature \"A&#9837; major\" with 4 flats"
         ],
     "key F minor": [
@@ -1076,27 +1098,27 @@ var functionMap = {
             "Key signature \"F minor\" with 4 flats"
         ],
     "key Db major": [
-            "(key \"Db\" \"maj\")",
+            "(key \"D&\" \"maj\")",
             "Key signature \"D&#9837; major\" with 5 flats"
         ],
     "key Bb minor": [
-            "(key \"Bb\" \"min\")",
+            "(key \"B&\" \"min\")",
             "Key signature \"B&#9837; minor\" with 5 flats"
         ],
     "key Gb major": [
-            "(key \"Gb\" \"maj\")",
+            "(key \"G&\" \"maj\")",
             "Key signature \"G&#9837; major\" with 6 flats"
         ],
     "key Eb minor": [
-            "(key \"Eb\" \"min\")",
+            "(key \"E&\" \"min\")",
             "Key signature \"E&#9837; minor\" with 6 flats"
         ],
     "key Cb major": [
-            "(key \"Cb\" \"maj\")",
+            "(key \"C&\" \"maj\")",
             "Key signature \"C&#9837; major\" with 7 flats"
         ],
     "key Ab minor": [
-            "(key \"Ab\" \"min\")",
+            "(key \"A&\" \"min\")",
             "Key signature \"A&#9837; minor\" with 7 flats"
         ],
     // clef
@@ -1177,6 +1199,7 @@ oop.inherits(Mode, TextMode);
 (function() {
 
     this.lineCommentStart = ";";
+    this.blockComment = {start: "/*", end: "*/"};
     this.minorIndentFunctions = ["defn", "defn-", "defmacro", "def", "deftest", "testing"];
 
     this.$toIndent = function(str) {
