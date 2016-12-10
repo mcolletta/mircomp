@@ -47,6 +47,7 @@ import javafx.scene.input.KeyEvent
 import javafx.scene.input.KeyCode
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
+import javafx.scene.Cursor
 import javafx.event.EventHandler
 
 
@@ -108,8 +109,6 @@ class ScoreViewer  extends VBox {
 
 	public ScoreViewer() {
 		loadControl()
-        scrollPane.setPannable(true)
-        setMode(ScoreMode.PANNING)
         scoreModel = new ScoreModel()
 
         /*scoreImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
@@ -191,8 +190,12 @@ class ScoreViewer  extends VBox {
 
         modeProperty().addListener(new ChangeListener(){
             @Override public void changed(ObservableValue o,Object oldVal, Object newVal){
-                 ScoreMode newMode = newVal as ScoreMode
-                 scrollPane.setPannable(newMode == ScoreMode.PANNING)
+                ScoreMode newMode = newVal as ScoreMode
+                scrollPane.setPannable(newMode == ScoreMode.PANNING)
+                if (newMode == ScoreMode.PANNING)
+                    scrollPane.setCursor(Cursor.OPEN_HAND)
+                else
+                    scrollPane.setCursor(Cursor.DEFAULT)
             }
         })
 
@@ -313,8 +316,15 @@ class ScoreViewer  extends VBox {
 
     void loadScore(Score score) {
         scoreModel.loadScore(score)
-        initScoreButtons()
+        initScore()
         draw()
+    }
+
+    void initScore() {
+        scrollPane.setPannable(true)
+        scrollPane.setCursor(Cursor.OPEN_HAND)
+        setMode(ScoreMode.PANNING)
+        initScoreButtons()
     }
 
     void initScoreButtons() {

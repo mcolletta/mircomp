@@ -320,15 +320,11 @@ class ScoreModel implements PlaybackListener {
     }
 
     void pause() {
-    	needScroll = false
         Playback.pause()
     }
 
     void stop() {
-    	needScroll = false
         Playback.stop()
-        setCurrentMP(mp0)
-        playbackLayouter.setCursorAt(getCurrentMP())
     }
 
     // Playback utils
@@ -424,12 +420,16 @@ class ScoreModel implements PlaybackListener {
 	}
 
 	@Override public void playbackPaused() {
+        needScroll = false
 	}
 
 	@Override public void playbackStopped() {
+        needScroll = false
 	}
 
 	@Override public void playbackAtEnd() {
+        setCurrentMP(mp0)
+        playbackLayouter.setCursorAt(getCurrentMP())
 	}
 
 }

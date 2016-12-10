@@ -87,7 +87,7 @@ public class MirChordGrammar extends Grammar {
 		public final Parser voice = seq(str("~"), number)
 		public final Parser anchor = seq(str("@"), symbol)
 		public final Parser repeatStart = str("|:")
-		public final Parser repeatEnd = seq(number, str(":|"))
+		public final Parser repeatEnd = seq(opt(number), str(":|"))
 
 		public final Parser relativeOctave = seq(str("^"), digit)
 		public final Parser stickyDuration = seq(str("%"), duration)

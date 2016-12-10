@@ -755,8 +755,10 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	void completeRepeatEnd(Match match) {
+		int times = 1
 		Match m = match.findMatchByType(grammar.number)
-		int times = (int)getResult(m)
+		if (m != null)
+			times = (int)getResult(m)
 		putResult(new Repeat(false, times))
 	}
 
