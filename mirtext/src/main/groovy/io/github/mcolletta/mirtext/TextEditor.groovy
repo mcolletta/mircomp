@@ -23,6 +23,8 @@
 
 package io.github.mcolletta.mirtext
 
+import java.util.Map
+
 import java.io.IOException
 import javafx.application.Application
 import javafx.scene.Scene
@@ -68,6 +70,10 @@ class TextEditor extends VBox {
 	@FXML private WebView editor
 	WebEngine engine
 	JSObject jsEditor
+    JSObject jsEditorSession
+
+    Map<String, String> pendingEditorCalls = [:]
+    Map<String, String> pendingEditorSessionCalls = [:]
 
 	@FXML private ComboBox selectFontSize
 	@FXML private ComboBox selectTheme
@@ -85,6 +91,13 @@ class TextEditor extends VBox {
         engine.getLoadWorker().stateProperty().addListener({observable, oldValue, newValue -> 
             if (newValue == Worker.State.SUCCEEDED) {
                 initializeHTML()
+                for(Map.Entry<String, String> e : pendingEditorCalls.entrySet()) {
+                    jsEditor.call(e.getKey(), e.getValue())
+                }
+                for(Map.Entry<String, String> e : pendingEditorSessionCalls.entrySet()) {
+                    jsEditorSession.call(e.getKey(), e.getValue())
+                    //engine.executeScript(e.getKey() + "('" + e.getValue() + "')")
+                }
             }
 		} as ChangeListener)
 
@@ -96,7 +109,6 @@ class TextEditor extends VBox {
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
                 if (newValue != null) {
                     engine.executeScript('setFontSize("' + newValue + '")');
-                    
                 }
             }
         })
@@ -126,6 +138,7 @@ class TextEditor extends VBox {
         Element element = document.getElementById("editor")
         engine.executeScript("initEditor()")
 		jsEditor = (JSObject)engine.executeScript("editor")
+        jsEditorSession = (JSObject)jsEditor.call("getSession")
 	}
 
     public registerCopyPasteEvents() {
@@ -166,7 +179,8 @@ class TextEditor extends VBox {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (newValue != null && oldValue != newValue) {
                     Mode mode = selectMode.getSelectionModel().getSelectedItem() as Mode
-                    engine.executeScript("setMode('" + mode.path + "')")
+                    setModeSafe(mode)
+                    //engine.executeScript("setMode('" + mode.path + "')")
                 }
             }
         })
@@ -177,7 +191,17 @@ class TextEditor extends VBox {
     }
 
     void setMode(Mode mode) {
-        engine.executeScript("setMode('" + mode.path + "')")
+        selectMode.setValue(mode);
+        //selectMode.getSelectionModel().select(indexOfItem)
+    }
+
+    void setModeSafe(Mode mode) {
+        if (jsEditorSession != null) {
+            jsEditorSession.call("setMode", mode.path)
+        } else {
+            if (!pendingEditorSessionCalls.containsKey("setMode"))
+                pendingEditorSessionCalls.put("setMode", mode.path)
+        }
     }
 
     String getValue() {
@@ -185,7 +209,12 @@ class TextEditor extends VBox {
     }
 
     void setValue(String content) {
-        jsEditor.call("setValue", content)
+        if (jsEditor != null) {
+            jsEditor.call("setValue", content)
+        } else {
+            if (!pendingEditorCalls.containsKey("setValue"))
+                pendingEditorCalls.put("setValue", content)
+        }
     }
 
 	// actions
@@ -209,26 +238,27 @@ class TextEditor extends VBox {
             setValue(fileContent)
             String filename = selectedFile.getName() 
             String fileExt = filename[filename.lastIndexOf('.')..-1]
-            // TODO: engine.executeScript("setMode('" + mode.path + "')")
+            Mode fileMode
             switch (fileExt) {
                 case ".mirchord":
-                    engine.executeScript("setMode('ace/mode/mirchord')")
+                    fileMode = Mode.MirChord
                     break
                 case '.groovy':
-                    engine.executeScript("setMode('ace/mode/groovy')")
+                    fileMode = Mode.Groovy
                     break
                 case ".java":
-                    engine.executeScript("setMode('ace/mode/java')")
+                    fileMode = Mode.Java
                 case ".xml":
-                    engine.executeScript("setMode('ace/mode/xml')")
+                    fileMode = Mode.XML
                     break
                 case ".json":
-                    engine.executeScript("setMode('ace/mode/json')")
+                    fileMode = Mode.JSON
                     break
                 default:
-                    engine.executeScript("setMode('ace/mode/text')")
+                    fileMode = Mode.Text
                     break
-            }    
+            }
+            jsEditorSession.call("setMode", fileMode)  
         }
     }
 

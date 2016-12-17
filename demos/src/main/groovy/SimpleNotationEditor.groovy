@@ -70,7 +70,8 @@ public class SimpleNotationEditor extends Application {
         splitPane = new SplitPane()
 
         editor = new TextEditor()
-        //editor.setMode(Mode.MirChord)
+        editor.setMode(Mode.MirChord)
+        editor.setValue("/* This is a comment */")
         viewer = new ScoreViewer()
 
         Button convertBtn = new Button("Convert")
