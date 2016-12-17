@@ -63,6 +63,8 @@ import org.w3c.dom.Document
 import org.w3c.dom.Element
 import netscape.javascript.JSObject
 
+//import com.xenoage.utils.jse.io.JseStreamUtils
+//import groovy.text.GStringTemplateEngine
 
 
 class TextEditor extends VBox {
@@ -89,20 +91,23 @@ class TextEditor extends VBox {
 		engine = editor.getEngine()
         engine.setJavaScriptEnabled(true)
         engine.getLoadWorker().stateProperty().addListener({observable, oldValue, newValue -> 
-            if (newValue == Worker.State.SUCCEEDED) {
+            if (newValue == Worker.State.SUCCEEDED && engine.getDocument() != null) {
                 initializeHTML()
-                for(Map.Entry<String, String> e : pendingEditorCalls.entrySet()) {
-                    jsEditor.call(e.getKey(), e.getValue())
-                }
-                for(Map.Entry<String, String> e : pendingEditorSessionCalls.entrySet()) {
-                    jsEditorSession.call(e.getKey(), e.getValue())
-                    //engine.executeScript(e.getKey() + "('" + e.getValue() + "')")
-                }
             }
 		} as ChangeListener)
 
 		editor.setContextMenuEnabled(false)
-		engine.load(getClass().getResource("resources/ace/editor.html").toExternalForm())
+        
+        /*def binding = ["ace_js": getClass().getResource("resources/ace/third-party/ace.js"), 
+                       "language_tools_js": getClass().getResource("resources/ace/third-party/ext-language_tools.js")]
+        String text = JseStreamUtils.readToString(getClass().getResourceAsStream("resources/ace/editor.template"))
+        def templateEngine = new groovy.text.GStringTemplateEngine()
+        def template = templateEngine.createTemplate(text).make(binding)
+        String html = template.toString()
+        engine.loadContent(html)*/
+
+        engine.load(getClass().getResource("resources/ace/editor.html").toExternalForm())
+        
 
 		selectFontSize.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
@@ -117,7 +122,21 @@ class TextEditor extends VBox {
         loadModes()
 
 		registerCopyPasteEvents()
+
+        editor.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                ensureLoadedDOM()
+            }
+        })
               
+    }
+
+    // TODO: remove when bug fixed
+    // https://bugs.openjdk.java.net/browse/JDK-8157413
+    public ensureLoadedDOM() {        
+        if (jsEditor == null)
+            initializeHTML()
     }
 
     private void loadControl() {
@@ -134,11 +153,19 @@ class TextEditor extends VBox {
     }
 
     private void initializeHTML() {
-        Document document = engine.getDocument()
-        Element element = document.getElementById("editor")
+        //Document document = engine.getDocument()
+        //Element element = document.getElementById("editor")
         engine.executeScript("initEditor()")
 		jsEditor = (JSObject)engine.executeScript("editor")
         jsEditorSession = (JSObject)jsEditor.call("getSession")
+        for(Map.Entry<String, String> e : pendingEditorCalls.entrySet()) {
+            jsEditor.call(e.getKey(), e.getValue())
+        }
+        for(Map.Entry<String, String> e : pendingEditorSessionCalls.entrySet()) {
+            jsEditorSession.call(e.getKey(), e.getValue())
+        }
+        pendingEditorCalls = [:]
+        pendingEditorSessionCalls = [:]
 	}
 
     public registerCopyPasteEvents() {
@@ -180,7 +207,6 @@ class TextEditor extends VBox {
                 if (newValue != null && oldValue != newValue) {
                     Mode mode = selectMode.getSelectionModel().getSelectedItem() as Mode
                     setModeSafe(mode)
-                    //engine.executeScript("setMode('" + mode.path + "')")
                 }
             }
         })
@@ -191,8 +217,7 @@ class TextEditor extends VBox {
     }
 
     void setMode(Mode mode) {
-        selectMode.setValue(mode);
-        //selectMode.getSelectionModel().select(indexOfItem)
+        selectMode.setValue(mode)
     }
 
     void setModeSafe(Mode mode) {

@@ -32,6 +32,8 @@ import javafx.scene.Scene
 import javafx.scene.layout.VBox
 
 import javafx.scene.control.SplitPane
+import javafx.scene.control.TabPane
+import javafx.scene.control.Tab
 import javafx.scene.control.Button
 
 import javafx.stage.Stage
@@ -48,30 +50,48 @@ import io.github.mcolletta.mirscore.ScoreViewer
 import io.github.mcolletta.mirconverter.ZongConverter
 import io.github.mcolletta.mirchord.core.Score as MirScore
 import io.github.mcolletta.mirchord.interpreter.MirChordInterpreter
+import io.github.mcolletta.mirchord.interpreter.GroovyScriptInterpreter
 
 import io.github.mcolletta.mirchord.core.ScoreBuilder
 
 import com.xenoage.zong.core.Score
 
-import org.codehaus.groovy.control.customizers.ImportCustomizer
-import org.codehaus.groovy.control.CompilerConfiguration
-
 
 public class SimpleNotationEditor extends Application {
 
+    GroovyScriptInterpreter scriptInterpreter
+
     SplitPane splitPane
     TextEditor editor
+    TextEditor geditor
     ScoreViewer viewer
 
     @Override
     public void start(Stage stage) throws Exception {
-        VBox root = new VBox()
+        scriptInterpreter = new GroovyScriptInterpreter(this.class.getName() + System.currentTimeMillis())
 
+        VBox root = new VBox()
         splitPane = new SplitPane()
+        TabPane tabPane = new TabPane()
 
         editor = new TextEditor()
         editor.setMode(Mode.MirChord)
-        editor.setValue("/* This is a comment */")
+        editor.setValue("/* MirChord: This is a comment */")
+
+        Tab tab = new Tab()
+        tab.setText("Notation Editor")
+        tab.setContent(editor)
+        tabPane.getTabs().add(tab)
+
+        geditor = new TextEditor()
+        geditor.setMode(Mode.Groovy)
+        geditor.setValue("/* Groovy This is a comment */")
+        
+        Tab gtab = new Tab()
+        gtab.setText("Code Editor")
+        gtab.setContent(geditor)
+        tabPane.getTabs().add(gtab)
+
         viewer = new ScoreViewer()
 
         Button convertBtn = new Button("Convert")
@@ -83,7 +103,7 @@ public class SimpleNotationEditor extends Application {
 
         //splitPane.setOrientation(Orientation.HORIZONTAL)
         splitPane.setOrientation(Orientation.VERTICAL)
-        splitPane.getItems().add(editor)
+        splitPane.getItems().add(tabPane)
         splitPane.getItems().add(viewer)
         root.getChildren().add(splitPane)
         root.getChildren().add(convertBtn)
@@ -105,37 +125,18 @@ public class SimpleNotationEditor extends Application {
         Score score = null
         Mode mode = editor.getMode()
         String source = editor.getValue()
-        if (mode == Mode.MirChord)
-            score = createScoreFromMirchord(source)
-        if (mode == Mode.Groovy)
-            score = createScoreFromGroovyBuilder(source)
+        String code = geditor.getValue()
+        score = createScore(source, code)
         viewer.loadScore(score)
     }
 
-    public Score createScoreFromMirchord(String source) {
-        ZongConverter zconverter = new ZongConverter()
-        MirChordInterpreter interpreter = new MirChordInterpreter()
+    public Score createScore(String source, String code) {
+        Script script = scriptInterpreter.getScript(code)
+        MirChordInterpreter interpreter = new MirChordInterpreter([script])
         MirScore mirscore = interpreter.evaluate(source)
+        ZongConverter zconverter = new ZongConverter()
         Score score = zconverter.convert(mirscore)
         return score
     }
-
-    public Score createScoreFromGroovyBuilder(String source) {
-        ZongConverter zconverter = new ZongConverter()
-        // Add imports for script.
-        def importCustomizer = new ImportCustomizer()
-        importCustomizer.addStaticStars 'com.xenoage.utils.math.Fraction'
-        importCustomizer.addImports 'com.xenoage.utils.math.Fraction'
-        importCustomizer.addStaticStars 'io.github.mcolletta.mirchord.core.Utils'
-        importCustomizer.addStaticStars 'io.github.mcolletta.mirconverter.Utils'
-        importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core'
-        def configuration = new CompilerConfiguration()
-        configuration.addCompilationCustomizers(importCustomizer)
-        def binding = new Binding()
-        binding.setProperty('builder', new ScoreBuilder()) 
-        def mirscore = new GroovyShell(binding, configuration).evaluate(source)
-        Score score =zconverter.convert((MirScore)mirscore)
-        return score
-    }
-
 }
+

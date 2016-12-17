@@ -37,15 +37,19 @@ import com.googlecode.lingwah.ParseContext
 import com.googlecode.lingwah.ParseResults
 import com.googlecode.lingwah.StringDocument
 
-import groovy.text.GStringTemplateEngine
 
 @CompileStatic
 class MirChordInterpreter {
 	
 	MirChordGrammar PARSER
+	MirChordProcessor processor
 	
-	MirChordInterpreter() {
+	MirChordInterpreter(List ext=[]) {
 		PARSER = MirChordGrammar.INSTANCE
+		List extensions=[new MirchordAddon()]
+		if (ext.size() > 0)
+			extensions.addAll(ext)
+		processor = new MirChordProcessor(extensions)
 	}
 	
 	Score evaluate(String source) {
@@ -54,9 +58,7 @@ class MirChordInterpreter {
 		ParseResults parseResults= ctx.getParseResults(PARSER.score, 0)
 		if (!parseResults.success())
 				throw parseResults.getError()
-		MirChordProcessor processor = new MirChordProcessor([new MirchordAddon()])
-		Score score = processor.process(parseResults)
-		
+		Score score = processor.process(parseResults)		
 		return score
 	}
 	
