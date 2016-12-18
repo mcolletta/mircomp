@@ -26,6 +26,8 @@ package io.github.mcolletta.mirtext
 import java.util.Map
 
 import java.io.IOException
+
+import javafx.application.Platform
 import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.layout.StackPane
@@ -63,10 +65,13 @@ import org.w3c.dom.Document
 import org.w3c.dom.Element
 import netscape.javascript.JSObject
 
+import groovy.transform.CompileStatic
+
 //import com.xenoage.utils.jse.io.JseStreamUtils
 //import groovy.text.GStringTemplateEngine
 
 
+@CompileStatic
 class TextEditor extends VBox {
 
 	@FXML private WebView editor
@@ -91,8 +96,9 @@ class TextEditor extends VBox {
 		engine = editor.getEngine()
         engine.setJavaScriptEnabled(true)
         engine.getLoadWorker().stateProperty().addListener({observable, oldValue, newValue -> 
-            if (newValue == Worker.State.SUCCEEDED && engine.getDocument() != null) {
-                initializeHTML()
+            if (newValue == Worker.State.SUCCEEDED) {
+                if (engine.getDocument() != null)
+                    initializeHTML()
             }
 		} as ChangeListener)
 
@@ -106,7 +112,26 @@ class TextEditor extends VBox {
         String html = template.toString()
         engine.loadContent(html)*/
 
-        engine.load(getClass().getResource("resources/ace/editor.html").toExternalForm())
+        Platform.runLater( {
+            try {
+                engine.load(getClass().getResource("resources/ace/editor.html").toExternalForm())
+            } catch(Exception ex) {
+                println "Exception: " + ex.getMessage()
+            }
+        } )
+
+        // HACK for BUG https://bugs.openjdk.java.net/browse/JDK-8157413        
+        def timer = new Timer()
+        def task = timer.runAfter(10000) {
+            Platform.runLater( {
+                try {
+                    ensureLoadedDOM()
+                } catch(Exception ex) {
+                    println "Exception: " + ex.getMessage()
+                }
+            } )
+        }
+        //-------------        
         
 
 		selectFontSize.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
@@ -132,8 +157,6 @@ class TextEditor extends VBox {
               
     }
 
-    // TODO: remove when bug fixed
-    // https://bugs.openjdk.java.net/browse/JDK-8157413
     public ensureLoadedDOM() {        
         if (jsEditor == null)
             initializeHTML()
@@ -171,7 +194,7 @@ class TextEditor extends VBox {
     public registerCopyPasteEvents() {
         final KeyCombination keyCombinationCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN)
         final KeyCombination keyCombinationPaste = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN)
-        this.addEventFilter(KeyEvent.KEY_PRESSED, { evt ->
+        this.addEventFilter(KeyEvent.KEY_PRESSED, { KeyEvent evt ->
             if (keyCombinationCopy.match(evt)) {
                 copy()
             }

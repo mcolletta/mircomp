@@ -27,6 +27,7 @@ import java.util.Map
 
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.control.customizers.ImportCustomizer
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
 import org.codehaus.groovy.control.CompilerConfiguration
 
 import io.github.mcolletta.mirchord.core.*
@@ -35,6 +36,7 @@ import static io.github.mcolletta.mirchord.core.Utils.*
 
 @CompileStatic
 class GroovyScriptInterpreter {
+    boolean staticCompileScript = true
     GroovyShell shell
     String scriptName = "MirGroovyScript.groovy"
     Map<String,GroovyScriptImportType> imports
@@ -48,6 +50,10 @@ class GroovyScriptInterpreter {
         	addImports(importCustomizer)
         def configuration = new CompilerConfiguration()
         configuration.addCompilationCustomizers(importCustomizer)
+        if (staticCompileScript) {
+            configuration.addCompilationCustomizers(
+                new ASTTransformationCustomizer(CompileStatic.class))
+        }
         shell = new GroovyShell(configuration)
     }
 

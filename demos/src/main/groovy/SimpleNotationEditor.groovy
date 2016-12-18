@@ -101,12 +101,26 @@ public class SimpleNotationEditor extends Application {
             }
         })
 
+        Button addTab = new Button("Add")
+        addTab.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                TextEditor edtr = new TextEditor()
+                edtr.setMode(Mode.Groovy)
+                editor.setValue("/* Put your code here */")
+                Tab tb = new Tab()
+                tb.setText("Editor")
+                tb.setContent(edtr)
+                tabPane.getTabs().add(tb)
+            }
+        })
+
         //splitPane.setOrientation(Orientation.HORIZONTAL)
         splitPane.setOrientation(Orientation.VERTICAL)
         splitPane.getItems().add(tabPane)
         splitPane.getItems().add(viewer)
         root.getChildren().add(splitPane)
         root.getChildren().add(convertBtn)
+        root.getChildren().add(addTab)
         
         Scene scene = new Scene(root, 1000, 700)
 
