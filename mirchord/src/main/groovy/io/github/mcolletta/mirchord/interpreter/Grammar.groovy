@@ -128,7 +128,7 @@ public class MirChordGrammar extends Grammar {
 
 		public final Parser scorePosition = cho(part, voice)
 		public final Parser scoreElement = cho(scorePosition, musicElement)
-		public final Parser score = oneOrMore(scoreElement).separatedBy(opt(ws))
+		public final Parser score = seq(opt(ws),oneOrMore(scoreElement).separatedBy(opt(ws)))
 		
 		private MirChordGrammar() {
 				init()
