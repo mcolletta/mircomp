@@ -26,6 +26,8 @@ package io.github.mcolletta.mirtext
 import java.util.Map
 
 import java.io.IOException
+import java.nio.file.Path
+import java.nio.file.Paths
 
 import javafx.application.Platform
 import javafx.application.Application
@@ -74,23 +76,29 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class TextEditor extends VBox {
 
+    Path filePath
+    String suggestedOpenSaveFolder = System.getProperty("user.home")
+    String suggestedOpenSaveFileName = "newfile.txt"
+
 	@FXML private WebView editor
 	WebEngine engine
 	JSObject jsEditor
     JSObject jsEditorSession
+    JSObject jsUndoManager
 
     Map<String, String> pendingEditorCalls = [:]
     Map<String, String> pendingEditorSessionCalls = [:]
+    Map<String, String> pendingUndoManagerCalls = [:]
 
 	@FXML private ComboBox selectFontSize
 	@FXML private ComboBox selectTheme
 	@FXML private ComboBox selectMode
 
+    @FXML private Button filesaveButton
 	@FXML private Button undoButton
 	@FXML private Button redoButton
 
-	public TextEditor() {
-
+	public TextEditor(Path path=null) {
 		loadControl()
 
 		engine = editor.getEngine()
@@ -154,6 +162,15 @@ class TextEditor extends VBox {
                 ensureLoadedDOM()
             }
         })
+
+        this.filePath = path
+        if (filePath != null) {
+            filesaveButton.setDisable(true)
+            setValue(filePath.getText())
+        }
+        else {
+            filesaveButton.setDisable(false)
+        }
               
     }
 
@@ -181,14 +198,21 @@ class TextEditor extends VBox {
         engine.executeScript("initEditor()")
 		jsEditor = (JSObject)engine.executeScript("editor")
         jsEditorSession = (JSObject)jsEditor.call("getSession")
+        jsUndoManager = (JSObject)jsEditorSession.call("getUndoManager")
         for(Map.Entry<String, String> e : pendingEditorCalls.entrySet()) {
             jsEditor.call(e.getKey(), e.getValue())
         }
         for(Map.Entry<String, String> e : pendingEditorSessionCalls.entrySet()) {
             jsEditorSession.call(e.getKey(), e.getValue())
         }
+        for(Map.Entry<String, String> e : pendingUndoManagerCalls.entrySet()) {
+            jsUndoManager.call(e.getKey(), e.getValue())
+        }
         pendingEditorCalls = [:]
         pendingEditorSessionCalls = [:]
+        pendingUndoManagerCalls = [:]        
+        registerUpCallEvents()
+        HandleUndoRedoButtons()
 	}
 
     public registerCopyPasteEvents() {
@@ -204,7 +228,17 @@ class TextEditor extends VBox {
         })
     }
 
+    public registerUpCallEvents() {
+        jsEditor.setMember("jsToJavaEventHandler", this)
+        engine.executeScript("editor.on('input', function() { editor.jsToJavaEventHandler.onInput(); });")
+    }
+
+    public void onInput() {
+        HandleUndoRedoButtons()
+    }
+
     private void HandleUndoRedoButtons() {
+        filesaveButton.setDisable(isClean())
     	undoButton.setDisable(!hasUndo())
         redoButton.setDisable(!hasRedo())
     }
@@ -257,12 +291,15 @@ class TextEditor extends VBox {
     }
 
     void setValue(String content) {
-        if (jsEditor != null) {
-            jsEditor.call("setValue", content)
+        // https://github.com/ajaxorg/ace/issues/1243
+        if (jsEditorSession != null) {
+            jsEditorSession.call("setValue", content)
         } else {
-            if (!pendingEditorCalls.containsKey("setValue"))
-                pendingEditorCalls.put("setValue", content)
+            if (!pendingEditorSessionCalls.containsKey("setValue"))
+                pendingEditorSessionCalls.put("setValue", content)
         }
+        undoReset()
+        markClean()
     }
 
 	// actions
@@ -277,7 +314,7 @@ class TextEditor extends VBox {
              new ExtensionFilter("JSON Files", "*.json"),
              new ExtensionFilter("All Files", "*.*"))
         fileChooser.setInitialDirectory(
-            new File(System.getProperty("user.home"))
+            new File(suggestedOpenSaveFolder)
         )
         Stage stage = (Stage)getScene().getWindow()
         File selectedFile = fileChooser.showOpenDialog(stage)
@@ -310,6 +347,21 @@ class TextEditor extends VBox {
         }
     }
 
+    void filesave() {
+        if (filePath != null) {
+            File file = filePath.toFile()
+            try {
+                file.text = getValue()
+                markClean()
+                HandleUndoRedoButtons()
+            } catch (IOException ex) {
+                println(ex.getMessage())
+            }
+        } else {
+            filesaveas()
+        }
+    }
+
     void filesaveas() {
         FileChooser fileChooser = new FileChooser()
         fileChooser.setTitle("Save Source Code as...")        
@@ -318,12 +370,18 @@ class TextEditor extends VBox {
              new ExtensionFilter("Groovy Files", "*.groovy"),
              new ExtensionFilter("XML Files", "*.xml"),
              new ExtensionFilter("JSON Files", "*.json"))
-        fileChooser.setInitialFileName("song.mirchord")
+        fileChooser.setInitialDirectory(
+            new File(suggestedOpenSaveFolder)
+        )
+        fileChooser.setInitialFileName(suggestedOpenSaveFileName)
         Stage stage = (Stage)getScene().getWindow()
         File file = fileChooser.showSaveDialog(stage)
         if (file != null) {
             try {
                 file.text = getValue()
+                filePath = file.toPath()
+                markClean()
+                HandleUndoRedoButtons()
             } catch (IOException ex) {
                 println(ex.getMessage())
             }
@@ -373,14 +431,36 @@ class TextEditor extends VBox {
     	return engine.executeScript("hasRedo()") as boolean
     }
 
+    void undoReset() {
+        if (jsUndoManager != null) {
+            // engine.executeScript("reset()")
+            jsUndoManager.call("reset", null)
+        }
+        else
+            pendingUndoManagerCalls.put("reset", null)
+    }
+
     void undo() {
-    	engine.executeScript("undo(false)")
-    	HandleUndoRedoButtons()
+        engine.executeScript("undo(false)")
+        HandleUndoRedoButtons()
     }
 
     void redo() {
-    	engine.executeScript("redo(false)")
-    	HandleUndoRedoButtons()
+        engine.executeScript("redo(false)")
+        HandleUndoRedoButtons()
     }
+
+    void markClean() {
+        if (jsUndoManager != null) {
+            //engine.executeScript("markClean()")
+            jsUndoManager.call("markClean", null)
+        }
+        else
+            pendingUndoManagerCalls.put("markClean", null)
+    }
+
+    boolean isClean() {
+        return engine.executeScript("isClean()") as boolean
+    }    
 
 }

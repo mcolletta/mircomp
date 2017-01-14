@@ -42,6 +42,8 @@
         });        
         editor.setShowPrintMargin(false);
         undoManager = editor.getSession().getUndoManager()
+        /*reset()
+        markClean()*/
     }
 
     function setValue(text) {
@@ -94,12 +96,24 @@
             undoManager.redo(dontSelect);
     }
 
+    function reset() {
+        undoManager.reset();
+    }
+
     function hasUndo() {
         return undoManager.hasUndo();
     }
 
     function hasRedo() {
         return undoManager.hasRedo();
+    }
+
+    function isClean() {
+        return undoManager.isClean();
+    }
+
+    function markClean() {
+        return undoManager.markClean();
     }
 
     function setFontSize(size) {

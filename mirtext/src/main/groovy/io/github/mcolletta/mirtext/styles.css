@@ -25,6 +25,10 @@
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/fileopen.png');
 }
+.filesave-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_save.png');
+}
 .filesaveas-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/sc_saveas.png');
