@@ -24,6 +24,8 @@
 package io.github.mcolletta.mirmidi
 
 import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths
 
 import javafx.application.Platform
 import javafx.stage.Stage
@@ -130,7 +132,11 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     @FXML private Label channelLabel
     @FXML private TextField currentZoomField
 
-	public MidiEditor() {
+    Path filePath
+    String suggestedOpenSaveFolder = System.getProperty("user.home")
+    String suggestedOpenSaveFileName = "newfile.mid"
+
+	public MidiEditor(Path path=null) {
 		loadControl()
 
         midi = new MidiView()
@@ -187,7 +193,13 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
                 draw()
             }
         })
-        
+
+        this.filePath = path
+        if (filePath != null) {
+            midi.loadMidi(filePath.toFile())
+            updateScrollBar()
+            draw()
+        }        
 	}
 
 	public loadControl() {
@@ -401,11 +413,27 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         }
     }
 
+    void filesave() {
+        if (filePath != null) {
+            File file = filePath.toFile()
+            try {
+                midi.saveAs(file)
+            } catch (IOException ex) {
+                println(ex.getMessage())
+            }
+        } else {
+            filesaveas()
+        }
+    }
+
     void filesaveas() {
         FileChooser fileChooser = new FileChooser()
         fileChooser.setTitle("Save Midi Sequence as...")        
         fileChooser.getExtensionFilters().addAll(
              new ExtensionFilter("Midi Files", "*.mid"))
+        fileChooser.setInitialDirectory(
+            new File(suggestedOpenSaveFolder)
+        )
         fileChooser.setInitialFileName("midifile.mid")
         Stage stage = (Stage)getScene().getWindow()
         File file = fileChooser.showSaveDialog(stage)

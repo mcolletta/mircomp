@@ -28,6 +28,7 @@
         <items>
             <Button fx:id="newsequenceButton"  onAction="#newsequence" styleClass="newsequence-button" text="New sequence" mnemonicParsing="false"/>
             <Button fx:id="fileopenButton"  onAction="#fileopen" styleClass="fileopen-button" text="Open..." mnemonicParsing="false"/>
+            <Button fx:id="filesaveButton"  onAction="#filesave" styleClass="filesave-button" text="Save" mnemonicParsing="false"/>
             <Button fx:id="filesaveasButton"  onAction="#filesaveas" styleClass="filesaveas-button" text="Save as..." mnemonicParsing="false"/>
             <Button fx:id="replayButton"  onAction="#replay" styleClass="replay-button" text="Cut" mnemonicParsing="false"/>
             <Button fx:id="playButton" onAction="#play" styleClass="play-button" text="Copy" mnemonicParsing="false"/>
