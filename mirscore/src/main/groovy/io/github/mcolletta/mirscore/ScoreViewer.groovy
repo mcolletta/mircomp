@@ -107,9 +107,9 @@ class ScoreViewer  extends VBox {
     final void setMode(ScoreMode value) { mode.set(value) }
     ObjectProperty<ScoreMode> modeProperty() { return mode }
 
-	public ScoreViewer() {
+	public ScoreViewer(boolean needInit=true) {
 		loadControl()
-        scoreModel = new ScoreModel()
+        scoreModel = new ScoreModel(needInit)
 
         /*scoreImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
              @Override

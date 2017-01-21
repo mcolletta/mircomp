@@ -123,9 +123,12 @@ class ScoreModel implements PlaybackListener {
     Rectangle2i viewRect = new Rectangle2i(0,0,0,0)
     boolean needScroll = false
 
-	ScoreModel(String appName = "Mircomp") {
-		JseZongPlatformUtils.init(appName);
-        SynthManager.init(false)
+	ScoreModel(boolean needInit=true) {
+        if (needInit) {
+            String appName = "MirScore"
+    		JseZongPlatformUtils.init(appName)
+            SynthManager.init(false)
+        }
 		Playback.registerListener(this)
 	}
 
