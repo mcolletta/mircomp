@@ -146,6 +146,10 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 	public MidiEditor(Path path=null) {
 		loadControl()
 
+        pianoCanvas.setFocusTraversable(true)
+        controllerCanvas.setFocusTraversable(true)
+        instrumentsCanvas.setFocusTraversable(true)
+
         midi = new MidiView()
         midi.registerListener(this)
 

@@ -114,7 +114,8 @@ class InstrumentsEditor {
 			}
 		});
 
-        canvas.addEventHandler(KeyEvent.KEY_PRESSED,
+        //canvas.addEventHandler(KeyEvent.KEY_PRESSED,
+        canvas.setOnKeyPressed(
         new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -125,6 +126,8 @@ class InstrumentsEditor {
                 }
             }
         });
+
+        canvas.addEventFilter(MouseEvent.ANY, { canvas.requestFocus() })
 
         visibleRects = [:]
 
