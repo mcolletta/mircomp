@@ -75,17 +75,49 @@
             <ComboBox fx:id="selectTrack" promptText="Select Track..." prefWidth="150"/>
             <Separator orientation="VERTICAL" />
             <Label fx:id="channelLabel"/>
-            <ComboBox fx:id="selectChannel" promptText="Select Channel..." prefWidth="180"/>
-            <Separator orientation="VERTICAL" />
-            <ComboBox fx:id="selectController" promptText="Select Controller..." prefWidth="180"/>
+            <ComboBox fx:id="selectChannel" promptText="Select Channel..." prefWidth="180"/>            
             <Separator orientation="VERTICAL" />
             <Button fx:id="tableButton" onAction="#showMidiTable" styleClass="table-button" text="MidiEvent Table" mnemonicParsing="false"/>
             <Separator orientation="VERTICAL" />
-            <Label fx:id="editccIcon" styleClass="editcc-icon" />
-            <Button fx:id="lineButton" onAction="#lineMode" styleClass="line-button" text="Line" mnemonicParsing="false"/>
-            <Button fx:id="curveButton" onAction="#curveMode" styleClass="curve-button" text="Curve" mnemonicParsing="false"/>
+            <Button fx:id="eraseButton" onAction="#erase" styleClass="eraser-button" text="Eraser" mnemonicParsing="false"/>
         </items>
-    </ToolBar>  
-    <ResizableCanvas fx:id="controllerCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+    </ToolBar>
+    <!-- Controller/Instruments -->
+    <TabPane fx:id="tabController" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" maxWidth="Infinity" maxHeight="Infinity">
+        <tabs>
+            <Tab text="Controller">
+              <content>
+                <VBox maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+                            <items>
+                                <ComboBox fx:id="selectController" promptText="Select Controller..." prefWidth="180"/>
+                                <Separator orientation="VERTICAL" />
+                                <Label fx:id="editccIcon" styleClass="editcc-icon" />
+                                <Button fx:id="lineButton" onAction="#lineMode" styleClass="line-button" text="Line" mnemonicParsing="false"/>
+                                <Button fx:id="curveButton" onAction="#curveMode" styleClass="curve-button" text="Curve" mnemonicParsing="false"/>
+                            </items>
+                        </ToolBar>
+                        <ResizableCanvas fx:id="controllerCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+                    </children>
+                </VBox>
+              </content>
+            </Tab>
+            <Tab text="Instruments">
+              <content>
+                <VBox maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+                            <items>
+                                <ComboBox fx:id="selectInstrument" promptText="Select Instrument..." prefWidth="180"/>
+                            </items>
+                        </ToolBar>
+                        <ResizableCanvas fx:id="instrumentsCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+                    </children>
+                </VBox>
+              </content>
+            </Tab>
+        </tabs>
+    </TabPane>    
     <ScrollBar fx:id="scrollBarX" orientation="HORIZONTAL" />
 </fx:root>

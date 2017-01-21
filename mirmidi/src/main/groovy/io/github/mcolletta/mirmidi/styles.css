@@ -57,6 +57,10 @@
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/color_line.png');
 }
+.eraser-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/eraser.png');
+}
 .hand-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/hand.png');

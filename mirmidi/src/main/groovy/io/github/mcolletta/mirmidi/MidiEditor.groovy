@@ -82,6 +82,8 @@ import org.controlsfx.control.CheckComboBox
 
 import javax.sound.midi.*
 
+import io.github.mcolletta.mirchord.core.Instrument
+
 import groovy.transform.CompileStatic
 import groovy.transform.Canonical
 
@@ -115,16 +117,20 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     ObservableList tracks
     ObservableList channels
     ObservableList controllers
+    ObservableList instruments
 
     PianoRollEditor pianoRollEditor
     ControllerEditor controllerEditor
+    InstrumentsEditor instrumentsEditor
 
     @FXML private ResizableCanvas pianoCanvas
     @FXML private ResizableCanvas controllerCanvas
+    @FXML private ResizableCanvas instrumentsCanvas
     @FXML private ComboBox selectNoteDuration
     @FXML private ComboBox selectTrack
     @FXML private ComboBox selectChannel
     @FXML private ComboBox selectController
+    @FXML private ComboBox selectInstrument
     @FXML private CheckComboBox selectMuteTracks
     @FXML private ScrollBar scrollBarX
     @FXML private Button undoButton
@@ -147,8 +153,10 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
         pianoRollEditor = new PianoRollEditor(midi, pianoCanvas)
         controllerEditor = new ControllerEditor(midi, controllerCanvas)
+        instrumentsEditor = new InstrumentsEditor(midi, instrumentsCanvas)
         pianoCanvas.repaint = pianoRollEditor.&repaint
         controllerCanvas.repaint = controllerEditor.&repaint
+        instrumentsCanvas.repaint = instrumentsEditor.&repaint
 
         currentZoomField.setText("" + 100)
         currentZoomField.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -265,10 +273,18 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         }        
         controllers = FXCollections.observableArrayList(controllerList)
 
+        List<MidiInstrument> instrumentList = []
+        for(Map.Entry<String,Integer> e : Instrument.GM.entrySet()) {
+            MidiInstrument instrument = new MidiInstrument([name:e.getKey(),program:e.getValue()])
+            instrumentList.add(instrument)
+        }        
+        instruments = FXCollections.observableArrayList(instrumentList)
+
         loadSelectTrack()
         loadSelectChannel()
         loadSelectController()
         loadSelectMuteTracks()
+        loadSelectInstrument()
     }
 
     private void loadSelectTrack() {
@@ -348,6 +364,20 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         })
     }
 
+    private void loadSelectInstrument() {
+        selectInstrument.setItems(instruments)
+        selectInstrument.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                if (newValue != null && oldValue != newValue) {
+                    MidiInstrument item = selectInstrument.getSelectionModel().getSelectedItem() as MidiInstrument
+                    midi.currentInstrument = item.program
+                    draw()
+                }
+            }
+        })
+    }
+
     public void onClose() {
         Stage stage = (Stage)getScene().getWindow()
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -362,11 +392,13 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     void draw() {
         pianoRollEditor.repaint()
         controllerEditor.repaint()
+        instrumentsEditor.repaint()
     }
 
     void drawPlayback() {
         pianoRollEditor.repaintPlayback()
         controllerEditor.repaintPlayback()
+        instrumentsEditor.repaint()
     }
 
     void updateScrollBar() {
@@ -485,6 +517,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
             try {
                 pianoRollEditor.playbackAtTick(tick)
                 controllerEditor.playbackAtTick(tick)
+                instrumentsEditor.playbackAtTick(tick)
                 drawPlayback()
             } catch(Exception ex) {
                 println "Exception: " + ex.getMessage()
@@ -510,14 +543,21 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
     // -------------------------------------------
 
+    void erase() {
+        println "erase"
+        instrumentsEditor.remove()
+    }
+
     void editMode() {
         pianoRollEditor.mode = PianoRollMode.EDIT
         pianoRollEditor.setCursor(Cursor.CROSSHAIR)
+        instrumentsEditor.mode = InstrumentsMode.EDIT
     }
 
     void selectMode() {
         pianoRollEditor.mode = PianoRollMode.SELECT
         pianoRollEditor.setCursor(Cursor.DEFAULT)
+        instrumentsEditor.mode = InstrumentsMode.SELECT
     }
 
     void panMode() {

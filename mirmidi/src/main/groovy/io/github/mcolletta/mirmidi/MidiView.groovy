@@ -40,12 +40,17 @@ enum ControllerEditMode {
     LINE, CURVE
 }
 
+enum InstrumentsMode {
+    EDIT, SELECT
+}
+
 @CompileStatic
 class MidiView extends MidiManager {
 
     List<Color> channelColor = []
     int currentChannel = 0
     int currentController = 7  // VOLUME
+    int currentInstrument = 0  // PIANO
 
     int NOTE_PIXEL_WIDTH = 50   // width of a note: how many pixel
     int NOTE_PIXEL_HEIGHT = 10  // height of a note: how many pixel
@@ -130,4 +135,14 @@ class MidiView extends MidiManager {
         return getCurrentScaleX() / NOTE_PIXEL_WIDTH
     }
 
+}
+
+@CompileStatic
+class MidiInstrument {
+    String name
+    int program
+
+    String toString() {
+        return name + " (GM $program)"
+    }
 }

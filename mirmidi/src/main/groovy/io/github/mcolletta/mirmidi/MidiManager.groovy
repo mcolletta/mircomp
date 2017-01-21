@@ -87,7 +87,8 @@ class MidiManager {
     ObservableList<MidiNote> notes
     SortedList<MidiNote> sortedByEndNotes
     SortedList<MidiNote> sortedByDurationNotes  // longest duration in O(1)
-    Map<Integer,Map<Integer,ObservableMap<Long,MidiCC>>> controllers
+    Map<Integer,Map<Integer,ObservableMap<Long,MidiCC>>> controllers  // [controller][channel][tick] = MidiCC
+    Map<Integer,ObservableMap<Long,MidiPC>> programs  // [channel][tick] = MidiPC
 
     long length = 0
 
@@ -178,6 +179,24 @@ class MidiManager {
                                     updateSequenceRemovedCC(change.getValueRemoved())
                                     if (currentEdit) 
                                         currentEdit.ccRemoved.add(change.getValueRemoved())
+                                }
+                            }
+                        }
+                    }
+
+    MapChangeListener<Long, MidiPC> programListener = new MapChangeListener<Long, MidiPC>() {
+                        @Override
+                        public void onChanged(MapChangeListener.Change<? extends Long, ? extends MidiPC> change) {
+                            if (!isParsing) {
+                                if (change.wasAdded()) {
+                                    updateSequenceAddedPC(change.getValueAdded())
+                                    if (currentEdit) 
+                                        currentEdit.pcInserted.add(change.getValueAdded())
+                                }
+                                if (change.wasRemoved()) {
+                                    updateSequenceRemovedPC(change.getValueRemoved())
+                                    if (currentEdit) 
+                                        currentEdit.pcRemoved.add(change.getValueRemoved())
                                 }
                             }
                         }
@@ -280,6 +299,18 @@ class MidiManager {
         }
     }
 
+    void updateSequenceAddedPC(MidiPC pc) {
+        Track t = sequence.tracks[pc.track]
+        t.add(pc.midiEvent)
+    }
+
+    void updateSequenceRemovedPC(MidiPC pc) {
+        if (pc != null) {
+            Track t = sequence.tracks[pc.track]
+            t.remove(pc.midiEvent)
+        }
+    }
+
     MidiNote createMidiNote(int channel, int track, long start, long end, int pitch, int attachVelocity, int decayVelocity=0) {
         ShortMessage msg = new ShortMessage()
         msg.setMessage(ShortMessage.NOTE_ON, channel, pitch, attachVelocity)
@@ -323,6 +354,24 @@ class MidiManager {
         this.controllers[cc.controller][cc.channel].remove(cc.tick)
     }
 
+    void addMidiPC(MidiPC pc) {
+        this.programs[pc.channel][pc.tick] = pc
+    }
+
+    void removeMidiPC(MidiPC pc) {
+        this.programs[pc.channel].remove(pc.tick)
+    }
+
+    MidiPC createMidiPC(int channel, int track, long tick, int data1) {
+        Track t = sequence.tracks[track]
+        ShortMessage msg = new ShortMessage()
+        int command = ShortMessage.PROGRAM_CHANGE
+        msg.setMessage(command, channel, data1, 0)
+        MidiEvent midiEvt = new MidiEvent(msg, tick)
+        MidiPC pc = new MidiPC(midiEvent:midiEvt, track:track)
+        return pc
+    }
+
     long getLength() {
         if (sequence != null) {
             return sequence.getTickLength()
@@ -352,6 +401,12 @@ class MidiManager {
         return idx
     }
 
+    int getStartPCIndex(long x, ObservableMap<Long, MidiPC> om) {
+        List<Long> keys = om.keySet() as List<Long>
+        int idx = Collections.binarySearch(keys, x)
+        return idx
+    }
+
     void parseEvents() {
         isParsing = true
 
@@ -370,6 +425,12 @@ class MidiManager {
             } 
         }
 
+        programs = [:].withDefault { // channel
+                ObservableMap<Long, MidiPC> map = FXCollections.observableMap( new ConcurrentSkipListMap<Long, MidiPC>() )
+                map.addListener(programListener)
+                return map
+            } 
+
         Map<Integer,Map<Integer,MidiEvent>> cache = [:].withDefault() { [:] }
         for(int idx = 0; idx < sequence.getTracks().size(); idx++) {
             Track track = sequence.getTracks()[idx]
@@ -382,11 +443,15 @@ class MidiManager {
                     int channel = message.getChannel()
                     usedChannels[channel] = true
                     switch (message.getCommand()) {
-                        case ShortMessage.CONTROL_CHANGE:       // 0xB0, 176
+                        case ShortMessage.PROGRAM_CHANGE:   // 0xC0, 192
+                            MidiPC pc = new MidiPC(midiEvent:event, track:idx)
+                            programs[pc.channel][pc.tick] = pc
+                            break
+                        case ShortMessage.CONTROL_CHANGE:   // 0xB0, 176
                             MidiCC cc = new MidiCC(midiEvent:event, track:idx)
                             controllers[cc.controller][cc.channel][cc.tick] = cc
                             break
-                        case ShortMessage.NOTE_ON:              // 0x90, 144
+                        case ShortMessage.NOTE_ON:   // 0x90, 144
                             if (message.getData2() == 0) {
                                 // A velocity of zero in a note-on event is a note-off event
                                 MidiEvent evt = cache[channel][message.getData1()]
@@ -510,6 +575,8 @@ class MidiManager {
         List<MidiNote> noteRemoved = []
         List<MidiCC> ccInserted = []
         List<MidiCC> ccRemoved = []
+        List<MidiPC> pcInserted = []
+        List<MidiPC> pcRemoved = []
 
         void undo() {
             // ORDER IS IMPORTANT: reverse respect to the action
@@ -525,6 +592,12 @@ class MidiManager {
             for(MidiCC cc : ccRemoved) {
                 addMidiCC(cc)
             }
+            for(MidiPC pc : pcInserted) {
+                removeMidiPC(pc)
+            }
+            for(MidiPC pc : pcRemoved) {
+                addMidiPC(pc)
+            }
         }
 
         void redo() {
@@ -539,6 +612,12 @@ class MidiManager {
             }
             for(MidiCC cc : ccInserted) {
                 addMidiCC(cc)
+            }
+            for(MidiPC pc : pcRemoved) {
+                removeMidiPC(pc)
+            }
+            for(MidiPC pc : pcInserted) {
+                addMidiPC(pc)
             }
         }
     }
@@ -650,7 +729,6 @@ class MidiData {
 
 class MidiCC extends MidiData {
 
-
     int getController() {
         ShortMessage message = midiEvent.getMessage() as ShortMessage
         int data1 = message.getData1()
@@ -664,7 +742,21 @@ class MidiCC extends MidiData {
     }
 
     String toString() {
-        return "CC#" + getController() + "=" + getValue() + "[" + getTick() + "]"
+        return "CC#" + getController() + "=" + getValue() + "[" + getTick() + "] channel=" + getChannel()
+    }
+
+}
+
+class MidiPC extends MidiData {
+
+    int getInstrument() {
+        ShortMessage message = midiEvent.getMessage() as ShortMessage
+        int data1 = message.getData1()
+        return data1
+    }
+
+    String toString() {
+        return "Program=" + getInstrument() + "[" + getTick() + "] channel=" + getChannel()
     }
 
 }
