@@ -82,7 +82,7 @@ class MidiManager {
     final void setResolution(int value) { resolution.set(value) }
     IntegerProperty resolutionProperty() { return resolution }
 
-    Map<Integer,Boolean> usedChannels = [:].withDefault() { false }
+    Map<Integer,Integer> usedChannels = [:].withDefault() { 0 }
     
     ObservableList<MidiNote> notes
     SortedList<MidiNote> sortedByEndNotes
@@ -279,35 +279,41 @@ class MidiManager {
         Track t = sequence.tracks[note.track]
         t.add(note.startEvent)
         t.add(note.endEvent)
+        usedChannels[note.getChannel()] += 1
     }
 
     void updateSequenceRemovedNote(MidiNote note) {
         Track t = sequence.tracks[note.track]
         t.remove(note.startEvent)
         t.remove(note.endEvent)
+        usedChannels[note.getChannel()] -= 1
     }
 
     void updateSequenceAddedCC(MidiCC cc) {
         Track t = sequence.tracks[cc.track]
         t.add(cc.midiEvent)
+        usedChannels[cc.getChannel()] += 1
     }
 
     void updateSequenceRemovedCC(MidiCC cc) {
         if (cc != null) {
             Track t = sequence.tracks[cc.track]
             t.remove(cc.midiEvent)
+            usedChannels[cc.getChannel()] -= 1
         }
     }
 
     void updateSequenceAddedPC(MidiPC pc) {
         Track t = sequence.tracks[pc.track]
         t.add(pc.midiEvent)
+        usedChannels[pc.getChannel()] += 1
     }
 
     void updateSequenceRemovedPC(MidiPC pc) {
         if (pc != null) {
             Track t = sequence.tracks[pc.track]
             t.remove(pc.midiEvent)
+            usedChannels[pc.getChannel()] -= 1
         }
     }
 
@@ -441,7 +447,7 @@ class MidiManager {
                 if (event.getMessage() instanceof ShortMessage) {
                     ShortMessage message = event.getMessage() as ShortMessage
                     int channel = message.getChannel()
-                    usedChannels[channel] = true
+                    usedChannels[channel] += 1
                     switch (message.getCommand()) {
                         case ShortMessage.PROGRAM_CHANGE:   // 0xC0, 192
                             MidiPC pc = new MidiPC(midiEvent:event, track:idx)

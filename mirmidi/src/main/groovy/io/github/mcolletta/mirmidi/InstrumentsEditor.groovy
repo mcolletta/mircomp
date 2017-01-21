@@ -148,15 +148,16 @@ class InstrumentsEditor {
         double rectHeight = h / 16
         int fontSize = (int) (rectHeight * 0.75)
 
-        g.setFill(Color.BLACK)
+        g.setFill(Color.web("272822"))
 
         for (int channel=0; channel<16; channel++) {
-            if (midi.usedChannels[channel]) {
+            if (midi.usedChannels[channel] > 0) {
                 Color color =  midi.channelColor[channel]
                 g.setFill(color)
                 double lw = g.getLineWidth()
                 double screenY = (channel * rectHeight)
                 double default_instr_duration = canvas.getWidth()
+                g.setStroke(Color.color(color.red, color.green, color.blue))
                 g.strokeRect(midi.toX(left), screenY+lw, default_instr_duration, rectHeight-lw)
                 g.setFill(Color.WHITE)              
                 g.setFont(Font.font("Verdana", fontSize))
@@ -194,6 +195,9 @@ class InstrumentsEditor {
                     duration = canvas.getWidth()-screenX
                     endLineX = canvas.getWidth()
                 }
+                // clear
+                g.setFill(Color.web("272822"))
+                g.fillRect(screenX, screenY, duration, rectHeight)
                 //g.setLineWidth(1.0) // default
                 double lw = g.getLineWidth()
                 if (pc != selectedItem) {                    
