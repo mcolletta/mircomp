@@ -37,6 +37,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -91,8 +92,40 @@ class MidiManager {
     long length = 0
 
     MidiEdit currentEdit
-    int editIndex = -1
     List<MidiEdit> editHistory = []
+
+    int savedEditHistoryHashCode
+    BooleanProperty clean = new SimpleBooleanProperty(true)
+    final boolean isClean() { return clean.get() }
+    final void setClean(boolean value) { clean.set(value) }
+    BooleanProperty cleanProperty() { return clean }
+
+    void markClean() {
+        savedEditHistoryHashCode = editHistory[0..getEditIndex()].hashCode()
+        //println savedEditHistoryHashCode
+        setClean(true)
+    }
+
+    void checkCleanState() {
+        int hashc = 0
+        int idx = getEditIndex()
+        if (idx >= 0)
+            hashc =  editHistory[0..idx].hashCode()
+        /*println "editIndex " + getEditIndex() + " savedEditHistoryHashCode " + savedEditHistoryHashCode
+        println "editHistory[0..idx].hashCode() " + editHistory[0..idx].hashCode()*/
+        if (savedEditHistoryHashCode == hashc)
+            setClean(true)
+        else
+            setClean(false)
+    }
+
+    IntegerProperty editIndex = new SimpleIntegerProperty(-1)
+    final int getEditIndex() { return editIndex.get() }
+    final void setEditIndex(int value) { 
+        editIndex.set(value)
+        checkCleanState()
+    }
+    IntegerProperty editIndexProperty() { return editIndex }
 
     boolean isParsing
 
@@ -511,36 +544,36 @@ class MidiManager {
     }
 
     void undo() {
-        if (editHistory.size() > 0 && editIndex > -1) {
-            editHistory[editIndex].undo()
-            editIndex -= 1
+        if (editHistory.size() > 0 && getEditIndex() > -1) {
+            editHistory[getEditIndex()].undo()
+            setEditIndex(getEditIndex() - 1)
         }
     }
 
     boolean hasUndo() {
-        return (editHistory.size() > 0 && editIndex > -1)
+        return (editHistory.size() > 0 && getEditIndex() > -1)
     }
 
     void redo() {
-        if (editIndex < editHistory.size()-1) {
-            editIndex += 1
-            editHistory[editIndex].redo()
+        if (getEditIndex() < editHistory.size()-1) {
+            setEditIndex(getEditIndex() + 1)
+            editHistory[getEditIndex()].redo()
         }
     }
 
     boolean hasRedo() {
-        return (editHistory.size() > 0 && editIndex < (editHistory.size()-1))
+        return (editHistory.size() > 0 && getEditIndex() < (editHistory.size()-1))
     }
 
     void startEdit() {
         currentEdit = new MidiEdit()
-        if (editHistory.size() > 0 && editIndex < (editHistory.size()-1))
-            editHistory = editHistory - editHistory[editIndex+1..editHistory.size()-1]
+        if (editHistory.size() > 0 && getEditIndex() < (editHistory.size()-1))
+            editHistory = editHistory - editHistory[getEditIndex()+1..editHistory.size()-1]
     }
 
     void stopEdit() {
         editHistory.add(currentEdit)
-        editIndex += 1
+        setEditIndex(getEditIndex() + 1)
         currentEdit = null
     }
 }

@@ -129,6 +129,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     @FXML private ScrollBar scrollBarX
     @FXML private Button undoButton
     @FXML private Button redoButton
+    @FXML private Button filesaveButton
     @FXML private Label channelLabel
     @FXML private TextField currentZoomField
 
@@ -194,6 +195,8 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
             }
         })
 
+        filesaveButton.disableProperty().bind(midi.cleanProperty())
+
         this.filePath = path
         if (filePath != null) {
             midi.loadMidi(filePath.toFile())
@@ -213,6 +216,15 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         } catch (IOException exception) {
             throw new RuntimeException(exception)
         }
+    }
+
+    void setSynthesizer(Synthesizer synthesizer) {
+        if (midi != null)
+            midi.setSynthesizer(synthesizer)
+    }
+
+    boolean isClean() {
+        return midi.isClean()
     }
 
     static class ColorRectCell extends ListCell<ChannelItem> {
@@ -418,6 +430,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
             File file = filePath.toFile()
             try {
                 midi.saveAs(file)
+                midi.markClean()
             } catch (IOException ex) {
                 println(ex.getMessage())
             }
@@ -440,6 +453,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         if (file != null) {
             try {
                 midi.saveAs(file)
+                midi.markClean()
             } catch (IOException ex) {
                 println(ex.getMessage())
             }
