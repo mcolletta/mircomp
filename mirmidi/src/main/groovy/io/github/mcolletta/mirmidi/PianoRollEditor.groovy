@@ -308,13 +308,10 @@ class PianoRollEditor {
                         }
                         else {
                             g.strokeRect(start, y, duration, note_height)
-                            /*DropShadow dropShadow = new DropShadow()
-                            dropShadow.setInput(new Lighting())*/
                             InnerShadow rectfx = new InnerShadow()
                             rectfx.setOffsetX(4)
                             rectfx.setOffsetY(4)
                             rectfx.setColor(Color.ANTIQUEWHITE)
-                            //rectfx.setColor(Color.web("272822"))
                             rectfx.setInput(new Bloom())
                             g.setEffect(rectfx)
                             g.fillRect(start, y, duration, note_height)

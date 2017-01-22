@@ -143,14 +143,14 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     String suggestedOpenSaveFolder = System.getProperty("user.home")
     String suggestedOpenSaveFileName = "newfile.mid"
 
-	public MidiEditor(Path path=null) {
+	public MidiEditor(Path path=null, Synthesizer synth=null) {
 		loadControl()
 
         pianoCanvas.setFocusTraversable(true)
         controllerCanvas.setFocusTraversable(true)
         instrumentsCanvas.setFocusTraversable(true)
 
-        midi = new MidiView()
+        midi = new MidiView(path,synth)
         midi.registerListener(this)
 
         initComboBoxes()
@@ -211,7 +211,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
         this.filePath = path
         if (filePath != null) {
-            midi.loadMidi(filePath.toFile())
+            //midi.loadMidi(filePath.toFile())
             updateScrollBar()
             draw()
         }        
@@ -456,6 +456,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         File selectedFile = fileChooser.showOpenDialog(stage)
         if (selectedFile != null) {
             midi.loadMidi(selectedFile)
+            filePath = selectedFile.toPath()
             updateScrollBar()
             draw()
         }

@@ -203,8 +203,8 @@ class MidiManager {
                     }
 
 
-    MidiManager(){
-        initMidi()
+    MidiManager(Synthesizer synth=null){
+        initMidi(synth)
         loadSequence()
         // ctype: 0 curve, 1 on/off
         controllersInfo[7] = new MidiControllerInfo(info:"COARSE VOLUME", value:7, ctype: 0)
@@ -212,29 +212,34 @@ class MidiManager {
     }
 
     // TODO get synthesizer from outside
-    void initMidi() {
+    void initMidi(Synthesizer synth=null) {
         try {
-            sequencer =  MidiSystem.getSequencer()
+            sequencer =  MidiSystem.getSequencer(false)
             if (sequencer == null) {
                 println("Sequencer not found from MidiSystem")
                 System.exit(0)
-            }
-            sequencer.open()
-            if (!(sequencer instanceof Synthesizer)) {
+            }            
+            if (synth == null)
                 synthesizer = MidiSystem.getSynthesizer()
-                synthesizer.open()
-                Receiver synthReceiver = synthesizer.getReceiver()
-                Transmitter seqTransmitter = sequencer.getTransmitter()
-                seqTransmitter.setReceiver(synthReceiver)
-            } else {
-                synthesizer = (Synthesizer)sequencer
-            }
+            else
+                synthesizer = synth
+            sequencer.open()
+            if (!synthesizer.isOpen())
+                synthesizer.open()            
+            Receiver synthReceiver = synthesizer.getReceiver()
+            Transmitter seqTransmitter = sequencer.getTransmitter()
+            seqTransmitter.setReceiver(synthReceiver)
+            
         } catch(MidiUnavailableException e) {
             println("No sequencer available")
             System.exit(0)
         } catch(Exception e) {
             e.printStackTrace()
         }
+    }
+
+    void setSynthesizer(Synthesizer synth) {
+        initMidi(synth)
     }
 
     void loadMidi(String path) {

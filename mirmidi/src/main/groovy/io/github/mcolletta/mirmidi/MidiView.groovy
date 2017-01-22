@@ -23,6 +23,9 @@
 
 package io.github.mcolletta.mirmidi
 
+import javax.sound.midi.Synthesizer
+import java.nio.file.Path
+
 import javafx.beans.property.IntegerProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.LongProperty
@@ -64,10 +67,10 @@ class MidiView extends MidiManager {
     long lengthX = 0L
     int lengthY = 127
 
-    MidiView(String path=null) {
-        super()
+    MidiView(Path path=null, Synthesizer synth=null) {
+        super(synth)
         if (path != null) {
-            loadMidi(path)
+            loadMidi(path.toFile())
         }
         List<String> hexColors = ["#f92672", "#66d9ef", "#a6e22e", "#ae81ff", 
                                   "#ffee80", "#ff628c", "#80ffbb", "#ff80e1", 
