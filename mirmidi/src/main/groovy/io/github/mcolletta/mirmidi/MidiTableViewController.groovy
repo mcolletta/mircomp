@@ -111,6 +111,9 @@ class MidiTableViewController {
                     item.setData1((int)message.getData1())
                     item.setData2((int)message.getData2())
                     switch (message.getCommand()) {
+                        case ShortMessage.PROGRAM_CHANGE:   // 0xC0, 192
+                            item.setCommand("PROGRAM_CHANGE")
+                            break
                         case ShortMessage.CONTROL_CHANGE:       // 0xB0, 176
                             item.setCommand("CONTROL_CHANGE")
                             break

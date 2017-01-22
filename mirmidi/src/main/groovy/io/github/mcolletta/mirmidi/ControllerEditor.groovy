@@ -32,6 +32,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import javafx.event.EventHandler
+import javafx.scene.input.KeyEvent
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCombination
+import javafx.scene.input.KeyCodeCombination
 
 import javafx.geometry.Point2D;
 
@@ -115,6 +119,24 @@ class ControllerEditor {
 				mouseMoved(e)
 			}
 		});
+
+        final KeyCombination keyCtrZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN)
+        final KeyCombination keyCtrY = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN)
+        canvas.setOnKeyPressed(
+        new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyCtrZ.match(keyEvent)) {
+                    midi.undo()
+                    repaint()
+                } else if (keyCtrY.match(keyEvent)) {
+                    midi.redo()
+                    repaint()
+                }
+            }
+        });
+
+        canvas.addEventFilter(MouseEvent.ANY, { canvas.requestFocus() })
 
 		repaint()
     }

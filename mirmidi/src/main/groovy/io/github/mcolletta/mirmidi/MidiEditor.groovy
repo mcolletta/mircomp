@@ -549,7 +549,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
     void erase() {
         println "erase"
-        instrumentsEditor.remove()
+        instrumentsEditor.delete()
     }
 
     void editMode() {

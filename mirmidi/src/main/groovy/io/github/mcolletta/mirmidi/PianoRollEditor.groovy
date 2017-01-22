@@ -38,7 +38,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.Cursor;
 
+import javafx.scene.effect.*
+
 import javafx.event.EventHandler
+import javafx.scene.input.KeyEvent
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCombination
+import javafx.scene.input.KeyCodeCombination
+
 import javafx.application.Platform
 
 import javafx.collections.ListChangeListener;
@@ -140,7 +147,26 @@ class PianoRollEditor {
                 mouseWheelMoved(e)
             }
         });
-        
+
+        final KeyCombination keyCtrZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN)
+        final KeyCombination keyCtrY = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN)
+        canvas.setOnKeyPressed(
+        new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.DELETE) {
+                    delete()
+                } else if (keyCtrZ.match(keyEvent)) {
+                    midi.undo()
+                    repaint()
+                } else if (keyCtrY.match(keyEvent)) {
+                    midi.redo()
+                    repaint()
+                }
+            }
+        });
+
+        canvas.addEventFilter(MouseEvent.ANY, { canvas.requestFocus() })
 
         visibleRects = [:]
         selectedNotes = []
@@ -280,8 +306,20 @@ class PianoRollEditor {
                             double draggedY = midi.toY(note.pitch + movedY)
                             g.strokeRect(draggedStart, draggedY, draggedDuration, note_height)
                         }
-                        else
+                        else {
                             g.strokeRect(start, y, duration, note_height)
+                            /*DropShadow dropShadow = new DropShadow()
+                            dropShadow.setInput(new Lighting())*/
+                            InnerShadow rectfx = new InnerShadow()
+                            rectfx.setOffsetX(4)
+                            rectfx.setOffsetY(4)
+                            rectfx.setColor(Color.ANTIQUEWHITE)
+                            //rectfx.setColor(Color.web("272822"))
+                            rectfx.setInput(new Bloom())
+                            g.setEffect(rectfx)
+                            g.fillRect(start, y, duration, note_height)
+                            g.setEffect(null)
+                        }
                     }
 
                     visibleRects[note] = noteShape

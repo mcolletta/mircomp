@@ -40,6 +40,8 @@ import javafx.scene.text.Text;
 import javafx.event.EventHandler
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCombination
+import javafx.scene.input.KeyCodeCombination
 
 import javafx.geometry.Point2D;
 
@@ -114,15 +116,20 @@ class InstrumentsEditor {
 			}
 		});
 
-        //canvas.addEventHandler(KeyEvent.KEY_PRESSED,
+        final KeyCombination keyCtrZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN)
+        final KeyCombination keyCtrY = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN)
         canvas.setOnKeyPressed(
         new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                println "key pressed"                
                 if (keyEvent.getCode() == KeyCode.DELETE) {
-                    println "deleting"
-                    remove()
+                    delete()
+                } else if (keyCtrZ.match(keyEvent)) {
+                    midi.undo()
+                    repaint()
+                } else if (keyCtrY.match(keyEvent)) {
+                    midi.redo()
+                    repaint()
                 }
             }
         });
@@ -255,11 +262,14 @@ class InstrumentsEditor {
         }
     }
 
-    void remove() {
+    void delete() {
         if (selectedItem != null) {
             int channel = selectedItem.getChannel()
             ObservableMap<Long, MidiPC> data = midi.programs[channel]
+            midi.startEdit()
             data.remove(selectedItem.getTick())
+            midi.stopEdit()
+            selectedItem = null
             repaint()
         }
     }
