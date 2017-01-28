@@ -52,6 +52,9 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
 import javafx.scene.input.KeyEvent
+import javafx.scene.input.Dragboard
+import javafx.scene.input.DragEvent
+import javafx.scene.input.TransferMode
 
 import javafx.beans.value.ChangeListener
 
@@ -59,7 +62,6 @@ import javafx.scene.control.ComboBox
 import javafx.beans.value.ObservableValue
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
-
 
 import javafx.scene.layout.VBox
 
@@ -213,6 +215,35 @@ class TextEditor extends VBox {
         pendingUndoManagerCalls = [:]        
         registerUpCallEvents()
         HandleUndoRedoButtons()
+
+        // Manage drop from dragging file
+        editor.setOnDragOver(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event)
+            {
+                Dragboard dragboard = event.getDragboard()
+                if (dragboard.hasFiles()) {
+                    event.acceptTransferModes(TransferMode.COPY)
+                }
+                event.consume()
+            }
+        })
+        editor.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event)
+            {
+                Dragboard dragboard = event.getDragboard()
+                boolean success = false
+                if (dragboard.hasFiles()) {
+                    File file = dragboard.getFiles()[0]
+                    String txt = file.getText()
+                    setValue(txt)
+                    success = true
+                }
+                event.setDropCompleted(success)
+                event.consume()
+            }
+        })
 	}
 
     public registerCopyPasteEvents() {
