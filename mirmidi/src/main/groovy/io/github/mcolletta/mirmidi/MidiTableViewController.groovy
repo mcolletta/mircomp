@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleLongProperty
 
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import javafx.collections.transformation.SortedList
 
 import javax.sound.midi.*
 
@@ -86,6 +87,8 @@ class MidiTableViewController {
 
 	@FXML private TableView<MidiEventItem> tableView
 	ObservableList<MidiEventItem> events
+    SortedList<MidiEventItem> sortedEvents
+    Comparator sortByTickComparator = { MidiEventItem left, MidiEventItem right -> return (int)(left.getTick() - right.getTick())} as Comparator
 
 	MidiTableViewController() {}
 
@@ -101,7 +104,7 @@ class MidiTableViewController {
             	MidiEventItem item = new MidiEventItem()
                 MidiEvent event = track.get(i)
                 long tick = event.getTick()
-                item.setTrack(i)
+                item.setTrack(idx)
                 item.setTick(tick)
                 
                 if (event.getMessage() instanceof ShortMessage) {
@@ -132,7 +135,9 @@ class MidiTableViewController {
                 	events.add(item)
             }
         }
-        tableView.setItems(events)
+        sortedEvents = new SortedList<>(events)
+        sortedEvents.comparatorProperty().set(sortByTickComparator)
+        tableView.setItems(sortedEvents)
 	}
 
 }

@@ -48,6 +48,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
+import javafx.scene.Cursor;
+
 import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
 
@@ -58,8 +60,6 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class InstrumentsEditor {
 
-    InstrumentsMode mode = InstrumentsMode.EDIT
-
     MidiPC selectedItem
     Map<MidiPC,Rectangle> visibleRects
 
@@ -67,7 +67,8 @@ class InstrumentsEditor {
     ResizableCanvas canvas
     GraphicsContext g
     GraphicsContext gl
-	
+
+    Cursor cursor	
 
     InstrumentsEditor(MidiView midi, ResizableCanvas canvas) {
         this.midi = midi
@@ -75,6 +76,8 @@ class InstrumentsEditor {
 
         this.g = canvas.getGraphicsContext2D()
         this.gl = canvas.getLayerGraphicsContext2D()
+
+        canvas.setFocusTraversable(true)
 
 		canvas.addEventHandler(MouseEvent.MOUSE_CLICKED,
 		new EventHandler<MouseEvent>() {
@@ -141,12 +144,18 @@ class InstrumentsEditor {
 		repaint()
     }
 
+    void setCursor(Cursor c) {
+        this.cursor = c 
+        repaint()
+    }
+
     private void reset() {
         g.setFill(Color.web("272822"))
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight())
 	}
 
     protected void repaint() {
+        canvas.setCursor(cursor)
         reset()
 
         int resolution = midi.getResolution()
@@ -275,19 +284,26 @@ class InstrumentsEditor {
     }
 
     void mouseClicked(MouseEvent event) {
-    	long x = midi.fromX(event.getX())
-    	double h = canvas.getHeight()
-        double rectHeight = h / 16
-    	int channel = (int) (event.getY() / rectHeight)
-    	int currentProgram = midi.currentInstrument
-        if (mode == InstrumentsMode.EDIT) {
-            midi.startEdit()
-            edit(channel, x, currentProgram)
-            midi.stopEdit()
+        if (midi.mode == Mode.SET_PLAYBACK_POSITION) {
+            midi.setPlaybackPosition(midi.fromX(event.getX()))
+            midi.sequencer.setTickPosition(midi.getPlaybackPosition())
             repaint()
-        } else if (mode == InstrumentsMode.SELECT) {
-            select(event.getX(),event.getY())
-            repaint()
+        }
+        if (midi.mode == Mode.EDIT || midi.mode == Mode.SELECT) {
+        	long x = midi.fromX(event.getX())
+        	double h = canvas.getHeight()
+            double rectHeight = h / 16
+        	int channel = (int) (event.getY() / rectHeight)
+        	int currentProgram = midi.currentInstrument
+            if (midi.mode == Mode.EDIT) {
+                midi.startEdit()
+                edit(channel, x, currentProgram)
+                midi.stopEdit()
+                repaint()
+            } else if (midi.mode == Mode.SELECT) {
+                select(event.getX(),event.getY())
+                repaint()
+            }
         }
     }
 

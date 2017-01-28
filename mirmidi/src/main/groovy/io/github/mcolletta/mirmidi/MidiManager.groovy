@@ -207,8 +207,16 @@ class MidiManager {
         initMidi(synth)
         loadSequence()
         // ctype: 0 curve, 1 on/off
+        controllersInfo[1] = new MidiControllerInfo(info:"MODULATION", value:1, ctype: 0)
         controllersInfo[7] = new MidiControllerInfo(info:"COARSE VOLUME", value:7, ctype: 0)
+        controllersInfo[8] = new MidiControllerInfo(info:"BALANCE", value:8, ctype: 0)
+        controllersInfo[10] = new MidiControllerInfo(info:"PAN", value:10, ctype: 0)
+        controllersInfo[11] = new MidiControllerInfo(info:"EXPRESSION", value:11, ctype: 0)
         controllersInfo[64] = new MidiControllerInfo(info:"SUSTAIN", value:64, ctype: 1)
+        controllersInfo[65] = new MidiControllerInfo(info:"PORTAMENTO", value:65, ctype: 1)
+        controllersInfo[66] = new MidiControllerInfo(info:"SOSTENUTO", value:66, ctype: 1)
+        controllersInfo[67] = new MidiControllerInfo(info:"SOFT PEDAL", value:67, ctype: 1)
+        controllersInfo[68] = new MidiControllerInfo(info:"LEGATO", value:68, ctype: 1)
     }
 
     // TODO get synthesizer from outside
@@ -420,6 +428,8 @@ class MidiManager {
 
     void parseEvents() {
         isParsing = true
+
+        usedChannels = [:].withDefault() { 0 }
 
         notes = FXCollections.observableArrayList()
         notes.addListener(noteListener)

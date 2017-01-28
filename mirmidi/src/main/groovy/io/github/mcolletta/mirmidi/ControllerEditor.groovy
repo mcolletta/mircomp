@@ -30,6 +30,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import javafx.event.EventHandler
 import javafx.scene.input.KeyEvent
@@ -41,6 +42,8 @@ import javafx.geometry.Point2D;
 
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+
+import javafx.scene.Cursor;
 
 import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
@@ -62,11 +65,14 @@ class ControllerEditor {
 
     ControllerEditMode pencilMode = ControllerEditMode.LINE
 
+    Rectangle selection
+
     MidiView midi
     ResizableCanvas canvas
     GraphicsContext g
     GraphicsContext gl
-	
+
+    Cursor cursor	
 
     ControllerEditor(MidiView midi, ResizableCanvas canvas) {
         this.midi = midi
@@ -74,6 +80,8 @@ class ControllerEditor {
 
         this.g = canvas.getGraphicsContext2D()
         this.gl = canvas.getLayerGraphicsContext2D()
+
+        canvas.setFocusTraversable(true)
 
 		canvas.addEventHandler(MouseEvent.MOUSE_CLICKED,
 		new EventHandler<MouseEvent>() {
@@ -126,7 +134,9 @@ class ControllerEditor {
         new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if (keyCtrZ.match(keyEvent)) {
+                if (keyEvent.getCode() == KeyCode.DELETE) {
+                    delete()
+                } else if (keyCtrZ.match(keyEvent)) {
                     midi.undo()
                     repaint()
                 } else if (keyCtrY.match(keyEvent)) {
@@ -141,6 +151,11 @@ class ControllerEditor {
 		repaint()
     }
 
+    void setCursor(Cursor c) {
+        this.cursor = c 
+        repaint()
+    }
+
     private void reset() {
 		// g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight())
         // monokai bg
@@ -149,6 +164,7 @@ class ControllerEditor {
 	}
 
     protected void repaint() {
+        canvas.setCursor(cursor)
         reset()
 
         int resolution = midi.getResolution()
@@ -192,6 +208,13 @@ class ControllerEditor {
             g.closePath()
         }
 
+        long startX = -1
+        long endX = -1
+        if (selection != null) {
+            startX = midi.fromX(selection.getX())
+            endX = midi.fromX(selection.getX() + selection.getWidth())
+        }
+
         for(Map.Entry<Integer,ObservableMap<Long, MidiCC>> e : midi.controllers[midi.currentController].entrySet()) {
             int channel = e.getKey()
             ObservableMap<Long, MidiCC> data = e.getValue()
@@ -228,7 +251,12 @@ class ControllerEditor {
                 g.setStroke(Color.color(color.red, color.green, color.blue))
                 g.strokeLine(screenX, rectHeight, endLineX, rectHeight)
                 if (channel == midi.currentChannel) {
-                    g.setFill(new Color(color.red, color.green, color.blue, 0.5))
+                    boolean selected = (startX > 0 && endX > 0) && (key >= startX && key <= endX)
+                    if (selected) {
+                        g.setFill(new Color(color.red, color.green, color.blue, 0.9))
+                    } else {
+                        g.setFill(new Color(color.red, color.green, color.blue, 0.5))                        
+                    }
                     g.fillRect(screenX, rectHeight, duration, h-rectHeight)
                 }
             }            
@@ -357,17 +385,45 @@ class ControllerEditor {
         data[endX] = midi.createMidiCC(midi.currentChannel, track, endX, midi.currentController, endVal) 
     }
 
+    void select() {
+        selection = new Rectangle( Math.min(clickX,dragClickX), Math.min(clickY,dragClickY),
+                                   Math.abs(dragClickX - clickX), Math.abs(dragClickY - clickY) )
+    }
+
+    void delete() {
+        if (selection != null) {
+            long startX = midi.fromX(selection.getX())
+            long endX = midi.fromX(selection.getX() + selection.getWidth())
+            ObservableMap<Long, MidiCC> data = midi.controllers[midi.currentController][midi.currentChannel]
+            Set<Long> keys = data.keySet()
+            midi.startEdit()
+            keys.each { key ->
+                if (key >= startX && key <= endX)
+                    data.remove(key)
+            }
+            midi.stopEdit()
+            selection = null
+            repaint()
+        }
+    }
 
     void mouseClicked(MouseEvent event) {
-        if (pencilMode == ControllerEditMode.CURVE) {
-            endCurveX = event.getX()
-            endCurveY = event.getY()
-            isEditingCurve = false
-
-            midi.startEdit()
-            editCurve()
-            midi.stopEdit()
+        if (midi.mode == Mode.SET_PLAYBACK_POSITION) {
+            midi.setPlaybackPosition(midi.fromX(event.getX()))
+            midi.sequencer.setTickPosition(midi.getPlaybackPosition())
             repaint()
+        }
+        if (midi.mode == Mode.EDIT) {
+            if (pencilMode == ControllerEditMode.CURVE) {
+                endCurveX = event.getX()
+                endCurveY = event.getY()
+                isEditingCurve = false
+
+                midi.startEdit()
+                editCurve()
+                midi.stopEdit()
+                repaint()
+            }
         }
     }
 
@@ -394,22 +450,27 @@ class ControllerEditor {
         int startY = (int)( 128 * (h - clickY) / h )
         int endY = (int)( 128 * (h - event.getY()) / h )
 
-        if (midi.controllersInfo[midi.currentController].ctype == 0) {
-            if (pencilMode == ControllerEditMode.LINE) {
+        if (midi.mode == Mode.SELECT) {
+            select()
+            repaint()
+        } else if (midi.mode == Mode.EDIT) {
+            if (midi.controllersInfo[midi.currentController].ctype == 0) {
+                if (pencilMode == ControllerEditMode.LINE) {
+                    midi.startEdit()
+                    editLine(startX, endX, startY, endY, h)
+                    midi.stopEdit()
+                    repaint()
+                } else {
+                    isEditingCurve = true
+                    endCurveX = event.getX()
+                    endCurveY = event.getY()
+                }
+            } else {
                 midi.startEdit()
-                editLine(startX, endX, startY, endY, h)
+                editHorizontalLine(startX, endX, startY, endY)
                 midi.stopEdit()
                 repaint()
-            } else {
-                isEditingCurve = true
-                endCurveX = event.getX()
-                endCurveY = event.getY()
             }
-        } else {
-            midi.startEdit()
-            editHorizontalLine(startX, endX, startY, endY)
-            midi.stopEdit()
-            repaint()
         }
     }
 

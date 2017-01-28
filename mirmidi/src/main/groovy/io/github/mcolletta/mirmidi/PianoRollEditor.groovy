@@ -92,8 +92,6 @@ class PianoRollEditor {
     GraphicsContext g
     GraphicsContext gl
 
-    PianoRollMode mode
-
     Map<Integer, String> pitchNameMap = [:]
 
     void setCursor(Cursor c) {
@@ -107,6 +105,8 @@ class PianoRollEditor {
         this.gl = canvas.getLayerGraphicsContext2D()
 
         this.midi = midi
+
+        canvas.setFocusTraversable(true)
 
         canvas.addEventHandler(MouseEvent.MOUSE_CLICKED,
 		new EventHandler<MouseEvent>() {
@@ -171,7 +171,7 @@ class PianoRollEditor {
         visibleRects = [:]
         selectedNotes = []
 
-        mode = PianoRollMode.PANNING
+        midi.mode = Mode.PANNING
 
         // build name map
         for(int pitch=0; pitch < 127; pitch++) {
@@ -428,12 +428,12 @@ class PianoRollEditor {
     }
 
     void mouseClicked(MouseEvent e) { 
-        if (mode == PianoRollMode.SET_PLAYBACK_POSITION) {
+        if (midi.mode == Mode.SET_PLAYBACK_POSITION) {
             midi.setPlaybackPosition(midi.fromX(e.getX()))
             midi.sequencer.setTickPosition(midi.getPlaybackPosition())
             repaint()
         }
-        if (mode == PianoRollMode.EDIT) {
+        if (midi.mode == Mode.EDIT) {
             int velocity = 90
             long posX = midi.fromX(e.getX())
             int posY = midi.fromY(e.getY())
@@ -450,7 +450,7 @@ class PianoRollEditor {
                 repaint()
             }
         }
-        if (mode == PianoRollMode.SELECT) {
+        if (midi.mode == Mode.SELECT) {
             long posX = midi.fromX(e.getX())
             int posY = midi.fromY(e.getY())
             pickNote(posX, posY)
@@ -459,7 +459,7 @@ class PianoRollEditor {
     }
 
     void mousePressed(MouseEvent e) {
-        if (mode == PianoRollMode.EDIT) {
+        if (midi.mode == Mode.EDIT) {
             long posX = midi.fromX(e.getX())
             int posY = midi.fromY(e.getY())
             MidiNote note = pickNote(posX, posY)
@@ -481,19 +481,19 @@ class PianoRollEditor {
                 }
             }
         }
-        if (mode == PianoRollMode.SELECT) {
+        if (midi.mode == Mode.SELECT) {
             anchor = new Point2D(e.getX(), e.getY())
             selection = new Rectangle(anchor.getX(), anchor.getY(), 0.0D, 0.0D) // (double x, double y, double width, double height)
             selectedNotes = []
         }
-        if (mode == PianoRollMode.PANNING) {
+        if (midi.mode == Mode.PANNING) {
             clickX = e.getX()
             clickY = e.getY()
         }
     }
 
     void mouseDragged(MouseEvent e) {
-        if (mode == PianoRollMode.EDIT) {
+        if (midi.mode == Mode.EDIT) {
             if (resizingE || resizingW) {
                 dragClickX = e.getX()
                 resize = midi.fromX(dragClickX) - midi.fromX(clickX)
@@ -504,11 +504,11 @@ class PianoRollEditor {
                 movedY = midi.fromY(dragClickY) - midi.fromY(clickY)
             }
         }
-        if (mode == PianoRollMode.SELECT) {
+        if (midi.mode == Mode.SELECT) {
             selection = new Rectangle( Math.min(anchor.getX(),e.getX()), Math.min(anchor.getY(),e.getY()),
                                        Math.abs(e.getX() - anchor.getX()), Math.abs(e.getY() - anchor.getY()) )
         }
-        if (mode == PianoRollMode.PANNING) {
+        if (midi.mode == Mode.PANNING) {
             dragClickX = e.getX()
             dragClickY = e.getY()
             long scrollX = midi.fromX(clickX) - midi.fromX(dragClickX)
@@ -536,7 +536,7 @@ class PianoRollEditor {
     }
 
     void mouseReleased(MouseEvent e) {
-        if (mode == PianoRollMode.EDIT) {
+        if (midi.mode == Mode.EDIT) {
             if (resizingE || resizingW) {
                 midi.startEdit()
                 selectedNotes.each { note ->
@@ -578,7 +578,7 @@ class PianoRollEditor {
                 movedY = 0
             }
         }
-        if (mode == PianoRollMode.SELECT) {
+        if (midi.mode == Mode.SELECT) {
             checkSelected()
             selection = null
         }

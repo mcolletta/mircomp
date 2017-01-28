@@ -35,20 +35,18 @@ import javafx.scene.paint.Color
 
 import groovy.transform.CompileStatic
 
-enum PianoRollMode {
-	PANNING, EDIT, SELECT, SET_PLAYBACK_POSITION
-}
-
 enum ControllerEditMode {
     LINE, CURVE
 }
 
-enum InstrumentsMode {
-    EDIT, SELECT
+enum Mode {
+    EDIT, SELECT, PANNING, SET_PLAYBACK_POSITION
 }
 
 @CompileStatic
 class MidiView extends MidiManager {
+
+    Mode mode = Mode.EDIT
 
     List<Color> channelColor = []
     int currentChannel = 0

@@ -47,8 +47,6 @@
               <ToggleGroup fx:id="editButtonsGroup"/>  
             </fx:define>
             <ToggleButton onAction="#panMode" toggleGroup="$editButtonsGroup" styleClass="move-button" text="Move" mnemonicParsing="false"/>  
-            <ToggleButton onAction="#selectMode" toggleGroup="$editButtonsGroup" styleClass="select-button" text="Select" mnemonicParsing="false"/>
-            <ToggleButton onAction="#editMode" toggleGroup="$editButtonsGroup" styleClass="edit-button" text="Pencil" mnemonicParsing="false"/>
             <ToggleButton onAction="#playbackPosMode" toggleGroup="$editButtonsGroup" styleClass="playbackpos-button" text="Playback Position" mnemonicParsing="false"/>
             <Separator orientation="VERTICAL" />
             <ComboBox fx:id="selectNoteDuration" promptText="Note duration...">
@@ -77,9 +75,11 @@
             <Label fx:id="channelLabel"/>
             <ComboBox fx:id="selectChannel" promptText="Select Channel..." prefWidth="180"/>            
             <Separator orientation="VERTICAL" />
-            <Button fx:id="tableButton" onAction="#showMidiTable" styleClass="table-button" text="MidiEvent Table" mnemonicParsing="false"/>
-            <Separator orientation="VERTICAL" />
+            <ToggleButton onAction="#selectMode" toggleGroup="$editButtonsGroup" styleClass="select-button" text="Select" mnemonicParsing="false"/>
+            <ToggleButton onAction="#editMode" toggleGroup="$editButtonsGroup" styleClass="edit-button" text="Pencil" mnemonicParsing="false"/>
             <Button fx:id="eraseButton" onAction="#erase" styleClass="eraser-button" text="Eraser" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="tableButton" onAction="#showMidiTable" styleClass="table-button" text="MidiEvent Table" mnemonicParsing="false"/>
         </items>
     </ToolBar>
     <!-- Controller/Instruments -->

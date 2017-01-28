@@ -146,9 +146,9 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 	public MidiEditor(Path path=null, Synthesizer synth=null) {
 		loadControl()
 
-        pianoCanvas.setFocusTraversable(true)
+        /*pianoCanvas.setFocusTraversable(true)
         controllerCanvas.setFocusTraversable(true)
-        instrumentsCanvas.setFocusTraversable(true)
+        instrumentsCanvas.setFocusTraversable(true)*/
 
         midi = new MidiView(path,synth)
         midi.registerListener(this)
@@ -548,31 +548,36 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
     // -------------------------------------------
 
+    void setCanvasesCursor(Cursor c) {
+        pianoRollEditor.setCursor(c)
+        controllerEditor.setCursor(c)
+        instrumentsEditor.setCursor(c)
+    }
+
     void erase() {
-        println "erase"
+        pianoRollEditor.delete()
+        controllerEditor.delete()
         instrumentsEditor.delete()
     }
 
     void editMode() {
-        pianoRollEditor.mode = PianoRollMode.EDIT
-        pianoRollEditor.setCursor(Cursor.CROSSHAIR)
-        instrumentsEditor.mode = InstrumentsMode.EDIT
+        midi.mode = Mode.EDIT
+        setCanvasesCursor(Cursor.CROSSHAIR)
     }
 
     void selectMode() {
-        pianoRollEditor.mode = PianoRollMode.SELECT
-        pianoRollEditor.setCursor(Cursor.DEFAULT)
-        instrumentsEditor.mode = InstrumentsMode.SELECT
+        midi.mode = Mode.SELECT
+        setCanvasesCursor(Cursor.DEFAULT)
     }
 
     void panMode() {
-       pianoRollEditor.mode = PianoRollMode.PANNING
-       pianoRollEditor.setCursor(Cursor.MOVE)
+       midi.mode = Mode.PANNING
+       setCanvasesCursor(Cursor.MOVE)
     }
 
     void playbackPosMode() {
-        pianoRollEditor.mode = PianoRollMode.SET_PLAYBACK_POSITION
-        pianoRollEditor.setCursor(Cursor.DEFAULT)
+        midi.mode = Mode.SET_PLAYBACK_POSITION
+        setCanvasesCursor(Cursor.DEFAULT)
     }
 
     void lineMode() {
