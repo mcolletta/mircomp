@@ -28,6 +28,8 @@
             <Button fx:id="fileopenButton"  onAction="#fileopen" styleClass="fileopen-button" text="Open..." mnemonicParsing="false"/>
             <Button fx:id="filesaveButton"  onAction="#filesave" styleClass="filesave-button" text="Save" mnemonicParsing="false"/>
             <Button fx:id="filesaveasButton"  onAction="#filesaveas" styleClass="filesaveas-button" text="Save as..." mnemonicParsing="false"/>
+            <Button fx:id="reloadfileButton"  onAction="#reloadfile" styleClass="reloadfile-button" text="Reload file..." mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
             <Button fx:id="cutButton"  onAction="#cut" styleClass="cut-button" text="Cut" mnemonicParsing="false"/>
             <Button fx:id="copyButton" onAction="#copy" styleClass="copy-button" text="Copy" mnemonicParsing="false"/>
             <Button fx:id="pasteButton" onAction="#paste" styleClass="paste-button" text="Paste" mnemonicParsing="false"/>

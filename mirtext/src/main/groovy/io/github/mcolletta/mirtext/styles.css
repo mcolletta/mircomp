@@ -37,6 +37,10 @@
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/reload.png');
 }
+.reloadfile-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_reload.png');
+}
 .cut-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/editcut.png');

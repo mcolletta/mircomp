@@ -238,6 +238,7 @@ class TextEditor extends VBox {
                     File file = dragboard.getFiles()[0]
                     String txt = file.getText()
                     setValue(txt)
+                    //filePath = file.toPath()
                     success = true
                 }
                 event.setDropCompleted(success)
@@ -249,12 +250,16 @@ class TextEditor extends VBox {
     public registerCopyPasteEvents() {
         final KeyCombination keyCombinationCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN)
         final KeyCombination keyCombinationPaste = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN)
+        final KeyCombination keyCombinationSave = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
         this.addEventFilter(KeyEvent.KEY_PRESSED, { KeyEvent evt ->
             if (keyCombinationCopy.match(evt)) {
                 copy()
             }
             if (keyCombinationPaste.match(evt)) {
                 paste()
+            }
+            if (keyCombinationSave.match(evt)) {
+                filesave()
             }
         })
     }
@@ -416,6 +421,12 @@ class TextEditor extends VBox {
             } catch (IOException ex) {
                 println(ex.getMessage())
             }
+        }
+    }
+
+    public reloadfile() {
+        if (filePath != null) {
+            setValue(filePath.getText())
         }
     }
 
