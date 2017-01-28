@@ -43,8 +43,10 @@ import javafx.scene.Node
 import javafx.scene.Cursor
 import javafx.scene.paint.Color
 
-import javafx.scene.input.KeyEvent
 import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCodeCombination
+import javafx.scene.input.KeyCombination
+import javafx.scene.input.KeyEvent
 
 import javafx.scene.layout.VBox
 import javafx.scene.layout.Pane
@@ -146,10 +148,6 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 	public MidiEditor(Path path=null, Synthesizer synth=null) {
 		loadControl()
 
-        /*pianoCanvas.setFocusTraversable(true)
-        controllerCanvas.setFocusTraversable(true)
-        instrumentsCanvas.setFocusTraversable(true)*/
-
         midi = new MidiView(path,synth)
         midi.registerListener(this)
 
@@ -214,7 +212,14 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
             //midi.loadMidi(filePath.toFile())
             updateScrollBar()
             draw()
-        }        
+        }
+
+        final KeyCombination keyCombinationSave = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
+        this.addEventFilter(KeyEvent.KEY_PRESSED, { KeyEvent evt ->
+            if (keyCombinationSave.match(evt)) {
+                filesave()
+            }
+        })      
 	}
 
 	public loadControl() {

@@ -599,6 +599,7 @@ class PianoRollEditor {
         if (newViewY < 0) newViewY = 0
         if (newViewY > maxMoveY) newViewY = maxMoveY
         midi.setVerticalOffset(newViewY)
+        repaint()
     }
 
     void playbackAtTick(long tick) {
