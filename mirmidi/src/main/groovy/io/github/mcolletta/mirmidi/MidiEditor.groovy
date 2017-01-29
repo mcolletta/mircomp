@@ -72,6 +72,7 @@ import javafx.collections.ObservableList
 import javafx.collections.ListChangeListener
 
 import javafx.beans.binding.NumberBinding
+import javafx.beans.binding.StringBinding
 import javafx.beans.binding.Bindings
 import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
@@ -150,6 +151,12 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
         midi = new MidiView(path,synth)
         midi.registerListener(this)
+        midi.channelMask.addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue o,Object oldVal, Object newVal) {
+                draw()
+            }
+        })
 
         initComboBoxes()
 

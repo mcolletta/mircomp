@@ -24,27 +24,31 @@
 package io.github.mcolletta.mirmidi
 
 import javax.sound.midi.*
+
 import java.util.concurrent.ConcurrentSkipListMap
 
 import javafx.beans.property.IntegerProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.LongProperty
 import javafx.beans.property.SimpleLongProperty
-
-import javafx.collections.transformation.SortedList
-
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+
+import javafx.collections.transformation.SortedList
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+
 import javafx.event.EventHandler;
 
 import java.util.ArrayList;
@@ -82,7 +86,8 @@ class MidiManager {
     final void setResolution(int value) { resolution.set(value) }
     IntegerProperty resolutionProperty() { return resolution }
 
-    Map<Integer,Integer> usedChannels = [:].withDefault() { 0 }
+    ObservableMap<Integer,Integer> usedChannels = FXCollections.observableMap( [:].withDefault() { 0 } )
+    StringProperty channelMask = new SimpleStringProperty("0000000000000000")
     
     ObservableList<MidiNote> notes
     SortedList<MidiNote> sortedByEndNotes
@@ -198,6 +203,28 @@ class MidiManager {
                                     if (currentEdit) 
                                         currentEdit.pcRemoved.add(change.getValueRemoved())
                                 }
+                            }
+                        }
+                    }
+
+
+    MapChangeListener<Integer,Integer> usedChannelsListener = new MapChangeListener<Integer,Integer>() {
+                        @Override
+                        public void onChanged(MapChangeListener.Change<? extends Integer, ? extends Integer> change) {
+                            int newValue = -1
+                            int oldValue = -1
+                            if (change.wasAdded()) {
+                                newValue = change.getValueAdded()
+                            }
+                            if (change.wasRemoved()) {
+                                 oldValue = change.getValueRemoved()
+                            }
+                            if ((newValue > 0 && oldValue == 0) || (newValue == 0 && oldValue > 0)) {
+                                int k = (int) change.getKey()
+                                String mask = channelMask.get()
+                                String newChar = (newValue == 0) ? '0' : '1'
+                                String newMask = mask.substring(0,k)+ newChar + mask.substring(k+1)
+                                channelMask.set(newMask)
                             }
                         }
                     }
@@ -429,8 +456,6 @@ class MidiManager {
     void parseEvents() {
         isParsing = true
 
-        usedChannels = [:].withDefault() { 0 }
-
         notes = FXCollections.observableArrayList()
         notes.addListener(noteListener)
         sortedByEndNotes = new SortedList<>(notes)
@@ -450,7 +475,11 @@ class MidiManager {
                 ObservableMap<Long, MidiPC> map = FXCollections.observableMap( new ConcurrentSkipListMap<Long, MidiPC>() )
                 map.addListener(programListener)
                 return map
-            } 
+            }
+
+        usedChannels = FXCollections.observableMap( [:].withDefault() { 0 } )
+        usedChannels.addListener(usedChannelsListener)
+        channelMask.set("0000000000000000")
 
         Map<Integer,Map<Integer,MidiEvent>> cache = [:].withDefault() { [:] }
         for(int idx = 0; idx < sequence.getTracks().size(); idx++) {
