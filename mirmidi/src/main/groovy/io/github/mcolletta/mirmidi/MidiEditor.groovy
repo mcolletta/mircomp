@@ -64,8 +64,10 @@ import javafx.scene.control.Menu
 import javafx.scene.control.MenuButton
 import javafx.scene.control.MenuItem
 import javafx.scene.control.RadioMenuItem
+import javafx.scene.control.CustomMenuItem
 import javafx.scene.control.ToggleGroup
 import javafx.scene.control.Toggle
+import javafx.scene.control.CheckBox
 
 import javafx.scene.control.Dialog
 import javafx.scene.control.DialogPane
@@ -97,8 +99,6 @@ import javafx.beans.value.ChangeListener
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javafx.concurrent.Task
-
-import org.controlsfx.control.CheckComboBox
 
 import javax.sound.midi.*
 
@@ -157,7 +157,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     @FXML private Label controllerLabel
     @FXML private MenuButton instrumentsMenu
     @FXML private Label instrumentLabel
-    @FXML private CheckComboBox selectMuteTracks
+    @FXML private MenuButton muteTracksMenu
     @FXML private ScrollBar scrollBarX
     @FXML private Button undoButton
     @FXML private Button redoButton
@@ -328,7 +328,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         loadTracksMenu()
         loadChannelsMenu()
         loadControllersMenu()
-        loadSelectMuteTracks()
+        loadMuteTracksMenu()
         loadInstrumentsMenu()
         loadNotesMenu()
     }
@@ -390,31 +390,27 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         channelLabel.setGraphic(rect)
     }
 
-    private void loadSelectMuteTracks() {
-        selectMuteTracks.getItems().clear()
-        selectMuteTracks.getItems().addAll(tracks)
-        selectMuteTracks.getCheckModel().getCheckedItems().addListener(new ListChangeListener<TrackItem>() {
-            public void onChanged(ListChangeListener.Change<? extends TrackItem> change) {
-                while (change.next()) {
-                    if (change.wasPermutated()) {
-                        for (int i = change.getFrom(); i < change.getTo(); ++i) {
-                            //println "permutate"
-                        }
-                    } else if (change.wasUpdated()) {
-                        //println "update"
-                    } else if (change.wasRemoved()) {
-                        for (TrackItem item : change.getRemoved()) {
-                            midi.sequencer.setTrackMute(item.index, false)
-                        }
-                    } else if (change.wasAdded()) {
-                        for (TrackItem item : change.getAddedSubList()) {
-                            midi.sequencer.setTrackMute(item.index, true)
-                        }
-                    }
+    private void loadMuteTracksMenu() {
+        muteTracksMenu.getItems().clear()
+        for(int i=0; i<tracks.size(); i++) {
+            TrackItem item = tracks[i]
+            String label = item.toString()
+            CheckBox cb = new CheckBox(label)
+
+            cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) {
+                    // println cb.getText() + " " + cb.isSelected()
+                    midi.sequencer.setTrackMute(item.getIndex(), cb.isSelected())
+                    draw()
                 }
-                draw()
-            }
-        })
+            })
+
+            CustomMenuItem menuItem = new CustomMenuItem(cb)
+            // menuItem.setUserData(item)
+            menuItem.setHideOnClick(false)
+            muteTracksMenu.getItems().add(menuItem)
+        }
     }
 
     private void loadControllersMenu() {
@@ -646,6 +642,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
     void replay() {
         midi.stop()
+        midi.setPlaybackPosition(0L)
         midi.play()
     }
 

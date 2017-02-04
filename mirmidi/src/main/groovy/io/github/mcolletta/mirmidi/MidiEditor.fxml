@@ -62,8 +62,7 @@
             <Button fx:id="addTrackButton" onAction="#addtrack" styleClass="addtrack-button" text="Add Track" mnemonicParsing="false"/>
             <Separator orientation="VERTICAL" />
             <Label text="Mute:"/>
-            <Label styleClass="mute-icon"/>
-            <CheckComboBox fx:id="selectMuteTracks" prefWidth="90"/>
+            <MenuButton fx:id="muteTracksMenu" styleClass="mute-icon" text="Mute..."/>
             <Separator orientation="VERTICAL" />
             <Label text="Channel:" />
             <MenuButton fx:id="channelsMenu" styleClass="channel-button" text="Select..."/>
