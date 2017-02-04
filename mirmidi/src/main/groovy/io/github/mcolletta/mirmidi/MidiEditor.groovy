@@ -69,6 +69,11 @@ import javafx.scene.control.Toggle
 
 import javafx.scene.shape.Rectangle
 
+import javafx.scene.input.KeyEvent
+import javafx.scene.input.Dragboard
+import javafx.scene.input.DragEvent
+import javafx.scene.input.TransferMode
+
 import javafx.geometry.Orientation
 
 import javafx.fxml.FXML
@@ -229,7 +234,37 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
             if (keyCombinationSave.match(evt)) {
                 filesave()
             }
-        })      
+        })
+
+
+        // Manage drop from dragging midi file
+        this.setOnDragOver(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event)
+            {
+                Dragboard dragboard = event.getDragboard()
+                if (dragboard.hasFiles()) {
+                    event.acceptTransferModes(TransferMode.COPY)
+                }
+                event.consume()
+            }
+        })
+        this.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event)
+            {
+                Dragboard dragboard = event.getDragboard()
+                boolean success = false
+                if (dragboard.hasFiles()) {
+                    File file = dragboard.getFiles()[0]
+                    midi.loadMidi(file)
+                    draw()
+                    success = true
+                }
+                event.setDropCompleted(success)
+                event.consume()
+            }
+        })    
 	}
 
 	public loadControl() {
