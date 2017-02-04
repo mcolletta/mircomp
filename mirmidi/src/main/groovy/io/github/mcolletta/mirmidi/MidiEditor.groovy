@@ -67,6 +67,11 @@ import javafx.scene.control.RadioMenuItem
 import javafx.scene.control.ToggleGroup
 import javafx.scene.control.Toggle
 
+import javafx.scene.control.Dialog
+import javafx.scene.control.DialogPane
+import javafx.scene.control.ButtonType
+import javafx.scene.control.ButtonBar.ButtonData
+
 import javafx.scene.shape.Rectangle
 
 import javafx.scene.input.KeyEvent
@@ -556,30 +561,26 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
     void newsequence(ActionEvent event) {
         // GUI dialog for choosing how many tracks
-        Stage dialog = new Stage(StageStyle.TRANSPARENT)
-        dialog.initModality(Modality.WINDOW_MODAL)
-        dialog.initOwner(((Node)event.getSource()).getScene().getWindow())
-
+        Dialog<ButtonType> dialog = new Dialog<>()
+        DialogPane dialogPane = dialog.getDialogPane()
+        
         VBox vbox = new VBox()
         Label label = new Label("Select how many tracks:")
         vbox.getChildren().add(label)
         Spinner spinner = new Spinner(1,16,1,1)
         vbox.getChildren().add(spinner)
-        Button button = new Button("OK")
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                dialog.close()
-            }
-        })
-        vbox.getChildren().add(button)
-        dialog.setScene(new Scene(vbox))
-        dialog.showAndWait()
-        // ---------------------------------------------
-        midi.loadSequence(null, (int)spinner.getValue())
-        midi.setHorizontalOffset(0L)
-        updateScrollBar()
-        initMenus()
-        draw()
+
+        dialogPane.setContent(vbox)
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL)
+        dialog.getDialogPane().lookupButton(ButtonType.OK)
+        Optional<ButtonType> result = dialog.showAndWait()
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            midi.loadSequence(null, (int)spinner.getValue())
+            midi.setHorizontalOffset(0L)
+            updateScrollBar()
+            initMenus()
+            draw()
+        }
     }
 
     void fileopen() {
@@ -789,31 +790,40 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
     void humanization(ActionEvent event) {
         // GUI dialog for eps
-        Stage dialog = new Stage(StageStyle.TRANSPARENT)
-        dialog.initModality(Modality.WINDOW_MODAL)
-        dialog.initOwner(((Node)event.getSource()).getScene().getWindow())
-
+        Dialog<ButtonType> dialog = new Dialog<>()
+        DialogPane dialogPane = dialog.getDialogPane()
+        
         VBox vbox = new VBox()
         Label label = new Label("Select humanization factor:")
         vbox.getChildren().add(label)
         // Spinner(double min, double max, double initialValue, double amountToStepBy)
         Spinner spinner = new Spinner(0.01D,2.0D,0.01D,0.01D)
         vbox.getChildren().add(spinner)
-        Button button = new Button("OK")
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                dialog.close()
-            }
-        })
-        vbox.getChildren().add(button)
-        dialog.setScene(new Scene(vbox))
-        dialog.showAndWait()
-        // ---------------------------------------------
-        pianoRollEditor.humanization((double)spinner.getValue())
+
+        dialogPane.setContent(vbox)
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL)
+        dialog.getDialogPane().lookupButton(ButtonType.OK)
+        Optional<ButtonType> result = dialog.showAndWait()
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            pianoRollEditor.humanization((double)spinner.getValue())
+        }
     }
 
     void quantization() {
-        pianoRollEditor.quantization()
+        Dialog<ButtonType> dialog = new Dialog<>()
+        DialogPane dialogPane = dialog.getDialogPane()
+        
+        VBox vbox = new VBox()
+        Label label = new Label("Quantization of selected notes?")
+        vbox.getChildren().add(label)
+
+        dialogPane.setContent(vbox)
+        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL)
+        dialog.getDialogPane().lookupButton(ButtonType.OK)
+        Optional<ButtonType> result = dialog.showAndWait()
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            pianoRollEditor.quantization()
+        }        
     }
 
 

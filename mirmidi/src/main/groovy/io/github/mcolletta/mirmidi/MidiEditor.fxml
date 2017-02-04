@@ -113,7 +113,7 @@
                     <children>
                         <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
                             <items>
-                                <Label text="Select Instrument:" />
+                                <Label text="Instrument:" />
                                 <MenuButton fx:id="instrumentsMenu" styleClass="instrument-button" text="Select..."/>
                                 <Label fx:id="instrumentLabel" text="default instrument" />
                             </items>
