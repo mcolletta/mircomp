@@ -294,15 +294,17 @@ class InstrumentsEditor {
         	double h = canvas.getHeight()
             double rectHeight = h / 16
         	int channel = (int) (event.getY() / rectHeight)
-        	int currentProgram = midi.currentInstrument
-            if (midi.mode == Mode.EDIT) {
-                midi.startEdit()
-                edit(channel, x, currentProgram)
-                midi.stopEdit()
-                repaint()
-            } else if (midi.mode == Mode.SELECT) {
-                select(event.getX(),event.getY())
-                repaint()
+            if (channel != 9) {
+            	int currentProgram = midi.currentInstrument
+                if (midi.mode == Mode.EDIT) {
+                    midi.startEdit()
+                    edit(channel, x, currentProgram)
+                    midi.stopEdit()
+                    repaint()
+                } else if (midi.mode == Mode.SELECT) {
+                    select(event.getX(),event.getY())
+                    repaint()
+                }
             }
         }
     }

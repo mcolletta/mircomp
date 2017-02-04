@@ -60,6 +60,13 @@ import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 import javafx.scene.control.Spinner
 
+import javafx.scene.control.Menu
+import javafx.scene.control.MenuButton
+import javafx.scene.control.MenuItem
+import javafx.scene.control.RadioMenuItem
+import javafx.scene.control.ToggleGroup
+import javafx.scene.control.Toggle
+
 import javafx.scene.shape.Rectangle
 
 import javafx.geometry.Orientation
@@ -119,8 +126,8 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     
     ObservableList tracks
     ObservableList channels
-    ObservableList controllers
-    ObservableList instruments
+    ObservableList<MidiControllerInfo> controllers
+    ObservableList<MidiInstrument> instruments
 
     PianoRollEditor pianoRollEditor
     ControllerEditor controllerEditor
@@ -129,11 +136,16 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     @FXML private ResizableCanvas pianoCanvas
     @FXML private ResizableCanvas controllerCanvas
     @FXML private ResizableCanvas instrumentsCanvas
-    @FXML private ComboBox selectNoteDuration
+
     @FXML private ComboBox selectTrack
     @FXML private ComboBox selectChannel
-    @FXML private ComboBox selectController
-    @FXML private ComboBox selectInstrument
+
+    @FXML private MenuButton notesMenu
+    @FXML private Label noteLabel
+    @FXML private MenuButton controllersMenu
+    @FXML private Label controllerLabel
+    @FXML private MenuButton instrumentsMenu
+    @FXML private Label intrumentLabel
     @FXML private CheckComboBox selectMuteTracks
     @FXML private ScrollBar scrollBarX
     @FXML private Button undoButton
@@ -158,7 +170,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
             }
         })
 
-        initComboBoxes()
+        initMenus()
 
         pianoRollEditor = new PianoRollEditor(midi, pianoCanvas)
         controllerEditor = new ControllerEditor(midi, controllerCanvas)
@@ -196,15 +208,6 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
                 draw()
             }
         })
-
-        selectNoteDuration.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                float duration = newValue as float
-                pianoRollEditor.insertNoteType = duration
-            }
-        })
-
 
         midi.playbackPositionProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
@@ -264,7 +267,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         }
     }
 
-    void initComboBoxes() {
+    void initMenus() {
         List<TrackItem> trackList = []
         for(int i = 0; i < midi.sequence.tracks.size(); i++) {
             Track track = midi.sequence.tracks[i]
@@ -298,9 +301,10 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
         loadSelectTrack()
         loadSelectChannel()
-        loadSelectController()
+        loadControllersMenu()
         loadSelectMuteTracks()
-        loadSelectInstrument()
+        loadInstrumentsMenu()
+        loadNotesMenu()
     }
 
     private void loadSelectTrack() {
@@ -339,20 +343,6 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         channelLabel.setGraphic(rect)
     }
 
-    private void loadSelectController() {
-        selectController.setItems(controllers)
-        selectController.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if (newValue != null && oldValue != newValue) {
-                    MidiControllerInfo item = selectController.getSelectionModel().getSelectedItem() as MidiControllerInfo
-                    midi.currentController = item.value
-                    draw()
-                }
-            }
-        })
-    }
-
     private void loadSelectMuteTracks() {
         selectMuteTracks.getItems().clear()
         selectMuteTracks.getItems().addAll(tracks)
@@ -380,18 +370,105 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         })
     }
 
-    private void loadSelectInstrument() {
-        selectInstrument.setItems(instruments)
-        selectInstrument.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if (newValue != null && oldValue != newValue) {
-                    MidiInstrument item = selectInstrument.getSelectionModel().getSelectedItem() as MidiInstrument
-                    midi.currentInstrument = item.program
+    private void loadControllersMenu() {
+        controllersMenu.getItems().clear()
+        ToggleGroup toggleGroup = new ToggleGroup()
+        Menu submenuContinuos = new Menu("0-127")
+        Menu submenuSoundControllers = new Menu("Sound Controllers")
+        Menu submenuOnOff = new Menu("On/Off")        
+        for(int i=0; i<controllers.size(); i++) {
+            MidiControllerInfo item = controllers[i]
+            String label = "${item.getValue()}: ${item.getInfo()}"
+            RadioMenuItem radioItem = new RadioMenuItem(label)
+            radioItem.setOnAction(new EventHandler<ActionEvent>() {
+                @Override public void handle(ActionEvent event) {
+                    midi.currentController = item.getValue()
+                    controllerLabel.setText(item.getInfo())
                     draw()
                 }
+            })
+            if (item.getValue() == 7)
+                radioItem.setSelected(true)
+            radioItem.setToggleGroup(toggleGroup)
+            if (item.getValue() in (70..78))
+                submenuSoundControllers.getItems().add(radioItem)
+            else {
+                if (item.getCtype() == 1)
+                    submenuOnOff.getItems().add(radioItem)
+                else
+                    submenuContinuos.getItems().add(radioItem)
             }
-        })
+        }
+        submenuContinuos.getItems().add(submenuSoundControllers)
+        controllersMenu.getItems().add(submenuContinuos)
+        controllersMenu.getItems().add(submenuOnOff)
+    }
+
+    private void loadInstrumentsMenu() {
+        instrumentsMenu.getItems().clear()
+        Map<String, IntRange> instrumentGroups = [
+            "Piano": (1..8),
+            "Chromatic Percussion": (9..16),
+            "Organ": (10..24),
+            "Guitar": (25..32),
+            "Bass": (33..40),
+            "Strings": (41..48),
+            "Ensemble": (49..56),
+            "Brass": (57..64),
+            "Reed": (65..72),
+            "Pipe": (73..80),
+            "Synth Lead": (81..88),
+            "Synth Pad": (89..96),
+            "Synth Effects": (97..104),
+            "Ethnic": (105..112),
+            "Percussive": (113..120),
+            "Sound effects": (121..128)
+        ]  
+        
+        ToggleGroup toggleGroup = new ToggleGroup()
+        for(Map.Entry<String,IntRange> e : instrumentGroups.entrySet()) {
+            Menu submenu = new Menu(e.getKey())
+            for(int i : e.getValue()) {
+                MidiInstrument item = instruments[i-1]
+                String label = "GM $i: ${item.getName()}"
+                RadioMenuItem radioItem = new RadioMenuItem(label)
+                radioItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override public void handle(ActionEvent event) {
+                        midi.currentInstrument = item.getProgram()
+                        intrumentLabel.setText(item.getName())
+                    }
+                })
+                radioItem.setToggleGroup(toggleGroup)
+                submenu.getItems().add(radioItem)
+            }
+            instrumentsMenu.getItems().add(submenu)
+        }
+    }
+
+    private void loadNotesMenu() {
+        notesMenu.getItems().clear()
+        //Menu submenu = new Menu("Triplet")
+        ToggleGroup toggleGroup = new ToggleGroup()
+        Map<String, Float> durations = [
+            "whole": 4f,
+            "half": 2f,
+            "quarter": 1f,
+            "eighth": 0.5f,
+            "sixteenth": 0.25f
+        ]
+        for(Map.Entry<String,Float> e : durations.entrySet()) {
+            String label = e.getKey()
+            float duration = e.getValue()
+            RadioMenuItem radioItem = new RadioMenuItem(label)
+            radioItem.setOnAction(new EventHandler<ActionEvent>() {
+                @Override public void handle(ActionEvent event) {                    
+                    pianoRollEditor.insertNoteType = duration
+                    noteLabel.setText(label)
+                }
+            })
+            radioItem.setToggleGroup(toggleGroup)
+            notesMenu.getItems().add(radioItem)
+        }
     }
 
     public void onClose() {
@@ -451,7 +528,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         midi.loadSequence(null, (int)spinner.getValue())
         midi.setHorizontalOffset(0L)
         updateScrollBar()
-        initComboBoxes()
+        initMenus()
         draw()
     }
 
@@ -506,6 +583,13 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
             } catch (IOException ex) {
                 println(ex.getMessage())
             }
+        }
+    }
+
+    public reloadfile() {
+        if (filePath != null) {
+            midi.loadMidi(filePath.toFile())
+            draw()
         }
     }
 
@@ -564,6 +648,12 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         pianoRollEditor.setCursor(c)
         controllerEditor.setCursor(c)
         instrumentsEditor.setCursor(c)
+    }
+
+    void addtrack() {
+        midi.addTrackToSequence()
+        initMenus()
+        draw()
     }
 
     void erase() {

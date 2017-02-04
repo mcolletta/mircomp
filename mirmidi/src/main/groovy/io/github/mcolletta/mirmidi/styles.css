@@ -37,6 +37,14 @@
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/sc_saveas.png');
 }
+.reloadfile-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/reload.png');
+}
+.addtrack-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/insert_table_row.png');
+}
 .replay-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/player_start.png');
@@ -52,6 +60,10 @@
 .stop-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/player_stop.png');
+}
+.note-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/mix_midi.png');
 }
 .edit-button {
     -fx-content-display: graphic-only;
@@ -114,7 +126,7 @@
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/sc_selecttable.png');
 }
-.editcc-icon {
+.editcc-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/sc_freeline.png');
 }
@@ -125,5 +137,10 @@
 .curve-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/sc_beziersmooth.png');
+}
+
+.instrument-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/kcmmidi.png');
 }
 

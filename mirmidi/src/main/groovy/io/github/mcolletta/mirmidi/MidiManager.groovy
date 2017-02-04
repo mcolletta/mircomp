@@ -234,16 +234,26 @@ class MidiManager {
         initMidi(synth)
         loadSequence()
         // ctype: 0 curve, 1 on/off
-        controllersInfo[1] = new MidiControllerInfo(info:"MODULATION", value:1, ctype: 0)
-        controllersInfo[7] = new MidiControllerInfo(info:"COARSE VOLUME", value:7, ctype: 0)
-        controllersInfo[8] = new MidiControllerInfo(info:"BALANCE", value:8, ctype: 0)
-        controllersInfo[10] = new MidiControllerInfo(info:"PAN", value:10, ctype: 0)
-        controllersInfo[11] = new MidiControllerInfo(info:"EXPRESSION", value:11, ctype: 0)
-        controllersInfo[64] = new MidiControllerInfo(info:"SUSTAIN", value:64, ctype: 1)
-        controllersInfo[65] = new MidiControllerInfo(info:"PORTAMENTO", value:65, ctype: 1)
-        controllersInfo[66] = new MidiControllerInfo(info:"SOSTENUTO", value:66, ctype: 1)
-        controllersInfo[67] = new MidiControllerInfo(info:"SOFT PEDAL", value:67, ctype: 1)
-        controllersInfo[68] = new MidiControllerInfo(info:"LEGATO", value:68, ctype: 1)
+        controllersInfo[1] = new MidiControllerInfo(info:"Modulation", value:1, ctype: 0)
+        controllersInfo[7] = new MidiControllerInfo(info:"Volume", value:7, ctype: 0)
+        controllersInfo[8] = new MidiControllerInfo(info:"Balance", value:8, ctype: 0)
+        controllersInfo[10] = new MidiControllerInfo(info:"Pan", value:10, ctype: 0)
+        controllersInfo[11] = new MidiControllerInfo(info:"Expression", value:11, ctype: 0)
+        controllersInfo[64] = new MidiControllerInfo(info:"Sustain", value:64, ctype: 1)
+        controllersInfo[65] = new MidiControllerInfo(info:"Portamento", value:65, ctype: 1)
+        controllersInfo[66] = new MidiControllerInfo(info:"Sostenuto", value:66, ctype: 1)
+        controllersInfo[67] = new MidiControllerInfo(info:"Soft Pedal", value:67, ctype: 1)
+        controllersInfo[68] = new MidiControllerInfo(info:"Legato", value:68, ctype: 1)
+        // Sound Controllers
+        controllersInfo[70] = new MidiControllerInfo(info:"Sound Variation", value:70, ctype: 0)
+        controllersInfo[71] = new MidiControllerInfo(info:"Timbre Intensity", value:71, ctype: 0)
+        controllersInfo[72] = new MidiControllerInfo(info:"Release Time", value:72, ctype: 0)
+        controllersInfo[73] = new MidiControllerInfo(info:"Attack Time", value:73, ctype: 0)
+        controllersInfo[74] = new MidiControllerInfo(info:"Brightness", value:74, ctype: 0)
+        controllersInfo[75] = new MidiControllerInfo(info:"Decay Time", value:75, ctype: 0)
+        controllersInfo[76] = new MidiControllerInfo(info:"Vibrato Rate", value:76, ctype: 0)
+        controllersInfo[77] = new MidiControllerInfo(info:"Vibrato Depth", value:77, ctype: 0)
+        controllersInfo[78] = new MidiControllerInfo(info:"Vibrato Delay", value:78, ctype: 0)
     }
 
     // TODO get synthesizer from outside
@@ -287,7 +297,7 @@ class MidiManager {
         loadSequence(sequence)
     }
 
-    void loadSequence(Sequence sequence=null, int tracksCount=16) {
+    void loadSequence(Sequence sequence=null, int tracksCount=1) {
         try {
             if (sequence == null) {
                 try {
@@ -305,6 +315,12 @@ class MidiManager {
             setSequenceResolution()
         } catch(Exception e) {
             e.printStackTrace()
+        }
+    }
+
+    void addTrackToSequence() {
+        if (sequence != null) {
+            sequence.createTrack()
         }
     }
 

@@ -72,7 +72,7 @@ class MidiView extends MidiManager {
         }
         List<String> hexColors = ["#f92672", "#66d9ef", "#a6e22e", "#ae81ff", 
                                   "#ffee80", "#ff628c", "#80ffbb", "#ff80e1", 
-                                  "#ff9d00", "#0088ff", "#cccccc", "#3ad900", 
+                                  "#ff9d00", "#0088ff", "#e64637", "#3ad900", 
                                   "#ffdd00", "#ff00ff", "#ff0000", "#C8C800"]
 
         for(String hexColor : hexColors) {
