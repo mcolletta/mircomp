@@ -47,7 +47,7 @@
             <Separator orientation="VERTICAL" />
             <Label text="Note:" />
             <MenuButton fx:id="notesMenu" styleClass="note-button" text="Select..."/>
-            <Label fx:id="noteLabel" text="quarter" />
+            <Label fx:id="noteLabel" />
             <Separator orientation="VERTICAL" />
             <Button fx:id="humanizationButton" onAction="#humanization" styleClass="humanization-button" text="Humanization" mnemonicParsing="false"/>
             <Button fx:id="quantizationButton" onAction="#quantization" styleClass="quantization-button" text="Quantization" mnemonicParsing="false"/>
@@ -56,15 +56,18 @@
     <ResizableCanvas fx:id="pianoCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
     <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
         <items>
-            <ComboBox fx:id="selectTrack" promptText="Select Track..." prefWidth="150"/>
+            <Label text="Track:" />
+            <MenuButton fx:id="tracksMenu" styleClass="track-button" text="Select..."/>
+            <Label fx:id="trackLabel" />
             <Button fx:id="addTrackButton" onAction="#addtrack" styleClass="addtrack-button" text="Add Track" mnemonicParsing="false"/>
             <Separator orientation="VERTICAL" />
             <Label text="Mute:"/>
             <Label styleClass="mute-icon"/>
             <CheckComboBox fx:id="selectMuteTracks" prefWidth="90"/>
-            <Separator orientation="VERTICAL" />            
+            <Separator orientation="VERTICAL" />
+            <Label text="Channel:" />
+            <MenuButton fx:id="channelsMenu" styleClass="channel-button" text="Select..."/>
             <Label fx:id="channelLabel"/>
-            <ComboBox fx:id="selectChannel" promptText="Select Channel..." prefWidth="180"/>            
             <Separator orientation="VERTICAL" />
             <fx:define>
               <ToggleGroup fx:id="editButtonsGroup"/>  
@@ -87,7 +90,7 @@
                     <children>
                         <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
                             <items>
-                                <Label text="Select Controller:" />
+                                <Label text="Controller:" />
                                 <MenuButton fx:id="controllersMenu" styleClass="editcc-button" text="Select..."/>
                                 <Label fx:id="controllerLabel" text="Volume" />
                                 <Separator orientation="VERTICAL" />
@@ -112,7 +115,7 @@
                             <items>
                                 <Label text="Select Instrument:" />
                                 <MenuButton fx:id="instrumentsMenu" styleClass="instrument-button" text="Select..."/>
-                                <Label fx:id="intrumentLabel" text="Default Instrument" />
+                                <Label fx:id="instrumentLabel" text="default instrument" />
                             </items>
                         </ToolBar>
                         <ResizableCanvas fx:id="instrumentsCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />

@@ -130,9 +130,10 @@ class MidiTableViewController {
                             item.setCommand("" + message.getCommand())
                             break
                     }
+                
+                    if (item.getTick() >= startTick && item.getTick() <= endTick)
+                    	events.add(item)
                 }
-                if (item.getTick() >= startTick && item.getTick() <= endTick)
-                	events.add(item)
             }
         }
         sortedEvents = new SortedList<>(events)

@@ -122,6 +122,15 @@
     -fx-graphic: url('resources/icons/sc_autoformat.png');
 }
 
+.track-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/enumlist1.png');
+}
+.channel-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/colorman.png');
+}
+
 .table-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/sc_selecttable.png');
@@ -144,3 +153,7 @@
     -fx-graphic: url('resources/icons/kcmmidi.png');
 }
 
+
+#noteLabel, #trackLabel, #channelLabel, #controllerLabel, #instrumentLabel {
+    -fx-font-weight: bold;
+}

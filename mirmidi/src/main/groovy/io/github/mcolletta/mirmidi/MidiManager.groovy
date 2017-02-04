@@ -321,6 +321,7 @@ class MidiManager {
     void addTrackToSequence() {
         if (sequence != null) {
             sequence.createTrack()
+            sequencer.setSequence(sequence)
         }
     }
 

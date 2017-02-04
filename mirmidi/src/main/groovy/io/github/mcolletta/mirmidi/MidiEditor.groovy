@@ -109,7 +109,7 @@ class TrackItem {
     Track track
 
     String toString() {
-        return "Track " + index
+        return "Track " + (index+1)
     }
 }
 
@@ -129,8 +129,8 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
     MidiView midi
     
-    ObservableList tracks
-    ObservableList channels
+    ObservableList<TrackItem> tracks
+    ObservableList<ChannelItem> channels
     ObservableList<MidiControllerInfo> controllers
     ObservableList<MidiInstrument> instruments
 
@@ -142,21 +142,21 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     @FXML private ResizableCanvas controllerCanvas
     @FXML private ResizableCanvas instrumentsCanvas
 
-    @FXML private ComboBox selectTrack
-    @FXML private ComboBox selectChannel
-
+    @FXML private MenuButton tracksMenu
+    @FXML private Label trackLabel
+    @FXML private MenuButton channelsMenu
+    @FXML private Label channelLabel
     @FXML private MenuButton notesMenu
     @FXML private Label noteLabel
     @FXML private MenuButton controllersMenu
     @FXML private Label controllerLabel
     @FXML private MenuButton instrumentsMenu
-    @FXML private Label intrumentLabel
+    @FXML private Label instrumentLabel
     @FXML private CheckComboBox selectMuteTracks
     @FXML private ScrollBar scrollBarX
     @FXML private Button undoButton
     @FXML private Button redoButton
     @FXML private Button filesaveButton
-    @FXML private Label channelLabel
     @FXML private TextField currentZoomField
 
     Path filePath
@@ -289,19 +289,6 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         return midi.isClean()
     }
 
-    static class ColorRectCell extends ListCell<ChannelItem> {
-        @Override
-        public void updateItem(ChannelItem item, boolean empty) {
-            super.updateItem(item, empty)
-            Rectangle rect = new Rectangle(100, 16)
-            if (item != null) {
-                rect.setFill(item.color)
-                setGraphic(rect)
-                setText(item.toString())
-            }
-        }
-    }
-
     void initMenus() {
         List<TrackItem> trackList = []
         for(int i = 0; i < midi.sequence.tracks.size(); i++) {
@@ -318,7 +305,6 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
             channelList.add(item)
         }
         channels = FXCollections.observableArrayList(channelList)
-        setChannelLabelColor(midi.channelColor[0])
 
         List<MidiControllerInfo> controllerList = []
         for(int i = 0; i < midi.controllersInfo.values().size(); i++) {
@@ -334,42 +320,63 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         }        
         instruments = FXCollections.observableArrayList(instrumentList)
 
-        loadSelectTrack()
-        loadSelectChannel()
+        loadTracksMenu()
+        loadChannelsMenu()
         loadControllersMenu()
         loadSelectMuteTracks()
         loadInstrumentsMenu()
         loadNotesMenu()
     }
 
-    private void loadSelectTrack() {
-        selectTrack.setItems(tracks)
-        selectTrack.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if (newValue != null && oldValue != newValue) {
-                    TrackItem item = selectTrack.getSelectionModel().getSelectedItem() as TrackItem
-                    midi.currentTrack = item.index
+    private void loadTracksMenu() {
+        tracksMenu.getItems().clear()
+        ToggleGroup toggleGroup = new ToggleGroup()
+        for(int i=0; i<tracks.size(); i++) {
+            TrackItem item = tracks[i]
+            String label = item.toString()
+            RadioMenuItem radioItem = new RadioMenuItem(label)
+            radioItem.setOnAction(new EventHandler<ActionEvent>() {
+                @Override public void handle(ActionEvent event) {
+                    midi.currentTrack = item.getIndex()
+                    trackLabel.setText(label)
                     draw()
                 }
+            })
+            if (item.getIndex() == midi.currentTrack) {
+                radioItem.setSelected(true)
+                trackLabel.setText(label)
             }
-        })
+            radioItem.setToggleGroup(toggleGroup)
+            tracksMenu.getItems().add(radioItem)
+        }
     }
 
-     private void loadSelectChannel() {
-        selectChannel.setItems(channels)
-        selectChannel.setCellFactory({ListView<ChannelItem> l -> new ColorRectCell()})
-        selectChannel.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                if (newValue != null && oldValue != newValue) {
-                    ChannelItem item = selectChannel.getSelectionModel().getSelectedItem() as ChannelItem
-                    midi.currentChannel = item.index
-                    setChannelLabelColor(item.color)
+    private void loadChannelsMenu() {
+        channelsMenu.getItems().clear()
+        ToggleGroup toggleGroup = new ToggleGroup()
+        for(int i=0; i<channels.size(); i++) {
+            ChannelItem item = channels[i]
+            String label = item.toString()
+            RadioMenuItem radioItem = new RadioMenuItem(label)
+            Rectangle rect = new Rectangle(100, 16)
+            rect.setFill(item.getColor())
+            radioItem.setGraphic(rect)
+            radioItem.setOnAction(new EventHandler<ActionEvent>() {
+                @Override public void handle(ActionEvent event) {
+                    midi.currentChannel = item.getIndex()
+                    setChannelLabelColor(item.getColor())
+                    channelLabel.setText(label)
                     draw()
                 }
+            })
+            if (item.getIndex() == midi.currentChannel) {
+                radioItem.setSelected(true)
+                setChannelLabelColor(item.getColor())
+                channelLabel.setText(label)
             }
-        })
+            radioItem.setToggleGroup(toggleGroup)
+            channelsMenu.getItems().add(radioItem)
+        }
     }
 
     private setChannelLabelColor(Color color) {
@@ -470,9 +477,13 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
                 radioItem.setOnAction(new EventHandler<ActionEvent>() {
                     @Override public void handle(ActionEvent event) {
                         midi.currentInstrument = item.getProgram()
-                        intrumentLabel.setText(item.getName())
+                        instrumentLabel.setText(label)
                     }
                 })
+                if (item.getProgram() == midi.currentInstrument) {
+                    radioItem.setSelected(true)
+                    instrumentLabel.setText(label)
+                }
                 radioItem.setToggleGroup(toggleGroup)
                 submenu.getItems().add(radioItem)
             }
@@ -501,6 +512,10 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
                     noteLabel.setText(label)
                 }
             })
+            if (duration == 1) {
+                radioItem.setSelected(true)
+                noteLabel.setText(label)
+            }
             radioItem.setToggleGroup(toggleGroup)
             notesMenu.getItems().add(radioItem)
         }
