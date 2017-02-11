@@ -28,6 +28,7 @@ import java.util.Map
 import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.Files
 
 import javafx.application.Platform
 import javafx.application.Application
@@ -45,6 +46,11 @@ import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.control.TextArea
 import javafx.scene.control.Button
+
+import javafx.scene.control.ButtonType
+import javafx.scene.control.Alert
+import javafx.scene.control.Alert.AlertType
+
 import javafx.scene.input.Clipboard
 import javafx.scene.input.ClipboardContent
 import javafx.scene.input.DataFormat
@@ -99,6 +105,9 @@ class TextEditor extends VBox {
     @FXML private Button filesaveButton
 	@FXML private Button undoButton
 	@FXML private Button redoButton
+
+    boolean GUESS_TEXT_FILE = false
+    final int MAX_FILE_SIZE = 500000
 
 	public TextEditor(Path path=null) {
 		loadControl()
@@ -165,13 +174,19 @@ class TextEditor extends VBox {
             }
         })
 
-        this.filePath = path
-        if (filePath != null) {
-            filesaveButton.setDisable(true)
-            setValue(filePath.getText())
-        }
-        else {
-            filesaveButton.setDisable(false)
+        boolean validPath = true
+        if (GUESS_TEXT_FILE && path != null)
+            validPath = checkFile(path.toFile())
+        if (validPath) {
+            this.filePath = path
+            if (filePath != null) {
+                filesaveButton.setDisable(true)
+                setValue(filePath.getText())
+                markClean()
+            }
+            else {
+                filesaveButton.setDisable(false)
+            }
         }
               
     }
@@ -236,16 +251,51 @@ class TextEditor extends VBox {
                 boolean success = false
                 if (dragboard.hasFiles()) {
                     File file = dragboard.getFiles()[0]
-                    String txt = file.getText()
-                    setValue(txt)
-                    //filePath = file.toPath()
-                    success = true
+                    if (checkFile(file)) {
+                        String txt = file.getText()
+                        jsEditor.call("setValue", txt)
+                        //filePath = file.toPath()
+                        success = true
+                    }
                 }
                 event.setDropCompleted(success)
                 event.consume()
             }
         })
 	}
+
+    void showAlert(AlertType atype, String text) {
+        Alert alert = new Alert(atype, text)
+        Optional<ButtonType> result = alert.showAndWait()
+    }
+
+    boolean checkFile(File file) {
+        Path path = file.toPath()
+        if (Files.size(path) > MAX_FILE_SIZE) {
+            showAlert(AlertType.ERROR, "File size exceeds limit")
+            return false
+        }
+        if (GUESS_TEXT_FILE) {
+            if (!isTextFile(file)) {
+                showAlert(AlertType.ERROR, "Not a text file")
+                return false
+            }
+        }
+        return true
+    }
+
+    boolean isTextFile(File file) {
+        int ascii = 0
+        int tot = 0
+        for (byte b : file.getBytes()) { // getBytes("UTF-8")
+            if ((b >= 0x20  &&  b <= 0x7E) || (b in [0x09, 0x0A, 0x0C, 0x0D])) {
+                ascii++
+            }
+            tot++
+        }
+        // println (ascii/tot)
+        return (ascii/tot) >= 0.9D
+    }
 
     public registerCopyPasteEvents() {
         final KeyCombination keyCombinationCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN)
@@ -335,7 +385,6 @@ class TextEditor extends VBox {
                 pendingEditorSessionCalls.put("setValue", content)
         }
         undoReset()
-        markClean()
     }
 
 	// actions
@@ -344,42 +393,46 @@ class TextEditor extends VBox {
         FileChooser fileChooser = new FileChooser()
         fileChooser.setTitle("Open Source Code File")
         fileChooser.getExtensionFilters().addAll(
-             new ExtensionFilter("Mirchord Files", "*.mirchord"),
-             new ExtensionFilter("Groovy Files", "*.groovy"),
-             new ExtensionFilter("XML Files", "*.xml"),
-             new ExtensionFilter("JSON Files", "*.json"),
-             new ExtensionFilter("All Files", "*.*"))
+            new ExtensionFilter("All Files", "*.*"),
+            new ExtensionFilter("Mirchord Files", "*.mirchord"),
+            new ExtensionFilter("Groovy Files", "*.groovy"),
+            new ExtensionFilter("XML Files", "*.xml"),
+            new ExtensionFilter("JSON Files", "*.json"))
         fileChooser.setInitialDirectory(
             new File(suggestedOpenSaveFolder)
         )
         Stage stage = (Stage)getScene().getWindow()
         File selectedFile = fileChooser.showOpenDialog(stage)
         if (selectedFile != null) {
-            String fileContent = selectedFile.getText('UTF-8') // or .text
-            setValue(fileContent)
-            String filename = selectedFile.getName() 
-            String fileExt = filename[filename.lastIndexOf('.')..-1]
-            Mode fileMode
-            switch (fileExt) {
-                case ".mirchord":
-                    fileMode = Mode.MirChord
-                    break
-                case '.groovy':
-                    fileMode = Mode.Groovy
-                    break
-                case ".java":
-                    fileMode = Mode.Java
-                case ".xml":
-                    fileMode = Mode.XML
-                    break
-                case ".json":
-                    fileMode = Mode.JSON
-                    break
-                default:
-                    fileMode = Mode.Text
-                    break
+            if (checkFile(selectedFile)) {
+                String fileContent = selectedFile.getText('UTF-8') // or .text
+                setValue(fileContent)
+                String filename = selectedFile.getName() 
+                String fileExt = filename[filename.lastIndexOf('.')..-1]
+                Mode fileMode
+                switch (fileExt) {
+                    case ".mirchord":
+                        fileMode = Mode.MirChord
+                        break
+                    case '.groovy':
+                        fileMode = Mode.Groovy
+                        break
+                    case ".java":
+                        fileMode = Mode.Java
+                    case ".xml":
+                        fileMode = Mode.XML
+                        break
+                    case ".json":
+                        fileMode = Mode.JSON
+                        break
+                    default:
+                        fileMode = Mode.Text
+                        break
+                }
+                jsEditorSession.call("setMode", fileMode)
+                filePath = selectedFile.toPath()
+                markClean()
             }
-            jsEditorSession.call("setMode", fileMode)  
         }
     }
 
@@ -402,10 +455,11 @@ class TextEditor extends VBox {
         FileChooser fileChooser = new FileChooser()
         fileChooser.setTitle("Save Source Code as...")        
         fileChooser.getExtensionFilters().addAll(
-             new ExtensionFilter("Mirchord Files", "*.mirchord"),
-             new ExtensionFilter("Groovy Files", "*.groovy"),
-             new ExtensionFilter("XML Files", "*.xml"),
-             new ExtensionFilter("JSON Files", "*.json"))
+            new ExtensionFilter("All Files", "*.*"),
+            new ExtensionFilter("Mirchord Files", "*.mirchord"),
+            new ExtensionFilter("Groovy Files", "*.groovy"),
+            new ExtensionFilter("XML Files", "*.xml"),
+            new ExtensionFilter("JSON Files", "*.json"))
         fileChooser.setInitialDirectory(
             new File(suggestedOpenSaveFolder)
         )

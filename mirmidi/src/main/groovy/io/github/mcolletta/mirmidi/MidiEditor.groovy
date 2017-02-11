@@ -73,6 +73,8 @@ import javafx.scene.control.Dialog
 import javafx.scene.control.DialogPane
 import javafx.scene.control.ButtonType
 import javafx.scene.control.ButtonBar.ButtonData
+import javafx.scene.control.Alert
+import javafx.scene.control.Alert.AlertType
 
 import javafx.scene.shape.Rectangle
 
@@ -262,15 +264,24 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
                 boolean success = false
                 if (dragboard.hasFiles()) {
                     File file = dragboard.getFiles()[0]
-                    midi.loadMidi(file)
-                    draw()
-                    success = true
+                    boolean loaded = midi.loadMidi(file)
+                    if (loaded) {
+                        draw()
+                        success = true
+                    } else {
+                        showAlert(AlertType.ERROR, "Could not get sequence from file")
+                    }
                 }
                 event.setDropCompleted(success)
                 event.consume()
             }
         })    
 	}
+
+    void showAlert(AlertType atype, String text) {
+        Alert alert = new Alert(atype, text)
+        Optional<ButtonType> result = alert.showAndWait()
+    }
 
 	public loadControl() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(getClass().getSimpleName() + ".fxml"))
@@ -591,10 +602,14 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         Stage stage = (Stage)getScene().getWindow()
         File selectedFile = fileChooser.showOpenDialog(stage)
         if (selectedFile != null) {
-            midi.loadMidi(selectedFile)
-            filePath = selectedFile.toPath()
-            updateScrollBar()
-            draw()
+            boolean loaded = midi.loadMidi(selectedFile)
+            if (loaded) {
+                filePath = selectedFile.toPath()
+                updateScrollBar()
+                draw()
+            } else {
+                showAlert(AlertType.ERROR, "Could not get sequence from file")
+            }
         }
     }
 
@@ -702,6 +717,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         midi.addTrackToSequence()
         initMenus()
         draw()
+        showAlert(AlertType.INFORMATION, "New track added to sequence")
     }
 
     void erase() {

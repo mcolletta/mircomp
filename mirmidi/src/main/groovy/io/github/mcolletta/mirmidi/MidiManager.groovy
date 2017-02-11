@@ -287,14 +287,19 @@ class MidiManager {
         initMidi(synth)
     }
 
-    void loadMidi(String path) {
+    boolean loadMidi(String path) {
         File midiFile = new File(path)
-        loadMidi(midiFile)
+        return loadMidi(midiFile)
     }
 
-    void loadMidi(File midiFile) {
-        Sequence sequence = MidiSystem.getSequence(midiFile)
-        loadSequence(sequence)
+    boolean loadMidi(File midiFile) {
+        try {
+            Sequence sequence = MidiSystem.getSequence(midiFile)
+            loadSequence(sequence)
+            return true
+        } catch (InvalidMidiDataException ex) {
+            return false
+        }
     }
 
     void loadSequence(Sequence sequence=null, int tracksCount=1) {
