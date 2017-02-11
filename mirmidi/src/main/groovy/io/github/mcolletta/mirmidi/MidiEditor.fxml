@@ -21,7 +21,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.collections.*?>
-<?import org.controlsfx.control.CheckComboBox?>
 <?import io.github.mcolletta.mirmidi.*?>
 <fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml" stylesheets="@styles.css">
 	<ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
