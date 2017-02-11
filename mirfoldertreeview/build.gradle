@@ -1,0 +1,33 @@
+apply plugin: 'groovy'
+sourceCompatibility = 8
+
+apply plugin: 'application'
+
+dependencies {
+    compile localGroovy()
+    // compile fileTree(dir: '../libs', include: ['*.jar'])
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+        resources {
+            srcDirs = ["src/main/groovy"]
+        }
+    }
+}
+
+
+task runScript(type: JavaExec) {
+    description 'Run Simple Demo'
+    main = 'io.github.mcolletta.mirfoldertreeview.Demo'
+    classpath = sourceSets.main.runtimeClasspath
+
+    if (project.hasProperty('custom_arg')) {
+        args project.getProperty('custom_arg')
+    }
+}
+
+defaultTasks 'runScript'
