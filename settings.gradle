@@ -4,9 +4,13 @@ include ":demos"
 include ":mirtext"
 include ":mirscore"
 include ":mirmidi"
+include ":mirfoldertreeview"
+include ":miride"
 project(':mirchord').projectDir = new File('mirchord')
 project(':mirconverter').projectDir = new File('mirconverter')
 project(':demos').projectDir = new File('demos')
 project(':mirtext').projectDir = new File('mirtext')
 project(':mirscore').projectDir = new File('mirscore')
 project(':mirmidi').projectDir = new File('mirmidi')
+project(':mirfoldertreeview').projectDir = new File('mirfoldertreeview')
+project(':miride').projectDir = new File('miride')

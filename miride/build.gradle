@@ -1,0 +1,46 @@
+apply plugin: 'groovy'
+sourceCompatibility = 8
+
+apply plugin: 'application'
+mainClassName = 'io.github.mcolletta.miride.MirIDE'
+
+dependencies {
+    // compile localGroovy()
+    // compile 'org.codehaus.groovy:groovy-all:2.4.8:indy'
+    compile name: 'groovy-all-2.4.8-indy'
+    compile fileTree(dir: '../libs', include: ['*.jar'])
+    compile project(':mirchord')
+    compile project(':mirconverter')
+    compile project(':mirscore')
+    compile project(':mirtext')
+    compile project(':mirmidi')
+    compile project(':mirfoldertreeview')
+}
+
+tasks.withType(GroovyCompile) {
+    groovyOptions.optimizationOptions.indy = true
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+        resources {
+            srcDirs = ["src/main/groovy"]
+        }
+    }
+}
+
+
+task runMirIDE(type: JavaExec) {
+    description 'Run MirIDE'
+    main = 'io.github.mcolletta.miride.MirIDE'
+    classpath = sourceSets.main.runtimeClasspath
+
+    if (project.hasProperty('custom_arg')) {
+        args project.getProperty('custom_arg')
+    }
+}
+
+defaultTasks 'runMirIDE'
