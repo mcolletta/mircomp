@@ -2,9 +2,14 @@ apply plugin: 'groovy'
 sourceCompatibility = 8
 
 dependencies {
-    compile localGroovy()
+    // compile localGroovy()
+    compile name: 'groovy-all-2.4.8-indy'
     compile fileTree(dir: '../libs', include: ['*.jar'])
     compile project(':mirchord')
+}
+
+tasks.withType(GroovyCompile) {
+    groovyOptions.optimizationOptions.indy = true
 }
 
 sourceSets {

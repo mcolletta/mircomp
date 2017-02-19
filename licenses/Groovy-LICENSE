@@ -203,11 +203,16 @@
 
 ------------------------------------------------------------------------
 
-Asciidoc License
+ANTLR 2 License
 
-This product uses the style.css from asciidoctor.org within
-documentation. The file is available under the MIT License.
-For details, see licenses/asciidoc-style-license.txt.
+Antlr2 is released in the public domain.
+See licenses/antlr2-license.txt for details.
+
+------------------------------------------------------------------------
+
+ASM 4 License
+
+ASM 4 uses a 3-clause BSD license. For details, see licenses/asm-license.txt.
 
 ------------------------------------------------------------------------
 
@@ -218,20 +223,9 @@ The following class within this product:
     org.codehaus.groovy.tools.shell.completion.FileNameCompleter
 
 was derived from JLine 2.12, and the following patch:
-https://github.com/jline/jline2/pull/204
+https://github.com/jline/jline2/issues/90
 JLine2 is made available under a BSD License.
 For details, see licenses/jline2-license.
-
-------------------------------------------------------------------------
-
-JQuery License
-
-The following file is used within documentation:
-
-    src/spec/assets/css/jquery-2.1.1.min.js
-
-This file is made available under the following MIT license:
-licenses/jquery-js-license.txt
 
 ------------------------------------------------------------------------
 

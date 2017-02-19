@@ -613,7 +613,7 @@ class Utils {
 			default:
 			break
 		}
-		return [type: type, dotted: dotted]
+		return [type: type, dotted: dotted] as Map<String, Boolean>
 	}
 	
 	static Map<String, String> chordkind_lily = [

@@ -106,7 +106,7 @@ public class SimpleNotationEditor extends Application {
             @Override public void handle(ActionEvent e) {
                 TextEditor edtr = new TextEditor()
                 edtr.setMode(Mode.Groovy)
-                editor.setValue("/* Put your code here */")
+                edtr.setValue("/* Put your code here */")
                 Tab tb = new Tab()
                 tb.setText("Editor")
                 tb.setContent(edtr)

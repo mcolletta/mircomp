@@ -6,7 +6,7 @@ apply plugin: 'application'
 allprojects {
     repositories {
        flatDir {
-           dirs 'libs'
+           dirs '../libs'
        }
     }
 }

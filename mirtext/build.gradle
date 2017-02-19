@@ -4,7 +4,12 @@ sourceCompatibility = 8
 apply plugin: 'application'
 
 dependencies {
-    compile localGroovy()
+    // compile localGroovy()
+    compile name: 'groovy-all-2.4.8-indy'
+}
+
+tasks.withType(GroovyCompile) {
+    groovyOptions.optimizationOptions.indy = true
 }
 
 sourceSets {
