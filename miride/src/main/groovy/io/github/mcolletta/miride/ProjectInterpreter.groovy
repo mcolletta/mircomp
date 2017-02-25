@@ -59,8 +59,9 @@ class ProjectInterpreter {
     Binding binding = new Binding()
 
 
-    ProjectInterpreter(String strPrjPath) {
-        projectPath = Paths.get(strPrjPath)
+    ProjectInterpreter(String strPrjPath=null) {
+        if (strPrjPath != null)
+            projectPath = Paths.get(strPrjPath)
         createEngine()
     }
 
@@ -84,19 +85,23 @@ class ProjectInterpreter {
         engineClassLoader = null
         engine = null
         shell = null
-        roots = []   
-        Files.walkFileTree(projectPath, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                throws IOException
-            {
-                roots << dir.toUri().toURL()
-                return FileVisitResult.CONTINUE
-            }
-        })
-        engine = new GroovyScriptEngine(roots as URL[], this.class.classLoader)
-        engineClassLoader = engine.getGroovyClassLoader()
-        shell = new GroovyShell(engineClassLoader, configuration)
+        roots = []
+        if (projectPath != null) {
+            Files.walkFileTree(projectPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                    throws IOException
+                {
+                    roots << dir.toUri().toURL()
+                    return FileVisitResult.CONTINUE
+                }
+            })
+            engine = new GroovyScriptEngine(roots as URL[], this.class.classLoader)
+            engineClassLoader = engine.getGroovyClassLoader()
+            shell = new GroovyShell(engineClassLoader, configuration)
+        } else {
+            shell = new GroovyShell(configuration)
+        }
     }
 
     void setDefaultImports(ImportCustomizer importCustomizer) {

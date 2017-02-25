@@ -200,6 +200,7 @@ public class Editor implements FolderTreeViewListener {
         )
 
         initMidi()
+        interpreter = new ProjectInterpreter()
     }
 
     void showLicenseAgreementDialog() {
@@ -562,7 +563,7 @@ public class Editor implements FolderTreeViewListener {
         }
     }
 
-    /*void newmirchordfile() {
+    void newmirchordfile() {
         DirectoryChooser dirChooser = new DirectoryChooser()
         dirChooser.setTitle("Select folder for file")
         dirChooser.setInitialDirectory(
@@ -586,7 +587,7 @@ public class Editor implements FolderTreeViewListener {
         if (selectedFolder != null) {
             openNewTab(selectedFolder.toPath(), "groovy", false)
         } 
-    }*/
+    }
 
     void openfile() {
         File initialDir = projectFolder.get()

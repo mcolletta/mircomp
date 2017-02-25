@@ -35,12 +35,12 @@
             <MenuItem mnemonicParsing="false" onAction="#openproject" text="Open project..." />
             <MenuItem mnemonicParsing="false" onAction="#reloadproject" text="Reload project" />
             <MenuItem mnemonicParsing="false" onAction="#openfile" text="Open file..." />
-            <!-- <Menu mnemonicParsing="false" text="New file">
+            <Menu mnemonicParsing="false" text="New file">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#newmirchordfile" text="New Mirchord file" />
                 <MenuItem mnemonicParsing="false" onAction="#newgroovyfile" text="New Groovy file" />
               </items>
-            </Menu> -->
+            </Menu>
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#onExit" text="Quit" />
           </items>
