@@ -201,7 +201,7 @@ class MirChordProcessor extends AbstractProcessor {
 	private void relative(String octave) {
 		Map scope = getScope()
 		scope['octave'] = Integer.parseInt(octave)
-		scope['relative'] = null
+		scope['symbol'] = null
 	}
 
 	private void addToScore(MusicElement element) {
