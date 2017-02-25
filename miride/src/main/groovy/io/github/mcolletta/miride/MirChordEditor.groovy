@@ -42,6 +42,8 @@ class MirChordEditor extends VBox {
     TextEditor editor
     ScoreViewer viewer
 
+    Path filePath
+
     MirChordEditor(Path path=null) {
     	splitPane = new SplitPane()
     	editor = new TextEditor(path)
@@ -63,5 +65,9 @@ class MirChordEditor extends VBox {
 
     boolean isClean() {
         return editor.isClean()
+    }
+
+    Path getFilePath() {
+        return editor.getFilePath()
     }
 }

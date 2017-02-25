@@ -152,7 +152,7 @@ public class FolderTreeView extends VBox {
 	        def node = toVisit.peek()
             //println "kind=" + kind + " node.getValue()=" + node.getValue()  + " path.getParent()=" + path.getParent()
 	        if (kind == ENTRY_MODIFY && node.getValue() == path) {
-	        	println "Modified  node= " + node.getValue()
+	        	// println "Modified  node= " + node.getValue()
 				return
 	        }
 	        if (kind == ENTRY_CREATE && node.getValue() == path.getParent()) {

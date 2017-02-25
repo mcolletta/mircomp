@@ -348,16 +348,14 @@ public class Editor implements FolderTreeViewListener {
                 if (tab.getText() != title) {
                     Platform.runLater( {
                         setTabLabelText(tab, title)
-                    }) 
+                    })
                 }
             }
 
             if (path == null) {
                 def tabContent = tab.getContent()
                 if (tabContent.hasProperty("filePath")) {
-                    println "tabContent " + tabContent
                     Path filePath = (Path) ((GroovyObject)tabContent).getProperty("filePath")
-                    println "filePath " + filePath
                     if (filePath != null && filePath == changedPath) {
                         Platform.runLater( {
                             setTabLabelText(tab, filePath.getFileName().toString())

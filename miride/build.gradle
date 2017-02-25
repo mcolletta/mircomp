@@ -33,11 +33,11 @@ sourceSets {
 }
 
 distZip {
-    //from '../LICENSE'
     into(project.name) {
         from '..'
         include 'licenses/*'
         include 'LICENSE'
+        include 'LICENSE-ALLJARS'
         include 'README.md'
     }
 }
