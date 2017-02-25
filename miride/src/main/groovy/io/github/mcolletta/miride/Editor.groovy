@@ -212,8 +212,9 @@ public class Editor implements FolderTreeViewListener {
         vbox.setPrefHeight(500)
         vbox.setAlignment(Pos.CENTER)
         Label label = new Label()
-        Path infoPath = Paths.get( getClass().getResource("resources/info.txt").getPath() )
-        label.setText(infoPath.toFile().getText())
+        /*Path infoPath = Paths.get( getClass().getResource("resources/info.txt").getPath() )
+        label.setText(infoPath.toFile().getText())*/
+        label.setText(getClass().getResourceAsStream("resources/info.txt").getText())
         vbox.getChildren().add(label)
 
         dialogPane.setContent(vbox)
@@ -536,8 +537,7 @@ public class Editor implements FolderTreeViewListener {
         vbox.setPrefHeight(500)
         vbox.setAlignment(Pos.CENTER)
         Label label = new Label()
-        Path infoPath = Paths.get( getClass().getResource("resources/info.txt").getPath() )
-        label.setText(infoPath.toFile().getText())
+        label.setText(getClass().getResourceAsStream("resources/info.txt").getText())
         vbox.getChildren().add(label)
 
         dialogPane.setContent(vbox)
@@ -550,6 +550,7 @@ public class Editor implements FolderTreeViewListener {
         if (projectFolder.get() != null) {
             Dialog<ButtonType> dialog = new Dialog<>()
             DialogPane dialogPane = dialog.getDialogPane()
+            dialogPane.getStylesheets().add(getClass().getResource("styles.css").toExternalForm())
             ConfigEditor configDialog = new ConfigEditor(projectFolder.get().toPath(), config)
             dialogPane.setContent(configDialog)
             ButtonType reloadBtn = new ButtonType("Reload", ButtonData.OK_DONE)
@@ -646,6 +647,7 @@ public class Editor implements FolderTreeViewListener {
     }
 
     void openprojectFolder() {
+        startWait()
         treeButton.setSelected(true)
         showtree()
         try {
@@ -656,6 +658,9 @@ public class Editor implements FolderTreeViewListener {
         } catch(Exception ex) {
             println "Exception: " + ex.getMessage()
         }
+        finally {
+                endWait()
+            }
     }
 
     void newproject() {

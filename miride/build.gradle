@@ -32,6 +32,15 @@ sourceSets {
     }
 }
 
+distZip {
+    //from '../LICENSE'
+    into(project.name) {
+        from '..'
+        include 'licenses/*'
+        include 'LICENSE'
+        include 'README.md'
+    }
+}
 
 task runMirIDE(type: JavaExec) {
     description 'Run MirIDE'
