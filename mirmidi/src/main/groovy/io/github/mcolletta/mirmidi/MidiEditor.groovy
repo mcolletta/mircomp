@@ -68,6 +68,7 @@ import javafx.scene.control.CustomMenuItem
 import javafx.scene.control.ToggleGroup
 import javafx.scene.control.Toggle
 import javafx.scene.control.CheckBox
+import javafx.scene.control.Spinner
 
 import javafx.scene.control.Dialog
 import javafx.scene.control.DialogPane
@@ -144,10 +145,12 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     PianoRollEditor pianoRollEditor
     ControllerEditor controllerEditor
     InstrumentsEditor instrumentsEditor
+    TempoEditor tempoEditor
 
     @FXML private ResizableCanvas pianoCanvas
     @FXML private ResizableCanvas controllerCanvas
     @FXML private ResizableCanvas instrumentsCanvas
+    @FXML private ResizableCanvas tempoCanvas
 
     @FXML private MenuButton tracksMenu
     @FXML private Label trackLabel
@@ -165,6 +168,8 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     @FXML private Button redoButton
     @FXML private Button filesaveButton
     @FXML private TextField currentZoomField
+
+    @FXML private Spinner tempoSpinner
 
     Path filePath
     String suggestedOpenSaveFolder = System.getProperty("user.home")
@@ -187,9 +192,11 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         pianoRollEditor = new PianoRollEditor(midi, pianoCanvas)
         controllerEditor = new ControllerEditor(midi, controllerCanvas)
         instrumentsEditor = new InstrumentsEditor(midi, instrumentsCanvas)
+        tempoEditor = new TempoEditor(midi, tempoCanvas)
         pianoCanvas.repaint = pianoRollEditor.&repaint
         controllerCanvas.repaint = controllerEditor.&repaint
         instrumentsCanvas.repaint = instrumentsEditor.&repaint
+        tempoCanvas.repaint = tempoEditor.&repaint
 
         currentZoomField.setText("" + 100)
         currentZoomField.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -212,6 +219,14 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
                 }
             }
         })
+
+        tempoSpinner.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+                tempoEditor.currentBPM = new_val as int
+                draw()
+            }
+        })
+        // tempoEditor.currentBPM = tempoSpinner.getValue()
 
         updateScrollBar()
         Bindings.bindBidirectional(scrollBarX.valueProperty(), midi.horizontalOffsetProperty())
@@ -265,6 +280,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
                 if (dragboard.hasFiles()) {
                     File file = dragboard.getFiles()[0]
                     boolean loaded = midi.loadMidi(file)
+                    tempoSpinner.getValueFactory().setValue( (int) midi.getSequencerBPM())
                     if (loaded) {
                         draw()
                         success = true
@@ -548,12 +564,14 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         pianoRollEditor.repaint()
         controllerEditor.repaint()
         instrumentsEditor.repaint()
+        tempoEditor.repaint()
     }
 
     void drawPlayback() {
         pianoRollEditor.repaintPlayback()
         controllerEditor.repaintPlayback()
         instrumentsEditor.repaint()
+        tempoEditor.repaint()
     }
 
     void updateScrollBar() {
@@ -603,6 +621,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         File selectedFile = fileChooser.showOpenDialog(stage)
         if (selectedFile != null) {
             boolean loaded = midi.loadMidi(selectedFile)
+            tempoSpinner.getValueFactory().setValue( (int) midi.getSequencerBPM())
             if (loaded) {
                 filePath = selectedFile.toPath()
                 updateScrollBar()
@@ -651,6 +670,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     public reloadfile() {
         if (filePath != null) {
             midi.loadMidi(filePath.toFile())
+            tempoSpinner.getValueFactory().setValue( (int) midi.getSequencerBPM())
             draw()
         }
     }
@@ -682,6 +702,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
                 pianoRollEditor.playbackAtTick(tick)
                 controllerEditor.playbackAtTick(tick)
                 instrumentsEditor.playbackAtTick(tick)
+                tempoEditor.playbackAtTick(tick)
                 drawPlayback()
             } catch(Exception ex) {
                 println "Exception: " + ex.getMessage()
@@ -711,6 +732,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         pianoRollEditor.setCursor(c)
         controllerEditor.setCursor(c)
         instrumentsEditor.setCursor(c)
+        tempoEditor.setCursor(c)
     }
 
     void addtrack() {
@@ -724,6 +746,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         pianoRollEditor.delete()
         controllerEditor.delete()
         instrumentsEditor.delete()
+        tempoEditor.delete()
     }
 
     void editMode() {
@@ -753,6 +776,15 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     void curveMode() {
         controllerEditor.pencilMode = ControllerEditMode.CURVE
     }
+
+    void tempoEditedMode() {
+        tempoEditor.tempoMode = TempoEditMode.EDITED
+    }
+
+    void tempoAxisMode() {
+        tempoEditor.tempoMode = TempoEditMode.AXIS
+    }
+
 
     void undo() {
         midi.undo()

@@ -121,6 +121,33 @@
                 </VBox>
               </content>
             </Tab>
+            <Tab text="Tempo">
+              <content>
+                <VBox maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+                            <items>
+                                <Label text="Tempo:" />
+                                <Spinner fx:id="tempoSpinner">
+                                  <valueFactory>
+                                    <SpinnerValueFactory.IntegerSpinnerValueFactory min="24" max="300" initialValue="120"/>
+                                  </valueFactory>
+                                  <editable>true</editable>
+                                </Spinner>
+                                <Separator orientation="VERTICAL" />
+                                <Label text="Tempo Mode:" />
+                                <fx:define>
+                                  <ToggleGroup fx:id="tempoModeButtonsGroup"/>  
+                                </fx:define>
+                                <ToggleButton fx:id="tempoEditedButton" onAction="#tempoEditedMode" toggleGroup="$tempoModeButtonsGroup" styleClass="spinner-button" text="Spinner" mnemonicParsing="false"/>
+                                <ToggleButton fx:id="tempoAxisButton" onAction="#tempoAxisMode" toggleGroup="$tempoModeButtonsGroup" styleClass="axis-button" text="Axis" mnemonicParsing="false"/>
+                            </items>
+                        </ToolBar>
+                        <ResizableCanvas fx:id="tempoCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+                    </children>
+                </VBox>
+              </content>
+            </Tab>
         </tabs>
     </TabPane>    
     <ScrollBar fx:id="scrollBarX" orientation="HORIZONTAL" />

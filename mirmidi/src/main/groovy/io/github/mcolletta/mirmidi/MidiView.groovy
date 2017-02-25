@@ -35,6 +35,10 @@ import javafx.scene.paint.Color
 
 import groovy.transform.CompileStatic
 
+enum TempoEditMode {
+    EDITED, AXIS
+}
+
 enum ControllerEditMode {
     LINE, CURVE
 }
@@ -70,10 +74,10 @@ class MidiView extends MidiManager {
         if (path != null) {
             loadMidi(path.toFile())
         }
-        List<String> hexColors = ["#f92672", "#66d9ef", "#a6e22e", "#ae81ff", 
-                                  "#ffee80", "#ff628c", "#80ffbb", "#ff80e1", 
-                                  "#ff9d00", "#0088ff", "#e64637", "#3ad900", 
-                                  "#ffdd00", "#ff00ff", "#ff0000", "#C8C800"]
+        List<String> hexColors = ["#3ad900", "#f92672", "#70d9ef", "#a6e22e", 
+                                  "#ae81ff", "#C8C800", "#ff628c", "#80ffbb", 
+                                  "#ff80e1", "#0088ff", "#ff9d00", "#e64637",  
+                                  "#ffdd00", "#ff00ff", "#ff0000", "#ffee80"]
 
         for(String hexColor : hexColors) {
             channelColor << Color.web(hexColor)

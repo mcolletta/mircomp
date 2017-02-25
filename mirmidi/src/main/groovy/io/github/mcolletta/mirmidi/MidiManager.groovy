@@ -66,6 +66,8 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class MidiManager {
 
+    final static int MESSAGE_TEMPO_TYPE = 0x51  // decimal 81
+
     Sequencer sequencer
     Sequence sequence
     Synthesizer synthesizer
@@ -94,6 +96,7 @@ class MidiManager {
     SortedList<MidiNote> sortedByDurationNotes  // longest duration in O(1)
     Map<Integer,Map<Integer,ObservableMap<Long,MidiCC>>> controllers  // [controller][channel][tick] = MidiCC
     Map<Integer,ObservableMap<Long,MidiPC>> programs  // [channel][tick] = MidiPC
+    ObservableMap<Long,MidiTempo> tempi
 
     long length = 0
 
@@ -207,6 +210,24 @@ class MidiManager {
                         }
                     }
 
+
+    MapChangeListener<Long, MidiTempo> tempoListener = new MapChangeListener<Long, MidiTempo>() {
+                        @Override
+                        public void onChanged(MapChangeListener.Change<? extends Long, ? extends MidiTempo> change) {
+                            if (!isParsing) {
+                                if (change.wasAdded()) {
+                                    updateSequenceAddedTempo(change.getValueAdded())
+                                    if (currentEdit) 
+                                        currentEdit.tempoInserted.add(change.getValueAdded())
+                                }
+                                if (change.wasRemoved()) {
+                                    updateSequenceRemovedTempo(change.getValueRemoved())
+                                    if (currentEdit) 
+                                        currentEdit.tempoRemoved.add(change.getValueRemoved())
+                                }
+                            }
+                        }
+                    }
 
     MapChangeListener<Integer,Integer> usedChannelsListener = new MapChangeListener<Integer,Integer>() {
                         @Override
@@ -337,6 +358,18 @@ class MidiManager {
         }
     }
 
+    void setSequencerBPM(float bpm) {
+        if (sequencer != null)
+            sequencer.setTempoInBPM(bpm)
+    }
+
+    float getSequencerBPM() {
+        if (sequencer != null) {
+            return sequencer.getTempoInBPM()
+        }
+        return 120f
+    }
+
     void updateSequenceAddedNote(MidiNote note) {
         Track t = sequence.tracks[note.track]
         t.add(note.startEvent)
@@ -376,6 +409,18 @@ class MidiManager {
             Track t = sequence.tracks[pc.track]
             t.remove(pc.midiEvent)
             usedChannels[pc.getChannel()] -= 1
+        }
+    }
+
+    void updateSequenceAddedTempo(MidiTempo tempo) {
+        Track t = sequence.tracks[tempo.track]
+        t.add(tempo.midiEvent)
+    }
+
+    void updateSequenceRemovedTempo(MidiTempo tempo) {
+        if (tempo != null) {
+            Track t = sequence.tracks[tempo.track]
+            t.remove(tempo.midiEvent)
         }
     }
 
@@ -422,14 +467,6 @@ class MidiManager {
         this.controllers[cc.controller][cc.channel].remove(cc.tick)
     }
 
-    void addMidiPC(MidiPC pc) {
-        this.programs[pc.channel][pc.tick] = pc
-    }
-
-    void removeMidiPC(MidiPC pc) {
-        this.programs[pc.channel].remove(pc.tick)
-    }
-
     MidiPC createMidiPC(int channel, int track, long tick, int data1) {
         Track t = sequence.tracks[track]
         ShortMessage msg = new ShortMessage()
@@ -438,6 +475,35 @@ class MidiManager {
         MidiEvent midiEvt = new MidiEvent(msg, tick)
         MidiPC pc = new MidiPC(midiEvent:midiEvt, track:track)
         return pc
+    }
+
+    void addMidiPC(MidiPC pc) {
+        this.programs[pc.channel][pc.tick] = pc
+    }
+
+    void removeMidiPC(MidiPC pc) {
+        this.programs[pc.channel].remove(pc.tick)
+    }
+
+    MidiTempo createMidiTempo(int track, long tick, int bpm) {
+        int mpq = (int) (60000000.0D / bpm)
+        byte[] data = new byte[3]
+        data[0] = (byte) ((mpq >> 16) & 0xFF)
+        data[1] = (byte) ((mpq >> 8) & 0xFF)
+        data[2] = (byte) (mpq & 0xFF)
+        MetaMessage msg = new MetaMessage()
+        msg.setMessage(MESSAGE_TEMPO_TYPE, data, data.length)
+        MidiEvent midiEvt = new MidiEvent(msg, tick)
+        MidiTempo tempo = new MidiTempo(midiEvent:midiEvt, track:track)
+        return tempo
+    }
+
+    void addMidiTempo(MidiTempo tempo) {
+        this.tempi[tempo.tick] = tempo
+    }
+
+    void removeMidiTempo(MidiTempo tempo) {
+        this.tempi.remove(tempo.tick)
     }
 
     long getLength() {
@@ -475,6 +541,12 @@ class MidiManager {
         return idx
     }
 
+    int getStartTempoIndex(long x, ObservableMap<Long, MidiTempo> om) {
+        List<Long> keys = om.keySet() as List<Long>
+        int idx = Collections.binarySearch(keys, x)
+        return idx
+    }
+
     void parseEvents() {
         isParsing = true
 
@@ -498,6 +570,9 @@ class MidiManager {
                 map.addListener(programListener)
                 return map
             }
+
+        tempi = FXCollections.observableMap( new ConcurrentSkipListMap<Long, MidiTempo>() )
+        tempi.addListener(tempoListener)
 
         usedChannels = FXCollections.observableMap( [:].withDefault() { 0 } )
         usedChannels.addListener(usedChannelsListener)
@@ -547,7 +622,16 @@ class MidiManager {
                             break
                     }
                 }
-
+                if (event.getMessage() instanceof MetaMessage) {
+                    MetaMessage message = event.getMessage() as MetaMessage
+                    switch (message.getType()) {
+                        case MESSAGE_TEMPO_TYPE:
+                            MidiTempo mt = new MidiTempo(midiEvent:event, track:idx)
+                            break
+                        default:
+                            break
+                    }
+                }
             }
         }
         
@@ -649,6 +733,8 @@ class MidiManager {
         List<MidiCC> ccRemoved = []
         List<MidiPC> pcInserted = []
         List<MidiPC> pcRemoved = []
+        List<MidiTempo> tempoInserted = []
+        List<MidiTempo> tempoRemoved = []
 
         void undo() {
             // ORDER IS IMPORTANT: reverse respect to the action
@@ -670,6 +756,12 @@ class MidiManager {
             for(MidiPC pc : pcRemoved) {
                 addMidiPC(pc)
             }
+            for(MidiTempo tempo : tempoInserted) {
+                removeMidiTempo(tempo)
+            }
+            for(MidiTempo tempo : tempoRemoved) {
+                addMidiTempo(tempo)
+            }
         }
 
         void redo() {
@@ -690,6 +782,12 @@ class MidiManager {
             }
             for(MidiPC pc : pcInserted) {
                 addMidiPC(pc)
+            }
+            for(MidiTempo tempo : tempoRemoved) {
+                removeMidiTempo(tempo)
+            }
+            for(MidiTempo tempo : tempoInserted) {
+                addMidiTempo(tempo)
             }
         }
     }
@@ -799,6 +897,7 @@ class MidiData {
     int track
 }
 
+@CompileStatic
 class MidiCC extends MidiData {
 
     int getController() {
@@ -819,6 +918,7 @@ class MidiCC extends MidiData {
 
 }
 
+@CompileStatic
 class MidiPC extends MidiData {
 
     int getInstrument() {
@@ -833,6 +933,7 @@ class MidiPC extends MidiData {
 
 }
 
+@CompileStatic
 @TupleConstructor
 class MidiControllerInfo {
     String info
@@ -842,6 +943,45 @@ class MidiControllerInfo {
     String toString() {
         return info
     }
+}
+
+@CompileStatic
+@ToString(includeNames=true, includeFields=true, excludes='midiEvent')
+@TupleConstructor
+class MidiMeta {
+
+    MidiEvent midiEvent
+
+    int getType() {
+        MetaMessage message = midiEvent.getMessage() as MetaMessage
+        int type = message.getType()
+        return type
+    }
+
+    long getTick() {
+        return midiEvent.getTick()
+    }
+
+    int track
+}
+
+@CompileStatic
+class MidiTempo extends MidiMeta {
+
+    int getBPM() {
+        MetaMessage message = midiEvent.getMessage() as MetaMessage
+        byte[] data = message.getData()
+        // microseconds per quarter
+        int mpq = (data[0] & 0xff) << 16 | (data[1] & 0xff) << 8 | (data[2] & 0xff)
+        // beats per minute
+        int bpm = (int) (60000000.0D / mpq)
+        return bpm
+    }
+
+    String toString() {
+        return "BPM=" + getBPM() + "[" + getTick() + "]"
+    }
+
 }
 
 interface MidiPlaybackListener {

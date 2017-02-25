@@ -147,6 +147,14 @@
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/sc_beziersmooth.png');
 }
+.spinner-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_spinbutton.png');
+}
+.axis-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_toggleaxisdescr.png');
+}
 
 .instrument-button {
     -fx-content-display: graphic-only;
