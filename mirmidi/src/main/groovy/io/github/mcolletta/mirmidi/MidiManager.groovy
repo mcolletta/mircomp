@@ -692,6 +692,7 @@ class MidiManager {
                 playbackThread.stopPlayback()
         }
         setPlaybackPosition(0L)
+        sequencer.setTickPosition(getPlaybackPosition())
         for (MidiPlaybackListener listener : listeners) {
             listener.playbackStopped()
         }

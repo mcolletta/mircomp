@@ -701,7 +701,6 @@ class MidiEditor  extends VBox implements MidiPlaybackListener, FolderTreeListen
 
     void replay() {
         midi.stop()
-        midi.setPlaybackPosition(0L)
         midi.play()
     }
 

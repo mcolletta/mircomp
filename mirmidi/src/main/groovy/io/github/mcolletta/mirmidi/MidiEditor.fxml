@@ -30,10 +30,10 @@
             <Button fx:id="filesaveButton"  onAction="#filesave" styleClass="filesave-button" text="Save" mnemonicParsing="false"/>
             <Button fx:id="filesaveasButton"  onAction="#filesaveas" styleClass="filesaveas-button" text="Save as..." mnemonicParsing="false"/>
             <Button fx:id="reloadfileButton"  onAction="#reloadfile" styleClass="reloadfile-button" text="Reload file..." mnemonicParsing="false"/>
-            <Button fx:id="replayButton"  onAction="#replay" styleClass="replay-button" text="Cut" mnemonicParsing="false"/>
-            <Button fx:id="playButton" onAction="#play" styleClass="play-button" text="Copy" mnemonicParsing="false"/>
-            <Button fx:id="playPause" onAction="#pause" styleClass="pause-button" text="Copy" mnemonicParsing="false"/>
-            <Button fx:id="stopButton" onAction="#stop" styleClass="stop-button" text="Paste" mnemonicParsing="false"/>
+            <Button fx:id="replayButton"  onAction="#replay" styleClass="replay-button" text="Replay" mnemonicParsing="false"/>
+            <Button fx:id="playButton" onAction="#play" styleClass="play-button" text="Play" mnemonicParsing="false"/>
+            <Button fx:id="playPause" onAction="#pause" styleClass="pause-button" text="Pause" mnemonicParsing="false"/>
+            <Button fx:id="stopButton" onAction="#stop" styleClass="stop-button" text="Stop" mnemonicParsing="false"/>
             <Separator orientation="VERTICAL" />
             <Button fx:id="undoButton" onAction="#undo" styleClass="undo-button" text="Undo" mnemonicParsing="false"/>
             <Button fx:id="redoButton" disable="true" onAction="#redo" styleClass="redo-button" text="Redo" mnemonicParsing="false"/>
