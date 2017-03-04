@@ -143,12 +143,18 @@ class ChordSymbol implements MusicElement {
 			pitches << pitch
 		}
 		if (bass != null) {
-			int octaveInversionStep = upInversion ? 1 : -1
 			boolean foundBassPitch = false
-			pitches.reverseEach { Pitch pitch ->
-				if (foundBassPitch) 
-					pitch.octave += octaveInversionStep
-				if (pitch == bass)
+			// pitches.reverseEach { Pitch pitch ->
+			for(int i=pitches.size()-1; i>=0; i--) {
+				Pitch pitch = pitches[i]
+				if (upInversion) {
+					if (foundBassPitch) 
+						pitch.octave += 1
+				} else {
+					if (!foundBassPitch) 
+						pitch.octave -= 1
+				}
+				if (pitch.symbol == bass.symbol)
 					foundBassPitch = true
 			}
 		}
