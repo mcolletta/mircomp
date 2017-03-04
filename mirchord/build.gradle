@@ -5,7 +5,7 @@ apply plugin: 'application'
 
 dependencies {
     // compile localGroovy()
-    compile name: 'groovy-all-2.4.8-indy'
+    compile name: 'groovy-all-2.4.9-indy'
     compile fileTree(dir: '../libs', include: ['*.jar'])
 }
 
