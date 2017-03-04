@@ -97,6 +97,7 @@ class Score {
 @Canonical
 class Part {
 	String id
+	String name
 	Map<String, Voice> voices = [:]
 
 	public boolean equals(Part part) {

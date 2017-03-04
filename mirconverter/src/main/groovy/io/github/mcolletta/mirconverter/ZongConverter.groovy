@@ -178,7 +178,7 @@ class ZongConverter {
 
 		mirscore.parts.each { idp, part ->
 			currentStaff = score.getStavesCount()
-			addPart(idp, part)
+			addPart(part)
 			part.voices.each { idv, voice ->
 				openBeamWaypoints == null
 				currentMeasure = 0
@@ -191,13 +191,15 @@ class ZongConverter {
 			}
 		}
 
-		println score.getInfo()
+		// println score.getInfo()
 		return score
 	}
 
-	void addPart(String idPart, MirPart mirpart) {
+	void addPart(MirPart mirpart) {
+		String partId = mirpart.getId()
+		String partName = (mirpart.getName() != null) ? mirpart.getName() : partId
 		Instrument defaultInstr = Instrument.defaultInstrument
-		Part zpart = new Part(idPart, null, 1, alist(defaultInstr))
+		Part zpart = new Part(partName, partId, 1, alist(defaultInstr))
 		new PartAdd(score, zpart, currentStaff, null).execute()
 	}
 

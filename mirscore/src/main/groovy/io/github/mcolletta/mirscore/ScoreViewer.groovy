@@ -171,14 +171,14 @@ class ScoreViewer  extends VBox {
         PropertyChangeListener scoreModelListener = {PropertyChangeEvent evt -> 
             if (evt.propertyName == "currentPage") {
                 int newPage = evt.newValue as int
-                println "currentPage changed with value " + newPage
+                // println "currentPage changed with value " + newPage
                 Platform.runLater( {
                     currentPageField.setText("" + (newPage+1))
                     })
             }
             if (evt.propertyName == "currentZoom") {
                 float newZoom = evt.newValue as float
-                println "currentZoom changed with value " + newZoom
+                // println "currentZoom changed with value " + newZoom
                 Platform.runLater( {
                     currentZoomField.setText("" + (int)(newZoom * 100))
                     })

@@ -61,7 +61,7 @@ import java.lang.annotation.RetentionPolicy
 @Processes(MirChordGrammar.class)
 class MirChordProcessor extends AbstractProcessor {
 
-	boolean DEBUG = true
+	boolean DEBUG = false
 
 	Score score
 	String currentPart
@@ -71,6 +71,7 @@ class MirChordProcessor extends AbstractProcessor {
 
 	Map<String, String> commands_abbr = [
 		"info": "scoreInfo",
+		"name": "partName",
 		"rel": "relative", 
 		"def": "define",
 		"p": "part",
@@ -206,7 +207,8 @@ class MirChordProcessor extends AbstractProcessor {
 
 	private void addToScore(MusicElement element) {
 		score.parts[currentPart].voices[getVoice()].elements << element
-		println "addToScore $element  in  $currentPart    ${getVoice()}"
+		if (DEBUG)
+			println "addToScore $element  in  $currentPart    ${getVoice()}"
 	}
 
 	private void updateCurrentInstrument(Instrument instrument) {
@@ -219,6 +221,11 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	// COMMANDS
+
+	@MirChord
+	void partName(String name) {
+		score.parts[currentPart].setName(name)
+	}
 
 	@MirChord 
 	void setCurrentVoice(String id) {
@@ -236,7 +243,7 @@ class MirChordProcessor extends AbstractProcessor {
 	void setCurrentPart(String id) {
 		if (DEBUG)
 			println "SETTING PART " + id
-		if (!score.parts.containsKey(id)) {			
+		if (!score.parts.containsKey(id)) {
 			score.parts.put(id, new Part(id))
 		}
 		currentPart = id 

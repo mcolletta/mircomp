@@ -68,7 +68,7 @@ var MirchordHighlightRules = function() {
     var builtinFunctions = (
         'key mode clef time tempo instr instrument tp tuplet define call relative unpitched ' +
         'keySignature copyTimes callSymbol ' +
-        'info title composer poet chordsMode lyrics label ' +
+        'info title composer poet chordsMode lyrics label name ' +
         'stemUp stemDown stemAuto ' +
         'transpose transposeDiatonic invert invertDiatonic augment diminuition retrograde chain ' +        
         'zero? list zipmap'
@@ -233,6 +233,65 @@ exports.MatchingParensOutdent = MatchingParensOutdent;
 });
 
 var functionMap = {
+    // parts
+    "=1": [
+        "=1",
+        "Part 1"
+    ],
+    "=2": [
+        "=2",
+        "Part 2"
+    ],
+    "=3": [
+        "=3",
+        "Part 3"
+    ],
+    "=4": [
+        "=4",
+        "Part 4"
+    ],
+    "=5": [
+        "=5",
+        "Part 5"
+    ],
+    "=6": [
+        "=6",
+        "Part 6"
+    ],
+    "=7": [
+        "=7",
+        "Part 7"
+    ],
+    "=8": [
+        "=8",
+        "Part 8"
+    ],
+    "=9": [
+        "=9",
+        "Part 9"
+    ],
+    "=10": [
+        "=10",
+        "Part 10"
+    ],
+    // voices
+    "~1": [
+        "~1",
+        "Voice 1"
+    ],
+    "~2": [
+        "~2",
+        "Voice 2"
+    ],
+    "~3": [
+        "~3",
+        "Voice 3"
+    ],
+    "~4": [
+        "~4",
+        "Voice 4"
+    ],
+    // Instruments
     "instr acoustic grand piano": [
             "(instr \"acoustic grand piano\")",
             "Instrument \"Acoustic Grand Piano\" with General Midi value 1"

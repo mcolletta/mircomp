@@ -53,7 +53,8 @@ class MirChordInterpreter {
 	}
 	
 	Score evaluate(String source) {
-		Document doc= new StringDocument(source.trim())
+		String cleanSource = source.trim().replaceAll("(?s)/\\*.*?\\*/", "")
+		Document doc= new StringDocument(cleanSource)
 		ParseContext ctx= new ParseContext(doc)
 		ParseResults parseResults= ctx.getParseResults(PARSER.score, 0)
 		if (!parseResults.success())
@@ -63,10 +64,10 @@ class MirChordInterpreter {
 	}
 	
 	public static void main(String[] args) {
-		String source = new File("/home/mircoc/mirchords/test1.mirchord").text
+		String source = new File("compositions/mirchords/test1.mirchord").text
 		MirChordInterpreter interpreter = new MirChordInterpreter()
 		Score score = interpreter.evaluate(source)
-		println "RESULT: " + score
+		println "SCORE PARSED: " + score
 	}
 
 }
