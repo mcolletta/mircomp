@@ -48,6 +48,12 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 		this.alteration = alteration		
 		this.symbolSemitones = mapping[symbol]
 	}
+
+	Pitch(Pitch pitch) {
+		this.symbol = pitch.symbol
+		this.octave = pitch.octave
+		this.alteration = pitch.alteration
+	}
 	
 	void setSymbol(String symbol) {
 		this.symbol = symbol
@@ -190,6 +196,14 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 		}
 		return  "$symbol$strAlter$octave[$midiValue]"
 	}
+
+	boolean isCopyable() {
+		return true
+	}
+
+	Pitch copy() {
+		Pitch clone = new Pitch(this)
+	}
 }
 
 enum ACCIDENTALS {
@@ -260,7 +274,7 @@ class Chord implements MusicElement {
 	Chord(Chord chord) {
 		List<Pitch> chord_pitches = []
 		for (Pitch p : chord.getPitches()) {
-			Pitch newPitch = new Pitch(p.symbol, p.octave, p.alteration)
+			Pitch newPitch = p.copy()  // new Pitch(p.symbol, p.octave, p.alteration)
 			chord_pitches.add(newPitch)
 		}
 		this.pitches = chord_pitches

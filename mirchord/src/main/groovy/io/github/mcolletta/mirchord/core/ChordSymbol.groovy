@@ -117,7 +117,7 @@ class ChordSymbol implements MusicElement {
 	
 	Chord getChord() {
 		List<Pitch> pitches = []
-		pitches << root
+		pitches << root.copy()
 
 		List<Integer> intervals = Utils.getIntervalsFromChordKind(kind)
 		if (chordAlteration != null) {

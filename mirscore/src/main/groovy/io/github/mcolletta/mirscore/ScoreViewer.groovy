@@ -50,6 +50,9 @@ import javafx.scene.image.WritableImage
 import javafx.scene.Cursor
 import javafx.event.EventHandler
 
+import javafx.scene.control.ButtonType
+import javafx.scene.control.Alert
+import javafx.scene.control.Alert.AlertType
 
 import javafx.animation.KeyFrame
 import javafx.animation.KeyValue
@@ -240,8 +243,12 @@ class ScoreViewer  extends VBox {
                                                       scoreModel.getCurrentZoom())
 
         } catch(Exception ex) {
-            println "Exception: " + ex.getMessage()
+            println "Exception during awtImage creation: " + ex.getMessage()
+            // ex.printStackTrace()
         }
+
+        if (awtImage == null)
+            return
 
         Platform.runLater( {
             try {
@@ -307,7 +314,7 @@ class ScoreViewer  extends VBox {
                     timeline.play()                    
                 }
             } catch(Exception ex) {
-                println "Exception: " + ex.getMessage()
+                println "Exception in draw: " + ex.getMessage()
             }
         } )
     }
@@ -394,29 +401,43 @@ class ScoreViewer  extends VBox {
     }
 
     void filesaveas() {
-        /*final DirectoryChooser directoryChooser = new DirectoryChooser()
-        final File selectedDirectory = directoryChooser.showDialog(stage);
-        if (selectedDirectory != null) {
-            selectedDirectory.getAbsolutePath();
-        }*/
         FileChooser fileChooser = new FileChooser()
         fileChooser.setTitle("Save Score as...")        
         fileChooser.getExtensionFilters().addAll(
-             new ExtensionFilter("PDF Files", "*.pdf"),
-             new ExtensionFilter("PNG Files", "*.png"),
-             new ExtensionFilter("MIDI Files", "*.mid"),
-             new ExtensionFilter("OGG Files", "*.ogg"))
-        fileChooser.setInitialFileName("score.pdf")
+            new ExtensionFilter("MIDI Files", "*.mid"),
+            new ExtensionFilter("WAV Files", "*.wav"),
+            //new ExtensionFilter("OGG Files", "*.ogg"),
+            //new ExtensionFilter("PDF Files", "*.pdf"),
+            new ExtensionFilter("PNG Files", "*.png"))
+        fileChooser.setInitialDirectory(
+            new File(System.getProperty("user.home"))
+        )
+        fileChooser.setInitialFileName("score")
         Stage stage = (Stage)getScene().getWindow()
         File file = fileChooser.showSaveDialog(stage)
         if (file != null) {
             try {
-                scoreModel.saveAs(file)
+                ExtensionFilter selectedExtf = fileChooser.getSelectedExtensionFilter()
+                if (!file.getName().contains(".") && selectedExtf.getExtensions().size() > 0) {
+                    String extf = selectedExtf.getExtensions()[0]
+                    String ext = extf.substring(extf.lastIndexOf("."))
+                    File f = new File(file.getAbsolutePath() + ext)
+                    if (f.exists() && !f.isDirectory()) { 
+                        Alert alert = new Alert(AlertType.CONFIRMATION, "File chosen without extension and ${f.getName()} exist. \nDo you want to replace it?")
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            scoreModel.saveAs(f)
+                        }
+                    }
+                } else
+                    scoreModel.saveAs(file)
             } catch (IOException ex) {
                 println(ex.getMessage())
             }
         }
     }
+
+
 
     void replay() {
         scoreModel.stop()

@@ -715,6 +715,10 @@ class MirChordProcessor extends AbstractProcessor {
 		if (chordSym != null) {
 			putResult(chordSym)
 		}
+		chordSym = (ChordSymbol)getResult(match.findMatchByType(grammar.sameChordSymbol))
+		if (chordSym != null) {
+			putResult(chordSym)
+		}
 		Rest rest = (Rest)getResult(match.findMatchByType(grammar.rest))
 		if (rest != null) {
 			putResult(rest)

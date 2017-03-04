@@ -71,6 +71,7 @@ import com.xenoage.zong.desktop.utils.JseZongPlatformUtils
 import com.xenoage.zong.desktop.io.DocumentIO
 import com.xenoage.zong.desktop.io.midi.out.MidiScoreDocFileOutput
 import com.xenoage.zong.desktop.io.musicxml.in.MusicXmlScoreDocFileInput
+import com.xenoage.zong.desktop.io.wav.out.WavScoreDocFileOutput
 import com.xenoage.zong.desktop.io.ogg.out.OggScoreDocFileOutput
 import com.xenoage.zong.desktop.io.pdf.out.PdfScoreDocFileOutput
 import com.xenoage.zong.desktop.io.png.out.PngScoreDocFileOutput
@@ -100,7 +101,7 @@ class ScoreModel implements PlaybackListener {
 
     @Bindable MP currentMP
     @Bindable int currentPage = 0
-    @Bindable float currentZoom
+    @Bindable float currentZoom = DEFAULT_ZOOM
 
 	Layout layout
     PlaybackLayouter playbackLayouter
@@ -223,24 +224,26 @@ class ScoreModel implements PlaybackListener {
 		FileOutput<ScoreDoc> out = null
 		String fileName = file.getName()
 		String format = ""
-		int i = fileName.lastIndexOf('.');
+		int i = fileName.lastIndexOf('.')
 		if (i >= 0) {
 		    format = fileName.substring(i+1)
 		} else
-			throw new Exception("The file nees an extension.")
+			throw new Exception("File extension required. Supported: .mid .png .wav")
 		switch (format) {
-			case "pdf": 
-				out = new PdfScoreDocFileOutput()
-				break
+			// case "pdf": 
+			// 	out = new PdfScoreDocFileOutput()
+			// 	break
 			case "png": 
 				out = new PngScoreDocFileOutput()
 				break
 			case "mid": 
 				out = new MidiScoreDocFileOutput()
 				break
-			case "ogg": 
+			/*case "ogg": 
 				out = new OggScoreDocFileOutput()
-				break
+				break*/
+            case "wav":
+                out = new WavScoreDocFileOutput()
 			default:
 				break
 		}

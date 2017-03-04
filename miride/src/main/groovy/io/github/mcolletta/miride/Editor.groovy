@@ -594,10 +594,11 @@ public class Editor implements FolderTreeViewListener {
         FileChooser fileChooser = new FileChooser()
         fileChooser.setTitle("Open File")
         fileChooser.getExtensionFilters().addAll(
-             new ExtensionFilter("Mirchord files", "*.mirchord"),
-             new ExtensionFilter("Groovy files", "*.groovy"),
-             new ExtensionFilter("Midi files", "*.mid"),
-             new ExtensionFilter("All Files", "*.*"))
+            new ExtensionFilter("All Files", "*.*"),
+            new ExtensionFilter("Mirchord files", "*.mirchord"),
+            new ExtensionFilter("Groovy files", "*.groovy"),
+            new ExtensionFilter("Midi files", "*.mid")
+            )
         fileChooser.setInitialDirectory(
             initialDir
         )
