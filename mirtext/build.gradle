@@ -6,6 +6,7 @@ apply plugin: 'application'
 dependencies {
     // compile localGroovy()
     compile name: 'groovy-all-2.4.9-indy'
+    compile project(':mirfoldertreeview')
 }
 
 tasks.withType(GroovyCompile) {

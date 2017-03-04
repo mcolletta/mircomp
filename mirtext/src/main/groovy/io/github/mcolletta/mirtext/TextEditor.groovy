@@ -46,6 +46,7 @@ import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.control.TextArea
 import javafx.scene.control.Button
+import javafx.scene.control.ComboBox
 
 import javafx.scene.control.ButtonType
 import javafx.scene.control.Alert
@@ -62,10 +63,11 @@ import javafx.scene.input.Dragboard
 import javafx.scene.input.DragEvent
 import javafx.scene.input.TransferMode
 
+import javafx.beans.property.ObjectProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ChangeListener
-
-import javafx.scene.control.ComboBox
 import javafx.beans.value.ObservableValue
+
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 
@@ -80,11 +82,23 @@ import groovy.transform.CompileStatic
 //import com.xenoage.utils.jse.io.JseStreamUtils
 //import groovy.text.GStringTemplateEngine
 
+import io.github.mcolletta.mirfoldertreeview.FolderTreeListenerList
+import io.github.mcolletta.mirfoldertreeview.FolderTreeViewListener
+import io.github.mcolletta.mirfoldertreeview.FolderTreeViewEvent
+import io.github.mcolletta.mirfoldertreeview.PathRequestType
+
 
 @CompileStatic
-class TextEditor extends VBox {
+class TextEditor extends VBox implements FolderTreeListenerList {
 
-    Path filePath
+    ObjectProperty<Path> filePath = new SimpleObjectProperty<>()
+    Path getFilePath() {
+        return filePath.get()
+    }
+    void setFilePath(Path path) {
+        filePath.set(path)
+    }
+
     String suggestedOpenSaveFolder = System.getProperty("user.home")
     String suggestedOpenSaveFileName = "newfile.txt"
 
@@ -178,17 +192,27 @@ class TextEditor extends VBox {
         if (GUESS_TEXT_FILE && path != null)
             validPath = checkFile(path.toFile())
         if (validPath) {
-            this.filePath = path
-            if (filePath != null) {
+            setFilePath(path)
+            if (getFilePath() != null) {
                 filesaveButton.setDisable(true)
-                setValue(filePath.getText())
+                setValue(getFilePath().getText())
                 markClean()
             }
             else {
                 filesaveButton.setDisable(false)
             }
         }
-              
+
+        filePath.addListener(new ChangeListener(){
+            @Override public void changed(ObservableValue o,Object oldVal, Object newVal){
+                Path newPath = newVal as Path
+                // println "Listener " + getFolderTreeViewListener()
+                fireFolderTreeUpdated(new FolderTreeViewEvent([origin: this,
+                                                               path: newPath,
+                                                               requestType: PathRequestType.MODIFY,
+                                                               fileType: ""]))
+            }
+        })    
     }
 
     public ensureLoadedDOM() {        
@@ -430,15 +454,15 @@ class TextEditor extends VBox {
                         break
                 }
                 jsEditorSession.call("setMode", fileMode)
-                filePath = selectedFile.toPath()
+                setFilePath(selectedFile.toPath())
                 markClean()
             }
         }
     }
 
     void filesave() {
-        if (filePath != null) {
-            File file = filePath.toFile()
+        if (getFilePath() != null) {
+            File file = getFilePath().toFile()
             try {
                 file.text = getValue()
                 markClean()
@@ -469,7 +493,7 @@ class TextEditor extends VBox {
         if (file != null) {
             try {
                 file.text = getValue()
-                filePath = file.toPath()
+                setFilePath(file.toPath())
                 markClean()
                 HandleUndoRedoButtons()
             } catch (IOException ex) {
@@ -479,8 +503,8 @@ class TextEditor extends VBox {
     }
 
     public reloadfile() {
-        if (filePath != null) {
-            setValue(filePath.getText())
+        if (getFilePath() != null) {
+            setValue(getFilePath().getText())
         }
     }
 
@@ -557,6 +581,6 @@ class TextEditor extends VBox {
 
     boolean isClean() {
         return engine.executeScript("isClean()") as boolean
-    }    
+    }
 
 }

@@ -39,6 +39,7 @@
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#newmirchordfile" text="New Mirchord file" />
                 <MenuItem mnemonicParsing="false" onAction="#newgroovyfile" text="New Groovy file" />
+                <MenuItem mnemonicParsing="false" onAction="#newmidifile" text="New Midi file" />
               </items>
             </Menu>
             <SeparatorMenuItem mnemonicParsing="false" />

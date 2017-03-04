@@ -356,7 +356,7 @@ public class Editor implements FolderTreeViewListener {
             if (path == null) {
                 def tabContent = tab.getContent()
                 if (tabContent.hasProperty("filePath")) {
-                    Path filePath = (Path) ((GroovyObject)tabContent).getProperty("filePath")
+                    Path filePath = (Path) tabContent.invokeMethod("getFilePath", null)
                     if (filePath != null && filePath == changedPath) {
                         Platform.runLater( {
                             setTabLabelText(tab, filePath.getFileName().toString())
@@ -474,6 +474,7 @@ public class Editor implements FolderTreeViewListener {
             editor.setSuggestedOpenSaveFileName("untitled")
         }
         editor.setMode(mode)
+        editor.addFolderTreeViewListener(this)
         tab.setContent(editor)
         return tab
     }
@@ -491,7 +492,8 @@ public class Editor implements FolderTreeViewListener {
             editor.setSuggestedOpenSaveFolder(path.toString())
             editor.setSuggestedOpenSaveFileName("untitled")
             editor.setValue("/* This is a comment */")
-        }        
+        }
+        mirchordEditor.getEditor().addFolderTreeViewListener(this) 
         tab.setContent(mirchordEditor)
         return tab
     }
@@ -507,7 +509,8 @@ public class Editor implements FolderTreeViewListener {
             midiEditor = new MidiEditor(null,SynthManager.getSynthesizer())
             midiEditor.setSuggestedOpenSaveFolder(path.toString())
             midiEditor.setSuggestedOpenSaveFileName("untitled")
-        }        
+        }
+        midiEditor.addFolderTreeViewListener(this)  
         tab.setContent(midiEditor)
         return tab
     }
@@ -564,29 +567,24 @@ public class Editor implements FolderTreeViewListener {
     }
 
     void newmirchordfile() {
-        DirectoryChooser dirChooser = new DirectoryChooser()
-        dirChooser.setTitle("Select folder for file")
-        dirChooser.setInitialDirectory(
-            new File(System.getProperty("user.home"))
-        )
-        Stage stage = (Stage) getScene().getWindow()
-        File selectedFolder = dirChooser.showDialog(stage)
-        if (selectedFolder != null) {
-            openNewTab(selectedFolder.toPath(), "mirchord", false)
-        }        
+        File suggestedDir = projectFolder.get()
+        if (suggestedDir == null)
+            suggestedDir = new File(System.getProperty("user.home"))
+        openNewTab(suggestedDir.toPath(), "mirchord", false)
     }
 
     void newgroovyfile() {
-        DirectoryChooser dirChooser = new DirectoryChooser()
-        dirChooser.setTitle("Select folder for file")
-        dirChooser.setInitialDirectory(
-            new File(System.getProperty("user.home"))
-        )
-        Stage stage = (Stage) getScene().getWindow()
-        File selectedFolder = dirChooser.showDialog(stage)
-        if (selectedFolder != null) {
-            openNewTab(selectedFolder.toPath(), "groovy", false)
-        } 
+        File suggestedDir = projectFolder.get()
+        if (suggestedDir == null)
+            suggestedDir = new File(System.getProperty("user.home"))
+        openNewTab(suggestedDir.toPath(), "groovy", false)
+    }
+
+    void newmidifile() {
+        File suggestedDir = projectFolder.get()
+        if (suggestedDir == null)
+            suggestedDir = new File(System.getProperty("user.home"))
+        openNewTab(suggestedDir.toPath(), "mid", false)
     }
 
     void openfile() {

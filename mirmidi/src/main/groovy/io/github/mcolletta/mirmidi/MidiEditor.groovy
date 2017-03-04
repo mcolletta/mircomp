@@ -93,6 +93,8 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.collections.ListChangeListener
 
+import javafx.beans.property.ObjectProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.binding.NumberBinding
 import javafx.beans.binding.StringBinding
 import javafx.beans.binding.Bindings
@@ -106,6 +108,11 @@ import javafx.concurrent.Task
 import javax.sound.midi.*
 
 import io.github.mcolletta.mirchord.core.Instrument
+
+import io.github.mcolletta.mirfoldertreeview.FolderTreeListenerList
+import io.github.mcolletta.mirfoldertreeview.FolderTreeViewListener
+import io.github.mcolletta.mirfoldertreeview.FolderTreeViewEvent
+import io.github.mcolletta.mirfoldertreeview.PathRequestType
 
 import groovy.transform.CompileStatic
 import groovy.transform.Canonical
@@ -133,7 +140,7 @@ class ChannelItem {
 }
 
 @CompileStatic
-class MidiEditor  extends VBox implements MidiPlaybackListener {
+class MidiEditor  extends VBox implements MidiPlaybackListener, FolderTreeListenerList {
 
     MidiView midi
     
@@ -171,7 +178,14 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
     @FXML private Spinner tempoSpinner
 
-    Path filePath
+    ObjectProperty<Path> filePath = new SimpleObjectProperty<>()
+    Path getFilePath() {
+        return filePath.get()
+    }
+    void setFilePath(Path path) {
+        filePath.set(path)
+    }
+
     String suggestedOpenSaveFolder = System.getProperty("user.home")
     String suggestedOpenSaveFileName = "newfile.mid"
 
@@ -244,12 +258,21 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
 
         filesaveButton.disableProperty().bind(midi.cleanProperty())
 
-        this.filePath = path
-        if (filePath != null) {
-            //midi.loadMidi(filePath.toFile())
+        if (path != null) {
+            setFilePath(path)
             updateScrollBar()
             draw()
         }
+
+        filePath.addListener(new ChangeListener(){
+            @Override public void changed(ObservableValue o,Object oldVal, Object newVal){
+                Path newPath = newVal as Path
+                fireFolderTreeUpdated(new FolderTreeViewEvent([origin: this,
+                                                               path: newPath,
+                                                               requestType: PathRequestType.MODIFY,
+                                                               fileType: ""]))
+            }
+        }) 
 
         final KeyCombination keyCombinationSave = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
         this.addEventFilter(KeyEvent.KEY_PRESSED, { KeyEvent evt ->
@@ -623,7 +646,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
             boolean loaded = midi.loadMidi(selectedFile)
             tempoSpinner.getValueFactory().setValue( (int) midi.getSequencerBPM())
             if (loaded) {
-                filePath = selectedFile.toPath()
+                setFilePath(selectedFile.toPath())
                 updateScrollBar()
                 draw()
             } else {
@@ -633,8 +656,8 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     }
 
     void filesave() {
-        if (filePath != null) {
-            File file = filePath.toFile()
+        if (getFilePath() != null) {
+            File file = getFilePath().toFile()
             try {
                 midi.saveAs(file)
                 midi.markClean()
@@ -660,6 +683,7 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
         if (file != null) {
             try {
                 midi.saveAs(file)
+                setFilePath(file.toPath())
                 midi.markClean()
             } catch (IOException ex) {
                 println(ex.getMessage())
@@ -668,8 +692,8 @@ class MidiEditor  extends VBox implements MidiPlaybackListener {
     }
 
     public reloadfile() {
-        if (filePath != null) {
-            midi.loadMidi(filePath.toFile())
+        if (getFilePath() != null) {
+            midi.loadMidi(getFilePath().toFile())
             tempoSpinner.getValueFactory().setValue( (int) midi.getSequencerBPM())
             draw()
         }

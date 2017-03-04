@@ -66,7 +66,7 @@ import javafx.concurrent.Task
 import groovy.transform.CompileStatic
 
 @CompileStatic
-public class FolderTreeView extends VBox {
+public class FolderTreeView extends VBox implements FolderTreeListenerList {
 
 	@FXML private TreeView treeView
 	private Task watchTask
@@ -332,8 +332,6 @@ public class FolderTreeView extends VBox {
 
 	// Listeners
 
-	private List<FolderTreeViewListener> listeners = []
-
 	public void openFile(Path path) {
         this.fireFileRequest(new FolderTreeViewEvent([origin: this,
         											  path: path,
@@ -346,6 +344,14 @@ public class FolderTreeView extends VBox {
         											  requestType: PathRequestType.NEW,
         											  fileType: fileType]))
     }
+
+}
+
+
+@CompileStatic
+public trait FolderTreeListenerList {
+
+    private List<FolderTreeViewListener> listeners = []
 
     public void addFolderTreeViewListener(FolderTreeViewListener listener) {
         if (listener != null) {
@@ -382,7 +388,6 @@ public class FolderTreeView extends VBox {
             }
         }
     }
-
 }
 
 public interface FolderTreeViewListener {

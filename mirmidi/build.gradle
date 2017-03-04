@@ -8,6 +8,7 @@ dependencies {
     compile name: 'groovy-all-2.4.9-indy'
     compile fileTree(dir: '../libs', include: ['*.jar'])
     compile project(':mirchord')
+    compile project(':mirfoldertreeview')
 }
 
 tasks.withType(GroovyCompile) {
