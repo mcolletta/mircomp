@@ -123,9 +123,10 @@ class ChordSymbol implements MusicElement {
 		if (chordAlteration != null) {
 			switch(chordAlteration.type) {
 				case ChordAltType.ALT:
-					for(int interval : intervals) {
+					for(int i=0; i<intervals.size(); i++) {
+						int interval = intervals[i]
 						if (interval == chordAlteration.interval)
-						 interval += chordAlteration.accidental
+							intervals[i] += chordAlteration.accidental
 					}
 					break
 				case ChordAltType.ADD:
