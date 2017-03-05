@@ -134,6 +134,23 @@ class MidiTableViewController {
                     if (item.getTick() >= startTick && item.getTick() <= endTick)
                     	events.add(item)
                 }
+                if (event.getMessage() instanceof MetaMessage) {
+                    MetaMessage message = event.getMessage() as MetaMessage
+                    switch (message.getType()) {
+                        case 0x51:
+                            item.setCommand("TEMPO_CHANGE")
+                            byte[] data = message.getData()
+                            // microseconds per quarter
+                            int mpq = (data[0] & 0xff) << 16 | (data[1] & 0xff) << 8 | (data[2] & 0xff)
+                            // beats per minute
+                            int bpm = (int) (60000000.0D / mpq)
+                            item.setData1(bpm)
+                            events.add(item)
+                            break
+                        default:
+                            break
+                    }
+                }
             }
         }
         sortedEvents = new SortedList<>(events)

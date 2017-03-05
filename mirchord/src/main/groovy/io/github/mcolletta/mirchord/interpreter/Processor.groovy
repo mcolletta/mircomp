@@ -254,12 +254,14 @@ class MirChordProcessor extends AbstractProcessor {
 		Instrument instr = new Instrument(name, true)
 		String letter = displayPitch[0]
 		int alteration = 0
-		for(String alt : displayPitch[1..-1]) {
-			if (alt == "#")
-				alteration += 1
-			else if (alt == "&")
-				alteration -= 1
+		if (displayPitch.length() > 1) {
+			for(String alt : displayPitch[1..-1]) {
+				if (alt == "#")
+					alteration += 1
+				else if (alt == "&")
+					alteration -= 1
 
+			}
 		}
 		// update scope
 		Map scope = getScope()
