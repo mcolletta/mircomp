@@ -17,7 +17,7 @@ A versatile midi application that supports midi notes entry and manipulation in 
 
 **...many more features to come!**
 
-Copyright (C) 2016 Mirco Colletta
+Copyright (C) 2016-2017 Mirco Colletta
 
 This project is released under the GPLv3 license, see the LICENSE file for details
 
