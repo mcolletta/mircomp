@@ -161,6 +161,7 @@ class ChordSymbol implements MusicElement {
 			}
 			if (!foundBassPitch) {
 				Pitch _bass = bass.copy()
+				_bass.octave = _root.octave
 				if (_bass >= _root)
 					_bass.octave -= 1
 				pitches << _bass

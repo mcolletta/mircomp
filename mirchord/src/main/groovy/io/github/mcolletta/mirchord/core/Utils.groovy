@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Mirco Colletta
+ * Copyright (C) 2016-2017 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -105,7 +105,7 @@ class Utils {
 										]
 
 	static int getHalfStepsFromDiatonic(Pitch pitch, int diatonicSteps, KeyMode mode) {
-		String symbol = pitch.symbol
+		String symbol = pitch.getSymbol()
 		int interval = abs(diatonicSteps)
 		int start = NOTE_NAMES[symbol] - 1
 		List<Integer> scale = MODE_INTERVALS[mode]
@@ -120,7 +120,7 @@ class Utils {
 	}
 
 	static int getDiatonicPitchesInterval(Pitch from, Pitch to) {
-		return NOTE_NAMES[from.symbol] - NOTE_NAMES[to.symbol]
+		return NOTE_NAMES[from.getSymbol()] - NOTE_NAMES[to.getSymbol()]
 	}
 	
 //	static def DynamicsToMidi =

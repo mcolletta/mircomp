@@ -40,7 +40,6 @@ import com.googlecode.lingwah.ParseContext
 @CompileStatic
 public class MirChordGrammar extends Grammar {
 		public final Parser measure = str("|")
-		public final Parser slash = str("/")
 		public final Parser ws = oneOrMore(regex("[ \\\t\n\f\r]"))
 		public final Parser digit = regex("[0-9]")
 		public final Parser number = oneOrMore(digit)
@@ -111,7 +110,7 @@ public class MirChordGrammar extends Grammar {
 		public final Parser chordBassSeparator = cho(str("/"),str("\\"))
 		public final Parser chordBass = seq(chordPitchName, opt(accidentals))
 		
-		public final Parser sameChordSymbol = str("//")
+		public final Parser sameChordSymbol = str("/")
 		
 		public final Parser chordSymbol = seq(chordRoot, chordKind, opt(chordAlteration), opt(seq(chordBassSeparator, chordBass)))
 
@@ -120,14 +119,14 @@ public class MirChordGrammar extends Grammar {
 		public final ParserReference sexpr = ref()
 		public final Parser contextElement = cho(relativeOctave, stickyDuration, stem, measure)
 		public final Parser musicElement = cho(contextElement, anchor, repeatStart, repeatEnd, sexpr, atom, phrase, identifier)
-		public final Parser elements = oneOrMore(musicElement).separatedBy(opt(ws))
+		public final Parser elements = oneOrMore(musicElement).separatedBy(ws)
 
 		public final Parser parm = cho(stringa, identifier, number, integerNumber, decimal, musicElement, sexpr)
 		public final Parser parms = oneOrMore(parm).separatedBy(ws)
 
 		public final Parser scorePosition = cho(part, voice)
 		public final Parser scoreElement = cho(scorePosition, musicElement)
-		public final Parser score = seq(opt(ws),oneOrMore(scoreElement).separatedBy(opt(ws)))
+		public final Parser score = seq(opt(ws),oneOrMore(scoreElement).separatedBy(ws))
 		
 		private MirChordGrammar() {
 				init()

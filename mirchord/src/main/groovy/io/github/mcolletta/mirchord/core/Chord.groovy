@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Mirco Colletta
+ * Copyright (C) 2016-2017 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -35,7 +35,7 @@ import groovy.transform.TupleConstructor
 @CompileStatic
 class Pitch implements MusicElement, Comparable<Pitch> {
 	
-	String symbol
+	private String symbol
 	int alteration
 	int octave
 	int symbolSemitones
@@ -43,14 +43,14 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 	static Map<String,Integer> mapping = ['C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11]
     
 	Pitch(String symbol='C', int octave=4, int alteration=0) {
-		this.symbol = symbol
+		this.setSymbol(symbol)
 		this.octave = octave
 		this.alteration = alteration		
 		this.symbolSemitones = mapping[symbol]
 	}
 
 	Pitch(Pitch pitch) {
-		this.symbol = pitch.symbol
+		this.setSymbol(pitch.symbol)
 		this.octave = pitch.octave
 		this.alteration = pitch.alteration
 	}
@@ -59,15 +59,19 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 		this.symbol = symbol
 		this.symbolSemitones = mapping[symbol]
 	}
+
+	String getSymbol() {
+		return symbol
+	}
 	
 	@Override public int compareTo(Pitch pitch) {
-		if (midiValue > pitch.midiValue) 
+		if (getMidiValue() > pitch.getMidiValue()) 
 			return 1
 		else {
-			if (midiValue < pitch.midiValue) 
+			if (getMidiValue() < pitch.getMidiValue()) 
 				return -1
 			else {
-				if (midiValue == pitch.midiValue) return 0
+				if (getMidiValue() == pitch.getMidiValue()) return 0
 					return 0
 			}
 		}
@@ -194,7 +198,7 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 				strAlter += alterSym
 			}
 		}
-		return  "$symbol$strAlter$octave[$midiValue]"
+		return  "$symbol$strAlter$octave[${getMidiValue()}]"
 	}
 
 	boolean isCopyable() {
