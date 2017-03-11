@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Mirco Colletta
+ * Copyright (C) 2016-2017 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -117,7 +117,8 @@ class ChordSymbol implements MusicElement {
 	
 	Chord getChord() {
 		List<Pitch> pitches = []
-		pitches << root.copy()
+		Pitch _root = root.copy()
+		pitches << _root
 
 		List<Integer> intervals = Utils.getIntervalsFromChordKind(kind)
 		if (chordAlteration != null) {
@@ -157,6 +158,12 @@ class ChordSymbol implements MusicElement {
 				}
 				if (pitch.symbol == bass.symbol)
 					foundBassPitch = true
+			}
+			if (!foundBassPitch) {
+				Pitch _bass = bass.copy()
+				if (_bass >= _root)
+					_bass.octave -= 1
+				pitches << _bass
 			}
 		}
 		return new Chord([pitches:pitches, duration:duration])   // or [:] as Chord
