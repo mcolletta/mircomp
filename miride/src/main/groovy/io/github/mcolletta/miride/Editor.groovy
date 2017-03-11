@@ -491,7 +491,7 @@ public class Editor implements FolderTreeViewListener {
             TextEditor editor = mirchordEditor.getEditor()
             editor.setSuggestedOpenSaveFolder(path.toString())
             editor.setSuggestedOpenSaveFileName("untitled")
-            editor.setValue("/* This is a comment */")
+            editor.setValue("=1 ~1 /* Part 1 Voice 1 */ \n")
         }
         mirchordEditor.getEditor().addFolderTreeViewListener(this) 
         tab.setContent(mirchordEditor)
