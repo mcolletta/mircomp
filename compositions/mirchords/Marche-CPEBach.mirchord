@@ -1,0 +1,18 @@
+(info
+	(title "Marche") 
+	(composer "Carl Philipp Emanuel Bach")
+)
+
+=1 ~1
+(instr "acoustic grand piano")
+(key "E&" "maj")
+(clef "treble")
+    ^4 r r r e8 g | b4 c8 d e b g'4 | g8 f e d e4 [a, c] | [a c] [g b]2 [f a]4 | (tp "3/2" g8 f e) e2 a'4 |
+    
+=2 ~1
+(key -3 "maj")
+(clef "bass")
+    ^3 r r r e | g a8 f g4 e | b b' e, a | b2 b, | e4 g8 f g4 e | d b' b, b'
+    
+=1 
+(tp "3/2" f8 e d) d d d f e d
