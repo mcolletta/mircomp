@@ -688,8 +688,10 @@ public class Editor implements FolderTreeViewListener {
         if (tabContent instanceof MirChordEditor) {
             MirChordEditor editor = (MirChordEditor) tabContent
             String source = editor.getValue()
-            Path projectPath = projectFolder.get() != null ? projectFolder.get().toPath() : null
-            runMirChord(source, projectPath, editor)
+            Path codePath = projectFolder.get() != null ? projectFolder.get().toPath() : null
+            if (codePath == null && path != null)
+                codePath = path
+            runMirChord(source, codePath, editor)
         }
 
         if (tabContent instanceof TextEditor) {

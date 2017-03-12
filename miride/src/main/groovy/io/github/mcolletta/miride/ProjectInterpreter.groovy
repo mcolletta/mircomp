@@ -114,6 +114,7 @@ class ProjectInterpreter {
     	importCustomizer.addImports 'io.github.mcolletta.mirchord.interpreter.MirChord'
         importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core'
         importCustomizer.addStaticStars 'io.github.mcolletta.mirchord.core.Utils'
+        importCustomizer.addStaticStars 'io.github.mcolletta.mirconverter.Helper'
         importCustomizer.addImports 'com.xenoage.utils.math.Fraction'
     	importCustomizer.addStaticStars 'com.xenoage.utils.math.Fraction'
     }
