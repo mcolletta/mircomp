@@ -28,6 +28,9 @@ import java.util.Map
 import java.nio.file.attribute.*
 import java.nio.file.*
 
+import java.util.regex.Pattern
+import java.util.regex.Matcher
+
 import groovy.transform.CompileStatic
 
 import groovy.util.GroovyScriptEngine
@@ -57,6 +60,9 @@ class ProjectInterpreter {
     Path projectPath
     List<URL> roots = []
     Binding binding = new Binding()
+
+    String includeRegex = /\(include\s+\"(.*?)\"\s*\)/
+    Pattern includePattern = Pattern.compile(includeRegex, Pattern.CASE_INSENSITIVE)
 
 
     ProjectInterpreter(String strPrjPath=null) {
@@ -177,17 +183,29 @@ class ProjectInterpreter {
         return script.run()
     }
 
-    public Score createScore(Path sourcePath, Path codePath=null) {
-        String source = sourcePath.toFile().getText()
-        String code = (codePath != null) ? codePath.toFile().getText() : null
-        createScore(source, code)
-    }
-
-    public Score createScore(String source, String scriptCode=null, String scriptName=null) {
+    public Score createScore(String source, Path codePath=null) {
+        // INCLUDES
+        Matcher matcher = includePattern.matcher(source)
+        List<String> includePaths = []
+        while(matcher.find()) {
+            includePaths.add(matcher.group(1))
+        }
         List addon = []
-        if (scriptCode != null) {
-            Script script = getScript(scriptCode,scriptName)
-            addon << script
+        if (includePaths.size() > 0) {
+            source = source.replaceAll(includeRegex, "")            
+            if (codePath == null) {
+                codePath = Paths.get(System.getProperty("user.home"))
+                println "WARNING: code path not given, using " + codePath
+            }
+            for (String includePath : includePaths) {
+                Path scriptPath = codePath.resolve(includePath)
+                String scriptCode = (scriptPath != null) ? scriptPath.toFile().getText() : null
+                String scriptName = (scriptPath != null) ? scriptPath.toString() : null
+                if (scriptCode != null) {
+                    Script script = getScript(scriptCode,scriptName)
+                    addon.add(script)
+                }
+            }
         }
         MirChordInterpreter interpreter = new MirChordInterpreter(addon)
         MirScore mirscore = interpreter.evaluate(source)

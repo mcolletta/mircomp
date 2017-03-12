@@ -687,18 +687,9 @@ public class Editor implements FolderTreeViewListener {
 
         if (tabContent instanceof MirChordEditor) {
             MirChordEditor editor = (MirChordEditor) tabContent
-            Path codePath = null
-            if (path != null) {
-                Path parent = path.getParent()
-                String fileName = path.getFileName()
-                int i = fileName.toString().lastIndexOf('.mirchord')
-                String name = fileName.substring(0,i)
-                codePath = Paths.get(parent.toString() + "/" + name + ".groovy")
-                if (!Files.exists(codePath))
-                    codePath = null
-            }
             String source = editor.getValue()
-            runMirChord(source, codePath, editor)
+            Path projectPath = projectFolder.get() != null ? projectFolder.get().toPath() : null
+            runMirChord(source, projectPath, editor)
         }
 
         if (tabContent instanceof TextEditor) {
@@ -714,9 +705,7 @@ public class Editor implements FolderTreeViewListener {
             try {
                 installInterceptor()
                 stopButton.setDisable(false)
-                String code = (codePath != null) ? codePath.toFile().getText() : null
-                String scriptName = (codePath != null) ? codePath.toString() : null
-                Score result = interpreter.createScore(source, code, scriptName)
+                Score result = interpreter.createScore(source, codePath)
                 // it is here to show message related to the score in console
                 Platform.runLater( {
                     editor.getViewer().loadScore(result)
