@@ -3,7 +3,7 @@ sourceCompatibility = 8
 
 dependencies {
     // compile localGroovy()
-    compile name: 'groovy-all-2.4.9-indy'
+    compile name: 'groovy-all-2.4.10-indy'
     compile fileTree(dir: '../libs', include: ['*.jar'])
     compile project(':mirchord')
 }
