@@ -120,6 +120,7 @@ import com.xenoage.utils.exceptions.InvalidFormatException
 public class Editor implements FolderTreeViewListener {
 
     Map<Tab,Path> openedTabs = [:]
+    private Map<Tab,Path> tabsFileRemoved = [:]
 
     ProjectInterpreter interpreter
 
@@ -335,33 +336,64 @@ public class Editor implements FolderTreeViewListener {
             @Override public void handle(Event e) {
                 // println e.getTarget()
                 removeTabHandler(tab)
+                if (tabsFileRemoved.containsKey(tab))
+                    tabsFileRemoved.remove(tab)
             }
         })
     }
 
-    void updateOpenedTabs(Path changedPath) {
+    void updateOpenedTabs(FolderTreeViewEvent evt) {
+        Path changedPath = evt.path
         for(Map.Entry<Tab,Path> e : openedTabs) {
             Tab tab = e.getKey()
             Path path = e.getValue()
+            def tabContent = tab.getContent()
+
+            // println "path=$path    changedPath=$changedPath    ${evt.requestType}"
 
             if (path == changedPath) {
-                String title = changedPath.getFileName().toString()
-                if (tab.getText() != title) {
+                if (evt.requestType == PathRequestType.DELETE) {
+                    tabsFileRemoved[tab] = path
                     Platform.runLater( {
-                        setTabLabelText(tab, title)
+                        setTabLabelText(tab, "untitled")
                     })
+                    if (tabContent.hasProperty("filePath")) {
+                        tabContent.invokeMethod("setFilePath", null)
+                    }
+                    e.setValue(null)
+                }
+                if (evt.requestType == PathRequestType.MODIFY) {
+                    String title = changedPath.getFileName().toString()
+                    if (tab.getText() != title) {
+                        Platform.runLater( {
+                            setTabLabelText(tab, title)
+                        })
+                    }
                 }
             }
 
             if (path == null) {
-                def tabContent = tab.getContent()
-                if (tabContent.hasProperty("filePath")) {
-                    Path filePath = (Path) tabContent.invokeMethod("getFilePath", null)
-                    if (filePath != null && filePath == changedPath) {
+                if (evt.requestType == PathRequestType.NEW 
+                    && tabsFileRemoved.containsKey(tab)) {
+                    if (changedPath == tabsFileRemoved[tab]) {
+                        if (tabContent.hasProperty("filePath")) {
+                            tabContent.invokeMethod("setFilePath", changedPath)
+                        }
                         Platform.runLater( {
-                            setTabLabelText(tab, filePath.getFileName().toString())
-                        })                    
-                        openedTabs[tab] = filePath
+                            setTabLabelText(tab, changedPath.getFileName().toString())
+                        })  
+                        tabsFileRemoved.remove(tab)
+                        e.setValue(changedPath)
+                    }
+                } else {
+                    if (tabContent.hasProperty("filePath")) {
+                        Path filePath = (Path) tabContent.invokeMethod("getFilePath", null)
+                        if (filePath != null && filePath == changedPath) {
+                            Platform.runLater( {
+                                setTabLabelText(tab, filePath.getFileName().toString())
+                            })                    
+                            openedTabs[tab] = filePath
+                        }
                     }
                 }
             }
@@ -369,14 +401,13 @@ public class Editor implements FolderTreeViewListener {
     }
 
     void folderTreeUpdated(FolderTreeViewEvent evt) {
-        Path path = evt.path
-        // println "folderTreeUpdated " + path
-        if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
+        // println "folderTreeUpdated " + evt.path + "   " + evt.requestType
+        if (Files.isDirectory(evt.path, LinkOption.NOFOLLOW_LINKS)) {
             // folder added, deleted or modified, re-create roots for GSE
             if (interpreter != null)
                 interpreter.createEngine()
         }
-        updateOpenedTabs(path)
+        updateOpenedTabs(evt)
     }
 
     void fileRequest(FolderTreeViewEvent evt) {

@@ -27,6 +27,8 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 
+//import java.security.MessageDigest
+
 public class Utils {
 
     public static final File makeDir(File parentFolder, String name) {
@@ -53,5 +55,9 @@ public class Utils {
         }
         return ext
     }
+
+    /*public static String getFileHash(Path filePath, String algorithm="MD5") {
+        MessageDigest.getInstance(algorithm).digest(filePath.toFile().getBytes()).encodeHex().toString()
+    }*/
 
 }

@@ -266,11 +266,13 @@ class MidiEditor  extends VBox implements MidiPlaybackListener, FolderTreeListen
 
         filePath.addListener(new ChangeListener(){
             @Override public void changed(ObservableValue o,Object oldVal, Object newVal){
-                Path newPath = newVal as Path
-                fireFolderTreeUpdated(new FolderTreeViewEvent([origin: this,
-                                                               path: newPath,
-                                                               requestType: PathRequestType.MODIFY,
-                                                               fileType: ""]))
+                if (newVal != null) {
+                    Path newPath = newVal as Path
+                    fireFolderTreeUpdated(new FolderTreeViewEvent([origin: this,
+                                                                   path: newPath,
+                                                                   requestType: PathRequestType.MODIFY,
+                                                                   fileType: ""]))
+                }
             }
         }) 
 
