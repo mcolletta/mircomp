@@ -51,6 +51,8 @@ import com.xenoage.zong.core.Score
 @CompileStatic
 class ProjectInterpreter {
 
+    boolean PRINT_STACKTRACE = false
+
     boolean staticCompile = false
     CompilerConfiguration configuration
     GroovyClassLoader engineClassLoader
@@ -181,7 +183,18 @@ class ProjectInterpreter {
         Script script = getScript(code, scriptName)
         if (binding != null)
             script.setBinding(binding)
-        return script.run()
+        try {
+            def result = script.run()
+            return result
+        } catch(Exception ex) {
+            System.err.println("Interpreter ERROR: " + ex.getMessage())
+            if (PRINT_STACKTRACE) {
+                StringWriter stacktrace = new StringWriter()
+                ex.printStackTrace(new PrintWriter(stacktrace))
+                System.err.println(stacktrace.toString())
+            }
+            return new InterpreterException(ex.getMessage())
+        }
     }
 
     public Score createScore(String source, Path codePath=null) {
@@ -216,7 +229,18 @@ class ProjectInterpreter {
             return score
         } catch(Exception ex) {
             System.err.println("Interpreter ERROR: " + ex.getMessage())
+            if (PRINT_STACKTRACE) {
+                StringWriter stacktrace = new StringWriter()
+                ex.printStackTrace(new PrintWriter(stacktrace))
+                System.err.println(stacktrace.toString())
+            }
         }
         return null
+    }
+}
+
+public class InterpreterException extends Exception {
+    public InterpreterException(String message) {
+        super(message);
     }
 }

@@ -745,7 +745,7 @@ public class Editor implements FolderTreeViewListener {
                         editor.getViewer().loadScore(result)
                     })
                 } else {
-                    showErrorConsole(true)                
+                    showErrorConsole(true)
                 }
             } catch(Throwable t) {
                 System.err.println t.message
@@ -765,8 +765,12 @@ public class Editor implements FolderTreeViewListener {
                 installInterceptor()
                 stopButton.setDisable(false)
                 def result = interpreter.executeScriptSource(source, scriptName)
-                outputConsole.text += "\nResult: " + result.toString()
-                showErrorConsole(false)
+                if (!(result instanceof InterpreterException)) {
+                    outputConsole.text += "\nResult: " + result.toString()
+                    showErrorConsole(false)
+                } else {
+                    showErrorConsole(true)
+                }
             } catch(Throwable t) {
                 System.err.println t.message
                 t.printStackTrace()
