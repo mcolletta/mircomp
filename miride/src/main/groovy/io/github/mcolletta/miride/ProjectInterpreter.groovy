@@ -209,9 +209,14 @@ class ProjectInterpreter {
             }
         }
         MirChordInterpreter interpreter = new MirChordInterpreter(addon)
-        MirScore mirscore = interpreter.evaluate(source)
-        ZongConverter zconverter = new ZongConverter()
-        Score score = zconverter.convert(mirscore)
-        return score
+        try {
+            MirScore mirscore = interpreter.evaluate(source)
+            ZongConverter zconverter = new ZongConverter()
+            Score score = zconverter.convert(mirscore)
+            return score
+        } catch(Exception ex) {
+            System.err.println("Interpreter ERROR: " + ex.getMessage())
+        }
+        return null
     }
 }

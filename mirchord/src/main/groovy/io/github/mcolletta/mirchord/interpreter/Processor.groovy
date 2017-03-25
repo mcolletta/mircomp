@@ -63,6 +63,8 @@ class MirChordProcessor extends AbstractProcessor {
 
 	boolean DEBUG = false
 
+	int DEFAULT_OCTAVE = 4
+
 	Score score
 	String currentPart
 	Map<String, String> currentVoice = [:]
@@ -165,10 +167,14 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	private Map getScope() {
+		ensureScope()
+		return getEnvironment().peek()
+	}
+
+	private void ensureScope() {
 		Stack env = getEnvironment()
 		if (env.size() < 1)
-			env.add([:]) 
-		return env.peek()
+			env.add(['octave': DEFAULT_OCTAVE, 'symbol': null])
 	}
 	
 	private Object getVarFromScopes(name) {
@@ -525,19 +531,18 @@ class MirChordProcessor extends AbstractProcessor {
 					else
 						octaveSteps -= 1
 				}
-				pitch.octave = octave + octaveSteps
-			} else {
-				pitch.octave = octave
-				scope['symbol'] = pitch.symbol
 			}
+			pitch.octave = octave + octaveSteps
 		}
 		else {
 			pitch.octave += octaveSteps
-			scope['octave'] = pitch.octave
 		}
 		
 		setVarFromScopes('octave', pitch.octave)
 		setVarFromScopes('symbol', pitch.symbol)
+
+		scope['octave'] = pitch.octave
+		scope['symbol'] = pitch.symbol
 		
 		if (alterations != 0)
 			pitch.alteration = alterations
@@ -605,6 +610,12 @@ class MirChordProcessor extends AbstractProcessor {
 		putResult(true)
 	}
 
+    boolean processPitchList(Match match) {
+    	ensureScope()
+        getEnvironment().add([:])
+        return true
+    }
+
 	void completePitchList(Match match) {
 		List<Match> pitches_match = match.findAllMatchByType(grammar.pitch)
 		List<Pitch> pitches = []
@@ -613,6 +624,7 @@ class MirChordProcessor extends AbstractProcessor {
 			pitches << pitch
 		}
         putResult(pitches)
+        getEnvironment().pop()
     }
 
     void completeUnpitched(Match match) {
@@ -728,7 +740,8 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	boolean processPhrase(Match match) {
-        getEnvironment().add([:])
+		ensureScope()
+        getEnvironment().add(['octave':getVarFromScopes('octave'), 'symbol': getVarFromScopes('symbol')])
         return true
     }
 

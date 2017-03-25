@@ -29,7 +29,7 @@
   <children>
     <MenuBar>
       <menus>
-        <Menu mnemonicParsing="false" text="Project">
+        <Menu mnemonicParsing="false" text="File">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#newproject" text="New project..." />
             <MenuItem mnemonicParsing="false" onAction="#openproject" text="Open project..." />

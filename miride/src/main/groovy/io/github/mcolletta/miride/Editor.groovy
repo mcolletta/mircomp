@@ -740,9 +740,13 @@ public class Editor implements FolderTreeViewListener {
                 stopButton.setDisable(false)
                 Score result = interpreter.createScore(source, codePath)
                 // it is here to show message related to the score in console
-                Platform.runLater( {
-                    editor.getViewer().loadScore(result)
-                })                    
+                if (result) {
+                    Platform.runLater( {
+                        editor.getViewer().loadScore(result)
+                    })
+                } else {
+                    showErrorConsole(true)                
+                }
             } catch(Throwable t) {
                 System.err.println t.message
                 t.printStackTrace()
