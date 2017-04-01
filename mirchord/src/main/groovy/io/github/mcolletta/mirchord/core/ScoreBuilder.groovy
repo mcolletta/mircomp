@@ -23,274 +23,317 @@
 
 package io.github.mcolletta.mirchord.core
 
-import groovy.transform.*
+import groovy.transform.CompileStatic
 
 import com.xenoage.utils.math.Fraction
 
+@CompileStatic
+class ScoreBuilder {
 
-class ScoreBuilder extends FactoryBuilderSupport {
+    Score score
 
-    def nodeReferences = [:]
+    Map<String,Instrument> nodeReferences
     
     def ScoreBuilder() {
-        registerFactories()
+        nodeReferences = [:]
     }
     
-    def registerFactories(){
-        registerFactory("score", new ScoreNode())
-        registerFactory("part", new PartNode())
-        registerFactory("voice", new VoiceNode())
-        registerFactory("chord", new ChordNode())
-        registerFactory("pitch", new PitchNode())
-        registerFactory("rest", new RestNode())
-        registerFactory("phrase", new PhraseNode())
-        registerFactory("anchor", new AnchorNode())
-        registerFactory("repeat", new RepeatNode())
-        registerFactory("instrument", new InstrumentNode())
-        registerFactory("clef", new ClefNode())
-        registerFactory("key", new KeyNode())
-        registerFactory("time", new TimeNode())
-        registerFactory("tempo", new TempoNode())
-        registerFactory("tuplet", new TupletNode())
-    }
-    
-    def build(){}
-}
-
-class ScoreNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        Score score = new Score()
-        score.parts = [:]
-        return score
+    Score score(@DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=ScoreNode) Closure cl) {
+        def node = new ScoreNode()
+        def code = cl.rehydrate(node, this, this)
+        code.resolveStrategy = Closure.DELEGATE_ONLY
+        code()
+        return node.score
     }
 
-    public boolean isLeaf() {
-        return false
-    }
-}
+    class ScoreNode {
+        Score score
 
-class PartNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        Part part = new Part()
-        part.voices = [:]
-        return part
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.parts[childNode.id] = childNode
-    }
-    
-    public boolean isLeaf() {
-        return false
-    }
-}
-
-class VoiceNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        Voice voice = new Voice()
-        voice.elements = []
-        return voice
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.voices[childNode.id] = childNode
-    }
-    
-    public boolean isLeaf() {
-        return false
-    }
-}
-
-class ChordNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        //return new Chord(nodeAttribs) // nodeAttribs=[midiPitch:72, duration:1/2]
-        // nodeAttribs are set on onHandleNodeAttributes
-        return new Chord()
-    }
-
-    public boolean onHandleNodeAttributes(FactoryBuilderSupport builder, Object node, Map attributes) {
-        if (attributes.containsKey("refId")) {
-            def refId = attributes.remove("refId")
-            def instrument = builder.nodeReferences[refId]
-            def pitch = instrument.displayPitch
-            attributes['pitch'] = pitch
-            attributes ['unpitched'] = true
+        ScoreNode() {
+            score = new Score()
+            score.parts = [:]
         }
-    	if (attributes.containsKey('midiPitch')) {
-    		def midiPitch = attributes.remove('midiPitch')    		
-    		Pitch pitch = new Pitch()
-    		pitch.setMidiValue(midiPitch)
-    		attributes['pitch'] = pitch
-    	}
-        super.onHandleNodeAttributes(builder, node, attributes)
-    }
 
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return false
-    }
-}
-
-class PitchNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Pitch()
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.pitches.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return true
-    }
-}
-
-class RestNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Rest()
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return true
-    }
-}
-
-class PhraseNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        Phrase phrase = new Phrase()
-        phrase.elements = []
-        return phrase
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return false
-    }
-}
-
-class AnchorNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Anchor()
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return true
-    }
-}
-
-class RepeatNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Repeat()
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return true
-    }
-}
-
-class InstrumentNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        def instrument = new Instrument()
-        if (nodeAttribs.containsKey("id")) {
-            def id = nodeAttribs["id"]
-            builder.nodeReferences[id] = instrument
+        def part(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=PartNode) Closure cl) {
+            def node = new PartNode(attributes)
+            node.setParent(score)
+            def code = cl.rehydrate(node, this, this)
+            code.resolveStrategy = Closure.DELEGATE_ONLY
+            code()
         }
-        return instrument
     }
 
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
+    class PartNode {
+        Part part
+        PartNode(Map attributes) {
+            part = attributes as Part
+            part.voices = [:]
+        }
+
+        def voice(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=VoiceNode) Closure cl) {
+            def node = new VoiceNode(attributes)
+            node.setParent(part)
+            def code = cl.rehydrate(node, this, this)
+            code.resolveStrategy = Closure.DELEGATE_ONLY
+            code()
+        }
+
+        void setParent(Score score) {
+            score.parts[part.id] = part
+        }
     }
-    
-    public boolean isLeaf() {
-        return true
+
+    class VoiceNode {
+        Voice voice
+
+        VoiceNode(Map attributes) {
+            voice = attributes as Voice
+            voice.elements = []
+        }
+
+        def rest(Map attributes) {
+            def node = new RestNode(attributes)
+            node.setParent(voice)
+        }
+
+        def chord(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=ChordNode) Closure cl={}) {
+            def node = new ChordNode(attributes)
+            node.setParent(voice)
+            def code = cl.rehydrate(node, this, this)
+            code.resolveStrategy = Closure.DELEGATE_ONLY
+            code()
+        }
+
+        def instrument(Map attributes) {
+            def node = new InstrumentNode(attributes)
+            node.setParent(voice)
+        }
+
+        def key(Map attributes) {
+            def node = new KeySignatureNode(attributes)
+            node.setParent(voice)
+        }
+
+        def clef(Map attributes) {
+            def node = new ClefNode(attributes)
+            node.setParent(voice)
+        }
+
+        def time(Map attributes) {
+            def node = new TimeSignatureNode(attributes)
+            node.setParent(voice)
+        }
+
+        def tempo(Map attributes) {
+            def node = new TempoNode(attributes)
+            node.setParent(voice)
+        }
+
+        def anchor(Map attributes) {
+            def node = new AnchorNode(attributes)
+            node.setParent(voice)
+        }
+
+        def repeat(Map attributes) {
+            def node = new RepeatNode(attributes)
+            node.setParent(voice)
+        }
+
+        void setParent(Part part) {
+            part.voices[voice.id] = voice
+        }
     }
+
+    class RestNode {
+        Rest rest
+
+        RestNode(Map attributes) {
+            rest = attributes as Rest
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(rest)
+        }
+    }
+
+    class ChordNode {
+        Chord chord
+
+        ChordNode(Map attributes) {
+            if (attributes.containsKey("refId")) {
+                String refId = attributes.remove("refId")
+                Instrument instrument = nodeReferences[refId]
+                Pitch pitch = instrument.displayPitch
+                attributes['pitch'] = pitch
+                attributes ['unpitched'] = true
+            }
+            if (attributes.containsKey('midiPitch')) {
+                int midiPitch = attributes.remove('midiPitch')          
+                Pitch pitch = new Pitch()
+                pitch.setMidiValue(midiPitch)
+                attributes['pitch'] = pitch
+            }
+            chord = attributes as Chord
+        }
+
+        void pitch(Map attributes) {
+            def node = new PitchNode(attributes)
+            node.setParent(chord)
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(chord)
+        }
+
+        void setPhrase(Phrase phrase) {
+            phrase.elements.add(chord)
+        }
+
+        void setTuplet(Tuplet tuplet) {
+            tuplet.chords.add(chord)
+        }
+    }
+
+    class PitchNode {
+        Pitch pitch
+
+        PitchNode(Map attributes) {
+            pitch = attributes as Pitch
+        }
+
+        void setParent(Chord chord) {
+            chord.pitches.add(pitch)
+        }
+    }
+
+    class InstrumentNode {
+        Instrument instrument
+
+        InstrumentNode(Map attributes) {
+            instrument = attributes as Instrument
+            if (attributes.containsKey("id")) {
+                String id = attributes["id"]
+                nodeReferences[id] = instrument
+            }
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(instrument)
+        }
+    }
+
+    class PhraseNode {
+        Phrase phrase
+
+        PhraseNode(Map attributes) {
+            phrase = attributes as Phrase
+            phrase.elements = []
+        }
+
+        def chord(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=ChordNode) Closure cl={}) {
+            def node = new ChordNode(attributes)
+            node.setPhrase(phrase)
+            def code = cl.rehydrate(node, this, this)
+            code.resolveStrategy = Closure.DELEGATE_ONLY
+            code()
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(phrase)
+        }
+    }
+
+    class ClefNode {
+        Clef clef
+
+        ClefNode(Map attributes) {
+            clef = attributes as Clef
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(clef)
+        }
+    }
+
+    class KeySignatureNode {
+        KeySignature keySignature
+
+        KeySignatureNode(Map attributes) {
+            keySignature = attributes as KeySignature
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(keySignature)
+        }
+    }
+
+    class TimeSignatureNode {
+        TimeSignature timeSignature
+
+        TimeSignatureNode(Map attributes) {
+            timeSignature = attributes as TimeSignature
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(timeSignature)
+        }
+    }
+
+    class TempoNode {
+        Tempo tempo
+
+        TempoNode(Map attributes) {
+            tempo = attributes as Tempo
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(tempo)
+        }
+    }
+
+    class TupletNode {
+        Tuplet tuplet
+
+        TupletNode(Map attributes) {
+            tuplet = attributes as Tuplet
+        }
+
+        def chord(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=ChordNode) Closure cl={}) {
+            def node = new ChordNode(attributes)
+            node.setTuplet(tuplet)
+            def code = cl.rehydrate(node, this, this)
+            code.resolveStrategy = Closure.DELEGATE_ONLY
+            code()
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(tuplet)
+        }
+    }
+
+    class AnchorNode {
+        Anchor anchor
+
+        AnchorNode(Map attributes) {
+            anchor = attributes as Anchor
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(anchor)
+        }
+    }
+
+    class RepeatNode {
+        Repeat repeat
+
+        RepeatNode(Map attributes) {
+            repeat = attributes as Repeat
+        }
+
+        void setParent(Voice voice) {
+            voice.elements.add(repeat)
+        }
+    }
+
 }
 
-class ClefNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Clef()
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return true
-    }
-}
-
-class KeyNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new KeySignature()
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return true
-    }
-}
-
-class TimeNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new TimeSignature()
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return true
-    }
-}
-
-class TempoNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Tempo()
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return true
-    }
-}
-
-class TupletNode extends AbstractFactory {
-    public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
-        return new Tuplet()
-    }
-
-    public void setParent(FactoryBuilderSupport builder, Object parentNode, Object childNode) {
-        parentNode.elements.add(childNode)
-    }
-    
-    public boolean isLeaf() {
-        return false
-    }
-}

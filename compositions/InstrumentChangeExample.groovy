@@ -1,5 +1,8 @@
 // first measures of Frère Jacques (the Italian version is known as "Fra Martino")
-builder.score() {
+def f4 = fr(1,4)
+def f2 = fr(1,2)
+def f1 = fr(1,1)
+def fra_martino = new ScoreBuilder().score() {
 	part(id:"1") {
 		voice(id:"1") {
 			clef(type:ClefType.TREBLE)
@@ -12,7 +15,7 @@ builder.score() {
 				chord(midiPitch:64, duration:f4)
 				chord(midiPitch:60, duration:f4)
 			}
-			instrument(id:"Violin 1", midiProgram:41)
+			instrument(id:"Violin 1", program:41)
 			(1..2).each {
 				chord(midiPitch:64, duration:f4)
 				chord(midiPitch:65, duration:f4)

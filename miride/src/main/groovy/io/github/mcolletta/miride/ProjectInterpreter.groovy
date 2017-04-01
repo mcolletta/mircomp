@@ -53,7 +53,7 @@ class ProjectInterpreter {
 
     boolean PRINT_STACKTRACE = false
 
-    boolean staticCompile = false
+    boolean staticCompile = true
     CompilerConfiguration configuration
     GroovyClassLoader engineClassLoader
     GroovyScriptEngine engine

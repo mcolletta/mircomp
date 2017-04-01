@@ -64,6 +64,7 @@ class MirChordProcessor extends AbstractProcessor {
 	boolean DEBUG = false
 
 	int DEFAULT_OCTAVE = 4
+	Fraction DEFAULT_DURATION = fr(1,4)
 
 	Score score
 	String currentPart
@@ -174,7 +175,7 @@ class MirChordProcessor extends AbstractProcessor {
 	private void ensureScope() {
 		Stack env = getEnvironment()
 		if (env.size() < 1)
-			env.add(['octave': DEFAULT_OCTAVE, 'symbol': null])
+			env.add(['octave': DEFAULT_OCTAVE, 'symbol': null, 'duration': DEFAULT_DURATION])
 	}
 	
 	private Object getVarFromScopes(name) {
@@ -741,7 +742,9 @@ class MirChordProcessor extends AbstractProcessor {
 
 	boolean processPhrase(Match match) {
 		ensureScope()
-        getEnvironment().add(['octave':getVarFromScopes('octave'), 'symbol': getVarFromScopes('symbol')])
+        getEnvironment().add(['octave':getVarFromScopes('octave'),
+        					  'symbol': getVarFromScopes('symbol'),
+        					  'duration': getVarFromScopes('duration')])
         return true
     }
 
