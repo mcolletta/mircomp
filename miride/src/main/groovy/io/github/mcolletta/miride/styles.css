@@ -49,6 +49,14 @@
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/xconsole.png');
 }
+.sandbox-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/locked.png');
+}
+.typecheck-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/spellcheck.png');
+}
 .reload-button {
     -fx-content-display: graphic-only;
     -fx-graphic: url('resources/icons/reload.png');

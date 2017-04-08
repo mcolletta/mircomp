@@ -115,6 +115,8 @@ import javax.sound.midi.MidiSystem
 import javax.sound.midi.Synthesizer
 import com.xenoage.utils.exceptions.InvalidFormatException
 
+import java.security.Policy
+
 
 @CompileStatic
 public class Editor implements FolderTreeViewListener {
@@ -126,11 +128,13 @@ public class Editor implements FolderTreeViewListener {
 
     @FXML private CheckMenuItem treeMenu
     @FXML private CheckMenuItem consoleMenu
+    @FXML private CheckMenuItem sandboxMenu
     @FXML private MenuItem runMenu
     @FXML private MenuItem stopMenu
 
     @FXML private ToggleButton treeButton
     @FXML private ToggleButton consoleButton
+     @FXML private ToggleButton sandboxButton
 
     @FXML private MenuItem propertiesMenu
 
@@ -151,6 +155,8 @@ public class Editor implements FolderTreeViewListener {
     SystemOutputInterceptor systemOutInterceptor
     SystemOutputInterceptor systemErrorInterceptor
 
+    private InterpreterSecurityManager interpreterSecurityManager = new InterpreterSecurityManager()
+
     ObjectProperty<File> projectFolder = new SimpleObjectProperty<>()
 
     Map<String,Path> config = [:]
@@ -166,6 +172,7 @@ public class Editor implements FolderTreeViewListener {
         folderTreeView.addFolderTreeViewListener(this)
         treeMenu.selectedProperty().bindBidirectional(treeButton.selectedProperty())
         consoleMenu.selectedProperty().bindBidirectional(consoleButton.selectedProperty())
+        sandboxMenu.selectedProperty().bindBidirectional(sandboxButton.selectedProperty())
         BooleanBinding fileExists = new BooleanBinding() {
             {
                 super.bind(projectFolder)
@@ -201,7 +208,7 @@ public class Editor implements FolderTreeViewListener {
         )
 
         initMidi()
-        interpreter = new ProjectInterpreter()
+        interpreter = new ProjectInterpreter()        
     }
 
     void showLicenseAgreementDialog() {
@@ -233,6 +240,19 @@ public class Editor implements FolderTreeViewListener {
     void showAlert(AlertType atype, String text) {
         Alert alert = new Alert(atype, text)
         Optional<ButtonType> result = alert.showAndWait()
+    }
+
+    void setupSecurity() {
+        if (sandboxButton.selected ) {
+            if (projectFolder.get() != null)
+                Policy.setPolicy(new InterpreterPolicy(projectFolder.get().getPath()))
+            else
+                Policy.setPolicy(new InterpreterPolicy())
+            System.setSecurityManager(interpreterSecurityManager)
+        } else {
+            if (System.getSecurityManager() != null)
+                System.setSecurityManager(null)
+        }
     }
 
     void initMidi() {
@@ -671,7 +691,8 @@ public class Editor implements FolderTreeViewListener {
                     interpreter.addLib(lib)
                 }
             }
-            loadSoundbank()
+            loadSoundbank()            
+            setupSecurity()            
         }
     }
 
@@ -800,6 +821,10 @@ public class Editor implements FolderTreeViewListener {
 
     void showconsole() {
         tabConsole.setVisible(consoleButton.selected)
+    }
+
+    void sandbox() {
+        setupSecurity()
     }
 
 
