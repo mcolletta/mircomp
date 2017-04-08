@@ -128,13 +128,15 @@ public class Editor implements FolderTreeViewListener {
 
     @FXML private CheckMenuItem treeMenu
     @FXML private CheckMenuItem consoleMenu
+    @FXML private CheckMenuItem typecheckMenu
     @FXML private CheckMenuItem sandboxMenu
     @FXML private MenuItem runMenu
     @FXML private MenuItem stopMenu
 
     @FXML private ToggleButton treeButton
     @FXML private ToggleButton consoleButton
-     @FXML private ToggleButton sandboxButton
+    @FXML private ToggleButton typecheckButton
+    @FXML private ToggleButton sandboxButton
 
     @FXML private MenuItem propertiesMenu
 
@@ -172,6 +174,7 @@ public class Editor implements FolderTreeViewListener {
         folderTreeView.addFolderTreeViewListener(this)
         treeMenu.selectedProperty().bindBidirectional(treeButton.selectedProperty())
         consoleMenu.selectedProperty().bindBidirectional(consoleButton.selectedProperty())
+        typecheckMenu.selectedProperty().bindBidirectional(typecheckButton.selectedProperty())
         sandboxMenu.selectedProperty().bindBidirectional(sandboxButton.selectedProperty())
         BooleanBinding fileExists = new BooleanBinding() {
             {
@@ -208,7 +211,7 @@ public class Editor implements FolderTreeViewListener {
         )
 
         initMidi()
-        interpreter = new ProjectInterpreter()        
+        interpreter = new ProjectInterpreter(null, typecheckButton.selected)        
     }
 
     void showLicenseAgreementDialog() {
@@ -702,7 +705,7 @@ public class Editor implements FolderTreeViewListener {
         showtree()
         try {
             folderTreeView.setRoot(projectFolder.get().getPath())
-            interpreter = new ProjectInterpreter(projectFolder.get().getPath())
+            interpreter = new ProjectInterpreter(projectFolder.get().getPath(), typecheckButton.selected)
             setupProject()
             interpreter.setBinding(new Binding([projectPath: projectFolder.get().toPath(), "config":config]))
         } catch(Exception ex) {
@@ -821,6 +824,13 @@ public class Editor implements FolderTreeViewListener {
 
     void showconsole() {
         tabConsole.setVisible(consoleButton.selected)
+    }
+
+    void typecheck() {
+        if (interpreter != null) {
+            interpreter.setStaticCompile(typecheckButton.selected)
+            interpreter.createEngine()
+        }
     }
 
     void sandbox() {

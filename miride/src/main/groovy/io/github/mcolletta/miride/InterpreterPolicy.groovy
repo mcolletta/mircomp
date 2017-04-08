@@ -76,6 +76,11 @@ public class InterpreterPolicy extends Policy {
 @CompileStatic
 class InterpreterSecurityManager extends SecurityManager {
 	@Override public void checkExit(int status) {
-		throw new SecurityException("Cannot call method exit in this context")
+        try {
+            checkExec("java -version")
+        } catch(Exception ex) {
+		  throw new SecurityException("Cannot call method exit in this context")
+        }
+        super.checkExit(status)
 	}
 }

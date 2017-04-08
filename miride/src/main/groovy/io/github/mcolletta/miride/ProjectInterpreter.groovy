@@ -25,6 +25,9 @@ package io.github.mcolletta.miride
 
 import java.util.Map
 
+import static java.util.Collections.singletonList
+import static java.util.Collections.singletonMap
+
 import java.nio.file.attribute.*
 import java.nio.file.*
 
@@ -67,9 +70,10 @@ class ProjectInterpreter {
     Pattern includePattern = Pattern.compile(includeRegex, Pattern.CASE_INSENSITIVE)
 
 
-    ProjectInterpreter(String strPrjPath=null) {
+    ProjectInterpreter(String strPrjPath=null, boolean typecheck=false) {
         if (strPrjPath != null)
             projectPath = Paths.get(strPrjPath)
+        staticCompile = typecheck
         createEngine()
     }
 
@@ -83,8 +87,11 @@ class ProjectInterpreter {
         configuration = new CompilerConfiguration()
         configuration.addCompilationCustomizers(importCustomizer)
         if (staticCompile) {
-            configuration.addCompilationCustomizers(
-                new ASTTransformationCustomizer(CompileStatic.class))
+            //configuration.addCompilationCustomizers(new ASTTransformationCustomizer(CompileStatic.class))
+            ASTTransformationCustomizer astcustomizer = new ASTTransformationCustomizer(
+                singletonMap("extensions", singletonList("io.github.mcolletta.miride.InterpreterTypeCheckingExtension")),
+                CompileStatic.class)
+            configuration.addCompilationCustomizers(astcustomizer)
         }
     }
 

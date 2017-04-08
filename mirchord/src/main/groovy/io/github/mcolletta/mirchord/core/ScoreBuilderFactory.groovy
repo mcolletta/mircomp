@@ -32,7 +32,7 @@ class ScoreBuilderFactory extends FactoryBuilderSupport {
 
     def nodeReferences = [:]
     
-    def ScoreBuilder() {
+    def ScoreBuilderFactory() {
         registerFactories()
     }
     

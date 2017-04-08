@@ -57,6 +57,7 @@
             <MenuItem fx:id="runMenu" mnemonicParsing="false" onAction="#runscript" text="Run" />
             <MenuItem fx:id="stopMenu" mnemonicParsing="false" onAction="#stopscript" text="Stop" />
             <CheckMenuItem fx:id="sandboxMenu" mnemonicParsing="false" onAction="#sandbox" text="Sandbox" selected="true" />
+            <CheckMenuItem fx:id="typecheckMenu" mnemonicParsing="false" onAction="#typecheck" text="Type Checking" selected="true" />
             <MenuItem fx:id="propertiesMenu" mnemonicParsing="false" onAction="#editproperties" text="Edit properties..." />
           </items>
         </Menu>
@@ -79,6 +80,7 @@
             <Button fx:id="stopButton" onAction="#stopscript" styleClass="stop-button" disable="true" text="Stop" mnemonicParsing="false"/>
             <ToggleButton fx:id="consoleButton" onAction="#showconsole" styleClass="console-button" text="Show/Hide Console" selected="false" mnemonicParsing="false"/>
             <ToggleButton fx:id="sandboxButton" onAction="#sandbox" styleClass="sandbox-button" text="Sandbox" selected="true" mnemonicParsing="false"/>
+            <ToggleButton fx:id="typecheckButton" onAction="#typecheck" styleClass="typecheck-button" text="Sandbox" selected="true" mnemonicParsing="false"/>
             <Separator orientation="VERTICAL" />
             <Button fx:id="propertiesButton" onAction="#editproperties" styleClass="properties-button" text="Edit properties..." mnemonicParsing="false"/>
         </items>

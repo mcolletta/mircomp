@@ -55,7 +55,7 @@
 }
 .typecheck-button {
     -fx-content-display: graphic-only;
-    -fx-graphic: url('resources/icons/spellcheck.png');
+    -fx-graphic: url('resources/icons/checkedclipboard.png');
 }
 .reload-button {
     -fx-content-display: graphic-only;
