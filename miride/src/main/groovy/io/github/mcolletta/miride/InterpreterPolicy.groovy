@@ -79,7 +79,7 @@ class InterpreterSecurityManager extends SecurityManager {
         try {
             checkExec("java -version")
         } catch(Exception ex) {
-		  throw new SecurityException("Cannot call method exit in this context")
+            throw new SecurityException("Cannot call method exit in this context")
         }
         super.checkExit(status)
 	}
