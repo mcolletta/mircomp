@@ -708,7 +708,12 @@ public class Editor implements FolderTreeViewListener {
             folderTreeView.setRoot(projectFolder.get().getPath())
             interpreter = new ProjectInterpreter(projectFolder.get().getPath(), typecheckButton.selected)
             setupProject()
-            interpreter.setBinding(new Binding([projectPath: projectFolder.get().toPath(), "config":config]))
+            // copy the config for the binding
+            Map<String,Path> configBinding = [:]
+            config.each { String k, Path v ->
+                configBinding[k] = Paths.get(v.toString())
+            }
+            interpreter.setBinding(new Binding([projectPath: projectFolder.get().toPath(), "config":configBinding]))
         } catch(Exception ex) {
             println "Exception: " + ex.getMessage()
         }
