@@ -37,6 +37,7 @@ import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.layout.VBox
 import javafx.scene.layout.StackPane
+import javafx.scene.layout.Region
 
 import javafx.scene.control.SplitPane
 import javafx.scene.control.TabPane
@@ -158,6 +159,7 @@ public class Editor implements FolderTreeViewListener {
     SystemOutputInterceptor systemErrorInterceptor
 
     private InterpreterSecurityManager interpreterSecurityManager = new InterpreterSecurityManager()
+    private InterpreterPolicy interpreterPolicy = new InterpreterPolicy()
 
     ObjectProperty<File> projectFolder = new SimpleObjectProperty<>()
 
@@ -246,11 +248,10 @@ public class Editor implements FolderTreeViewListener {
     }
 
     void setupSecurity() {
-        if (sandboxButton.selected ) {
+        if (sandboxButton.selected) {
             if (projectFolder.get() != null)
-                Policy.setPolicy(new InterpreterPolicy(projectFolder.get().getPath()))
-            else
-                Policy.setPolicy(new InterpreterPolicy())
+                interpreterPolicy.setFilePath(projectFolder.get().getPath())
+            Policy.setPolicy(interpreterPolicy)
             System.setSecurityManager(interpreterSecurityManager)
         } else {
             if (System.getSecurityManager() != null)
@@ -834,6 +835,15 @@ public class Editor implements FolderTreeViewListener {
     }
 
     void sandbox() {
+        if (!(sandboxButton.selected)) {
+            Alert alert = new Alert(AlertType.CONFIRMATION, 
+                                    "Without sandbox scripts code run with full control over the system.\nAre you sure to leave the sandbox?")
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE)
+            Optional<ButtonType> result = alert.showAndWait();
+            if (!(result.isPresent() && result.get() == ButtonType.OK)) {
+                sandboxButton.setSelected(true)
+            }
+        }
         setupSecurity()
     }
 
