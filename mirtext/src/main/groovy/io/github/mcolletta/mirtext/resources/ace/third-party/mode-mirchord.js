@@ -70,7 +70,7 @@ var MirchordHighlightRules = function() {
         'keySignature copyTimes callSymbol ' +
         'info title composer poet chordsMode lyrics label name ' +
         'stemUp stemDown stemAuto ' +
-        'transpose transposeDiatonic invert invertDiatonic augment diminuition retrograde chain ' +        
+        'transpose transposeDiatonic invert invertDiatonic augment diminuition retrograde zip chain ' +        
         'zero? list zipmap'
     );
 
@@ -1235,9 +1235,9 @@ var functionMap = {
         "(diminuition \"2/1\" {})",
         "Phrase diminuition(String ratio, Phrase phrase)"
     ],
-    "chain": [
-        "(chain {} {})",
-        "Phrase chain(Phrase phrase, Phrase pattern)"
+    "zip": [
+        "(zip {} {})",
+        "Phrase zip(Phrase phrase, Phrase pattern)"
     ]
 };
 

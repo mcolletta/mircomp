@@ -179,7 +179,16 @@ class TextEditor extends VBox implements FolderTreeListenerList {
         loadThemes()
         loadModes()
 
-		registerCopyPasteEvents()
+        /*  On Windows 10 cut/paste works without registerCopyPasteEvents, 
+            otherwise it paste the text twice!!
+            Ex.
+            System.getProperty("os.name") ===> Windows 10
+            System.getProperty("os.name") ===> Linux
+        */
+        String os = System.getProperty("os.name");
+        if (os.toLowerCase().indexOf("windows") < 0) {
+            registerCopyPasteEvents()
+        }
 
         editor.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override

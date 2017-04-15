@@ -25,11 +25,17 @@ package io.github.mcolletta.miride
 
 import java.lang.reflect.Method
 
+import java.security.Policy
+
 import java.io.IOException
 import java.nio.file.Paths
 import java.nio.file.Path
 import java.nio.file.Files
 import java.nio.file.LinkOption
+
+import javax.sound.midi.Soundbank
+import javax.sound.midi.MidiSystem
+import javax.sound.midi.Synthesizer
 
 import javafx.application.Platform
 import javafx.application.Application
@@ -101,6 +107,7 @@ import io.github.mcolletta.mirchord.core.ScoreBuilder
 import com.xenoage.zong.core.Score
 import com.xenoage.zong.desktop.io.midi.out.SynthManager
 import com.xenoage.zong.desktop.utils.JseZongPlatformUtils
+import com.xenoage.utils.exceptions.InvalidFormatException
 
 import static io.github.mcolletta.miride.Utils.getFileExt
 import static io.github.mcolletta.miride.DraggableTabs.*
@@ -110,22 +117,14 @@ import groovy.ui.SystemOutputInterceptor
 import groovy.transform.CompileStatic
 import groovy.transform.CompileDynamic
 
-//------------------------
-import javax.sound.midi.Soundbank
-import javax.sound.midi.MidiSystem
-import javax.sound.midi.Synthesizer
-import com.xenoage.utils.exceptions.InvalidFormatException
-
-import java.security.Policy
-
 
 @CompileStatic
 public class Editor implements FolderTreeViewListener {
 
-    Map<Tab,Path> openedTabs = [:]
+    private Map<Tab,Path> openedTabs = [:]
     private Map<Tab,Path> tabsFileRemoved = [:]
 
-    ProjectInterpreter interpreter
+    private ProjectInterpreter interpreter
 
     @FXML private CheckMenuItem treeMenu
     @FXML private CheckMenuItem consoleMenu
@@ -155,15 +154,15 @@ public class Editor implements FolderTreeViewListener {
     @FXML private TextArea errorConsole
 
     private volatile Thread  runThread = null
-    SystemOutputInterceptor systemOutInterceptor
-    SystemOutputInterceptor systemErrorInterceptor
+    private SystemOutputInterceptor systemOutInterceptor
+    private SystemOutputInterceptor systemErrorInterceptor
 
     private InterpreterSecurityManager interpreterSecurityManager = new InterpreterSecurityManager()
     private InterpreterPolicy interpreterPolicy = new InterpreterPolicy()
 
-    ObjectProperty<File> projectFolder = new SimpleObjectProperty<>()
+    private ObjectProperty<File> projectFolder = new SimpleObjectProperty<>()
 
-    Map<String,Path> config = [:]
+    private Map<String,Path> config = [:]
 
     private boolean needAgreement = true
     
@@ -213,6 +212,7 @@ public class Editor implements FolderTreeViewListener {
         )
 
         initMidi()
+        setupSecurity()
         interpreter = new ProjectInterpreter(null, typecheckButton.selected)        
     }
 
@@ -739,8 +739,8 @@ public class Editor implements FolderTreeViewListener {
     }
 
     void runscript() {
-        outputConsole.text = ""
-        errorConsole.text = ""
+        outputConsole.clear()
+        errorConsole.clear()
         Tab tab = tabPane.getSelectionModel().getSelectedItem()
         Path path = openedTabs[tab]
 
@@ -793,11 +793,11 @@ public class Editor implements FolderTreeViewListener {
         runThread = Thread.start {
             try {
                 installInterceptor()
+                showErrorConsole(false)
                 stopButton.setDisable(false)
                 def result = interpreter.executeScriptSource(source, scriptName)
                 if (!(result instanceof InterpreterException)) {
-                    outputConsole.text += "\nResult: " + result.toString()
-                    showErrorConsole(false)
+                    println "\nRESULT: " + result.toString()
                 } else {
                     showErrorConsole(true)
                 }
@@ -823,7 +823,7 @@ public class Editor implements FolderTreeViewListener {
 
     void showErrorConsole(boolean error=false) {
         int index = (error) ? 1 : 0
-        consoleButton.selected = true
+        consoleButton.setSelected(true)
         tabConsole.setVisible(true)
         tabConsole.getSelectionModel().select(index)
     }
@@ -842,9 +842,9 @@ public class Editor implements FolderTreeViewListener {
     void sandbox() {
         if (!(sandboxButton.selected)) {
             Alert alert = new Alert(AlertType.CONFIRMATION, 
-                                    "Without sandbox scripts code run with full control over the system.\nAre you sure to leave the sandbox?")
+                                    "Without sandbox scripts run unrestricted over the system.\nAre you sure to leave the sandbox?")
             alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE)
-            Optional<ButtonType> result = alert.showAndWait();
+            Optional<ButtonType> result = alert.showAndWait()
             if (!(result.isPresent() && result.get() == ButtonType.OK)) {
                 sandboxButton.setSelected(true)
             }
@@ -864,7 +864,7 @@ public class Editor implements FolderTreeViewListener {
     boolean notifySystemOut(int consoleId, String str) {
         Platform.runLater( {
             try {
-                outputConsole.text += str
+                outputConsole.appendText(str)
             } catch(Exception ex) {
                 println "Exception: " + ex.getMessage()
             }
@@ -875,7 +875,7 @@ public class Editor implements FolderTreeViewListener {
     boolean notifySystemErr(int consoleId, String str) {
         Platform.runLater( {
             try {
-                errorConsole.text += str
+                errorConsole.appendText(str)
             } catch(Exception ex) {
                 println "Exception: " + ex.getMessage()
             }

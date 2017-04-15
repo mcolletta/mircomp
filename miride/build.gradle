@@ -31,6 +31,8 @@ sourceSets {
     }
 }
 
+// version = 1.0.0-alpha.1
+
 distZip {
     into(project.name) {
         from '..'

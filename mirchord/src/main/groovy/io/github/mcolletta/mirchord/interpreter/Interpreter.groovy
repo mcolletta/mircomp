@@ -172,7 +172,7 @@ class MirchordAddon {
 	}
 
 	@MirChord 
-	public Phrase chain(Phrase phrase, Phrase pattern) {
+	public Phrase zip(Phrase phrase, Phrase pattern) {
 		Phrase newPhrase = phrase.copy()
 		List<MusicElement> rhythm = pattern.elements.findAll { it.getMusicElementType() == "Chord" }
 
