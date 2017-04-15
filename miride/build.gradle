@@ -41,6 +41,13 @@ distZip {
         include 'LICENSE-ALLJARS'
         include 'README.md'
     }
+    doLast {
+        file("$destinationDir/$archiveName").renameTo("$destinationDir/mircomp-1.0.0-alpha.1.zip")
+    }
+}
+
+jar {
+    manifest.attributes 'Created-By': 'Mirco Colletta'
 }
 
 task runMirIDE(type: JavaExec) {

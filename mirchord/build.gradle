@@ -24,6 +24,10 @@ sourceSets {
     }
 }
 
+jar {
+    manifest.attributes 'Created-By': 'Mirco Colletta'
+}
+
 task runScript(type: JavaExec) {
     description 'Run Simple Demo'
     main = 'io.github.mcolletta.mirchord.interpreter.MirChordInterpreter'

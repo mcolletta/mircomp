@@ -12,6 +12,10 @@ tasks.withType(GroovyCompile) {
     groovyOptions.optimizationOptions.indy = true
 }
 
+jar {
+    manifest.attributes 'Created-By': 'Mirco Colletta'
+}
+
 sourceSets {
     main {
         groovy {
