@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Computer Music Composition Software">
+    <meta name="keywords" content="Open Source Assisted Automatic Algorithmic Computer Music Composition Sofware Library Framework">
+    <meta name="author" content="Mirco Colletta">
+    <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
+
+    <title>
+      MirComp: computer music composition framework
+      
+      
+      
+      
+      
+      
+       - Framework
+      
+      
+      
+      
+    </title>
+
+    <link rel="author license" href="about_site.html">
+
+    <!-- Bootstrap core CSS -->
+    <link href="./assets/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="./assets/css/mircomp.css" rel="stylesheet">
+  </head>
+
+  <body role="document">
+
+
+    <a href="https://mcolletta.github.com/mircomp"><img style="position: absolute; top: 45px; right: 0; border: 0;" src="./assets/images/fork-github.png" alt="Fork me on GitHub" ></a>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li  ><a href="index.html">Home</a></li>
+            <li  ><a href="getting_started.html">Getting Started</a></li>
+            <li  ><a href="documentation.html">Documentation</a></li>
+            <li  ><a href="download.html">Download</a></li>
+            <!-- <li><a href="about.html">About</a></li> -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container theme-showcase" role="main">
+
+      <div>
+        
+<div class="jumbotron">
+    <h1>Framework</h1>
+    <p>An introduction to the MirChord framework and an API reference to common components useful for algorithmic music. Learn how to build your score algorithmically.</p>
+</div>
+
+
+<p>In the <a href="mirchord.html">notation language</a> section we learned how to craft a score using a domain specific language (DSL) and how to extend it using groovy with custom transformations. However, behind the curtains, the mirchord interpreter uses a rich set of music software components to build the score.<br/>
+Now we are going to see how to create a score using these raw components.</p>
+
+<p class="bg-danger">This section requires a basic knowledge of the Groovy programming language (or Java since most Java code is also valid Groovy code)</p>
+
+<div class="page-header">
+	<h2>The pitch class</h2>
+</div>
+
+<p>Let's start with the most basic object type, a simple Pitch</p>
+
+<pre>
+def pitch = new Pitch('C',4,0)  // symbol, octave, alteration
+int midiKey = pitch.getMidiValue()
+double hertz = 440f * Math.pow(2, (midiKey - 69) / 12f)
+
+println "Pitch " + pitch + " with midiKey " + midiKey + " hertz " + hertz
+</pre>
+
+<p>should print to the console</p>
+
+<samp>
+Pitch C4[60] with midiKey 60 hertz 261.62558
+</samp>
+
+<div class="page-header">
+	<h2>Score with builder</h2>
+</div>
+
+<p>
+	As you guess every kind of musical entity presented in the notation language has a counterpart in the object model so you can create an entire score in the stardard imperative paradigm. However, even if this is a viable option, a more straightforward manner to create a score with the object model is to use a special groovy <em>builder</em> named <code>ScoreBuilder</code>.
+</p>
+
+<pre>
+// first measures of "Fra Martino"
+def f4 = fr(1,4)
+def f2 = fr(1,2)
+def f1 = fr(1,1)
+def fra_martino = new ScoreBuilder().score() {
+	part(id:"1") {
+		voice(id:"1") {
+			clef(type:ClefType.TREBLE)
+			key(fifths:0, mode:KeyMode.MAJOR)
+			time(time:fr(4,4))
+			tempo(baseBeat:fr(1,4), bpm:90)
+			(1..2).each {
+				chord(midiPitch:60, duration:f4)
+				chord(midiPitch:62, duration:f4)
+				chord(midiPitch:64, duration:f4)
+				chord(midiPitch:60, duration:f4)
+			}
+			instrument(id:"Violin 1", program:41)
+			(1..2).each {
+				chord(midiPitch:64, duration:f4)
+				chord(midiPitch:65, duration:f4)
+				chord(midiPitch:67, duration:f2)
+			}
+		}
+	}
+}
+
+def midiFile = projectPath.resolve('midi/FraMartino.mid').toFile()
+saveAs(fra_martino, midiFile)
+</pre>
+
+<p class="spaced">
+	In the example above after the score creation we saved it in a MIDI file.
+</p>
+
+<p class="bg-danger">Coming soon...</p>
+
+<div class="page-header">
+	<h2>Algorithmic music using AI techinques</h2>
+</div>
+
+<p class="bg-danger">Coming soon...</p>
+      </div>
+
+      <hr/>
+
+      <!-- FOOTER -->
+      <footer>
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>© 2016-2017 Mirco Colletta - <a href="about_site.html">About the site</a></p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <script src="./assets/js/mircomp.js"></script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <script src="./assets/js/docs.min.js"></script> -->
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
+  
+
+  </body>
+</html>

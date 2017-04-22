@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Computer Music Composition Software">
+    <meta name="keywords" content="Open Source Assisted Automatic Algorithmic Computer Music Composition Sofware Library Framework">
+    <meta name="author" content="Mirco Colletta">
+    <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
+
+    <title>
+      MirComp: computer music composition framework
+      
+      
+      
+      
+      
+       - Extending MirChord
+      
+      
+      
+      
+      
+    </title>
+
+    <link rel="author license" href="about_site.html">
+
+    <!-- Bootstrap core CSS -->
+    <link href="./assets/css/bootstrap.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="./assets/css/mircomp.css" rel="stylesheet">
+  </head>
+
+  <body role="document">
+
+
+    <a href="https://mcolletta.github.com/mircomp"><img style="position: absolute; top: 45px; right: 0; border: 0;" src="./assets/images/fork-github.png" alt="Fork me on GitHub" ></a>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li  ><a href="index.html">Home</a></li>
+            <li  ><a href="getting_started.html">Getting Started</a></li>
+            <li  ><a href="documentation.html">Documentation</a></li>
+            <li  ><a href="download.html">Download</a></li>
+            <!-- <li><a href="about.html">About</a></li> -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container theme-showcase" role="main">
+
+      <div>
+        <div class="jumbotron">
+    <h1>Extending MirChord</h1>
+    <p>A short guide to extend the notation functionality with music "logic".</p>
+</div>
+
+<div>
+    <p class="spaced">
+        We have seen in the <a href="mirchord.html">notation language</a> page that the interpreter provides by default a lot of built-in useful tranformations but sometimes we could have the necessity to create our own functions.<br/>
+        In MirChord it is possible to extend the interpreter processing capabilities with custom transformations by means of groovy methods marked with the special annotation <code>@MirChord</code>.
+    </p>
+
+    <p class="bg-danger">This section requires a basic knowledge of the Groovy programming language (or Java since most Java code is also valid Groovy code)</p>
+
+    <h4>Example</h4>
+
+    <p class="spaced">
+        Transposition is available from the standard set of built-in functions but as a little exercise we now define it again as a custom transformation. First, you should create in the <em>src</em> folder a groovy file named <em>Transformations.groovy</em> and paste the following code.
+    </p>
+
+    <pre>
+    @MirChord 
+    public Phrase myTranspose(int halfSteps, Phrase phrase) {
+        Phrase newPhrase = phrase.copy()
+        for(MusicElement el : newPhrase.elements) {
+            if (el.getMusicElementType() == "Chord") {
+                Chord chord = (Chord)el
+                for(Pitch pitch : chord.getPitches()) {
+                    pitch.setMidiValue(pitch.getMidiValue() + halfSteps)
+                }
+            }
+        }
+        return newPhrase
+    }
+    </pre>
+
+    <p class="spaced">
+        Now we can use the new defined transformation inside our MirChord scores using the <mark>include</mark> command.
+    </p>
+
+    <pre>
+    =1 ~1
+    (instr "flute")
+    (key "D" "min")
+
+    ^4 f4 g a f | f4 g a f | a4 b c2 | a4 b c2
+                
+    ^5 c8 d c b a4 f | ^5 c8 d c b a4 f
+
+    ^4 f4 c f2 | f4 c f2  
+
+    (include "src/Transformations.groovy")
+
+    (myTranspose 3 { ^4 f4 c f2 | f4 c f2 })
+    </pre>
+
+</div>
+      </div>
+
+      <hr/>
+
+      <!-- FOOTER -->
+      <footer>
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>© 2016-2017 Mirco Colletta - <a href="about_site.html">About the site</a></p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <script src="./assets/js/mircomp.js"></script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <script src="./assets/js/docs.min.js"></script> -->
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
+  
+
+  </body>
+</html>
