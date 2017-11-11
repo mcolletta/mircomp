@@ -4,7 +4,8 @@ sourceCompatibility = 8
 apply plugin: 'application'
 
 dependencies {
-    compile localGroovy()
+    //compile localGroovy()
+    compile name: 'groovy-all-2.4.10-indy'
     compile fileTree(dir: '../libs', include: ['*.jar'])
     compile project(':mirchord')
     compile project(':mirconverter')
@@ -40,6 +41,17 @@ task runNotationEditor(type: JavaExec) {
 
     if (project.hasProperty('custom_arg')) {
         args project.getProperty('custom_arg')
+    }
+}
+
+task runLeadSheetsReader(type: JavaExec) {
+    description 'Run LeadSheets Reader'
+    main = 'io.github.mcolletta.mircomp.demos.LeadSheetReaderDemo'
+    classpath = sourceSets.main.runtimeClasspath
+
+    if (project.hasProperty('mxml_folder') && project.hasProperty('midi_output')) {
+        args project.getProperty('mxml_folder'), project.getProperty('midi_output')
+        // gradle runLeadSheetsReader -Pmxml_folder="..." -Pmidi_output="..."
     }
 }
 

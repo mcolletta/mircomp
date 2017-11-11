@@ -270,6 +270,15 @@ class Chord implements MusicElement {
 		this.pitches = []
 	}
 
+	Chord(Pitch pitch) {
+		this.pitches = [pitch]
+	}
+
+	Chord(Pitch pitch, Fraction duration) {
+		this.pitches = [pitch]
+		this.duration = duration
+	}
+
 	Chord(List<Pitch> pitches, Fraction duration) {
 		this.pitches = pitches
 		this.duration = duration
