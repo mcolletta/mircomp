@@ -40,7 +40,31 @@ import groovy.xml.*
 import groovy.util.XmlSlurper
 
 
-class MusicXmlLeadSheetReader {
+trait LeadSheetReader {
+
+	void addLeadSheetListener(LeadSheetListener subscriber) {
+		leadSheetListeners << subscriber
+	}
+
+	void fireNewSong() {
+		leadSheetListeners.each { it.newSong() }
+	}
+
+	void fireChordSymbol(ChordSymbol event) {
+		leadSheetListeners.each { it.chordSymbol(event) }
+	}
+
+	void fireChord(Chord event) {
+		leadSheetListeners.each { it.chord(event) }
+	}
+
+	void fireRest(Rest event) {
+		leadSheetListeners.each { it.rest(event) }
+	}
+}
+
+
+class MusicXmlLeadSheetReader implements LeadSheetReader {
 
 	List<LeadSheetListener> leadSheetListeners = []
 	Map<String, Map<Integer, Integer>> chordStats = [:].withDefault{[:].withDefault{0}}
@@ -154,7 +178,6 @@ class MusicXmlLeadSheetReader {
 								chordSymbol.bass =  new Pitch(_bass_step, _bass_octave, _bass_alteration)
 							}
 							currentChord  = chordSymbol
-							//println "Got chordSymbol= " + chordSymbol.toString()
 						}
 						else
 							println "Chord kind of type $kindText not recognized"
@@ -213,26 +236,5 @@ class MusicXmlLeadSheetReader {
 			fireChordSymbol(currentChord)
 		}
 
-	}
-
-	void addLeadSheetListener(LeadSheetListener subscriber) {
-		leadSheetListeners << subscriber
-	}
-
-	void fireNewSong() {
-		leadSheetListeners.each { it.newSong() }
-	}
-
-	void fireChordSymbol(ChordSymbol event) {
-		leadSheetListeners.each { it.chordSymbol(event) }
-		
-	}
-
-	void fireChord(Chord event) {
-		leadSheetListeners.each { it.chord(event) }
-	}
-
-	void fireRest(Rest event) {
-		leadSheetListeners.each { it.rest(event) }
 	}
 }

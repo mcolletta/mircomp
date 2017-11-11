@@ -27,6 +27,8 @@ import com.xenoage.zong.io.midi.out.MidiTools
 
 import static io.github.mcolletta.mirconverter.Utils.*
 
+import static io.github.mcolletta.mirchord.core.Utils.*
+
 import io.github.mcolletta.mirchord.core.MusicElement
 import io.github.mcolletta.mirchord.core.Phrase
 import io.github.mcolletta.mirchord.core.Anchor

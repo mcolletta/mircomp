@@ -30,63 +30,17 @@ import com.xenoage.utils.math.Fraction
 import static com.xenoage.utils.math.Fraction.fr
 import static com.xenoage.utils.math.Fraction._0
 
+import static io.github.mcolletta.mirchord.core.Utils.*
+
 import groovy.transform.CompileStatic
 
 @CompileStatic
 class Utils {
 
-	static Fraction f1 = fr(4, 4)
-	static Fraction f3 = fr(3, 4)
-	static Fraction f2 = fr(2, 4)
-	static Fraction f4 = fr(1, 4)
-	static Fraction f8 = fr(1, 8)
-	static Fraction f16 = fr(1, 16)
-	static Fraction f32 = fr(1, 32)
-	static Fraction f64 = fr(1, 64)
-	static Fraction f128 = fr(1, 128)
-	static Fraction f256 = fr(1, 256)
-
-	static Fraction f8dot = f8.add(f16)
-	static Fraction f8dotdot = f8dot.add(f32)
-	static Fraction f4dot = f4.add(f8)
-	static Fraction f4dotdot = f4dot.add(f16)
-	static Fraction f2dot = f2.add(f4)
-	static Fraction f2dotdot = f2dot.add(f8)
-
-	static Fraction f6 = fr(1, 6)
-	static Fraction f12 = fr(1, 12)
-
 	static boolean isPowerOfTwo(long n) {
 		return (n != 0) && ((n & (n - 1)) == 0)
 	}
 
-	static Map<Float,Fraction> allowedDurations = [
-		0.00390625f: f256,
-		0.0078125f: f128,
-		0.015625f: f64,
-		0.0625f: f16,
-		0.083f: f12, // triplet?
-		0.125f: f8,
-		0.17f: f6, // triplet?
-		0.1875f: f8dot,
-		0.25f: f4,
-		0.375f: f4dot,		
-		0.5f: f2,
-		0.75f: f3,
-		1.0f: f1
- 	]
-
-
-	static float nearest(Set<Float> list, float number) {
-		return list.sort { (it - number).abs() }.first()
-	}
-
-	static Fraction getDurationFromDecimal(float num) {
-		float key = nearest(allowedDurations.keySet(), num)
-		return allowedDurations[key]
-	}
-
-	
 	// AUTOMATIC BEAMING
 	static Map<Integer, Map<String, Fraction>> pulses_4_4 = (Map<Integer, Map<String, Fraction>>)[1: ['l': _0, 'r': f4], 
 																							      2: ['l': f4, 'r': f2], 
