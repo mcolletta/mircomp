@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -23,6 +23,7 @@
 
 package io.github.mcolletta.mirscore
 
+import javax.sound.midi.Synthesizer
 import javax.sound.midi.MidiUnavailableException
 
 import static com.xenoage.zong.core.position.MP.mp0
@@ -30,33 +31,27 @@ import static com.xenoage.zong.core.position.MP.mp0
 import com.xenoage.zong.core.Score
 import com.xenoage.zong.core.position.MP
 import com.xenoage.zong.io.midi.out.PlaybackListener
-import com.xenoage.zong.desktop.io.midi.out.MidiScorePlayer
-
-import groovy.transform.CompileStatic
 
 
-@CompileStatic
 class Playback {
     
-    private static MidiScorePlayer player = null;
+    private Synthesizer synthesizer
+    private MidiScorePlayer player = null;
     
-    static void openScore(Score score) {
-        initPlayer()
+    void openScore(Score score) {
         player.openScore(score)
     }
     
-    private static void initPlayer() {
-        if (player == null) {
-            try {
-                MidiScorePlayer.init()
-                player = MidiScorePlayer.midiScorePlayer()
-            } catch (MidiUnavailableException ex) {
-                println "MIDI not available"
-            }
+    public Playback(Synthesizer synthesizer) {
+        this.synthesizer = synthesizer
+        try {
+            player = new MidiScorePlayer(synthesizer)
+        } catch (MidiUnavailableException ex) {
+            println "MIDI not available"
         }
     }
     
-    static void start(MP position=null) {
+    void start(MP position=null) {
         if (player != null) {
             player.setMetronomeEnabled(false);
             if (position != null)
@@ -65,22 +60,23 @@ class Playback {
         }
     }
 
-    static void pause() {
+    void pause() {
         if (player != null)
             player.pause()
     }
 
-    static void stop() {
+    void stop() {
         if (player != null) {
             player.stop()
-            /*if (player.isPlaybackFinished())
-                player.setMP(mp0)*/
         }
     }
     
-    public static void registerListener(PlaybackListener listener) {
-        initPlayer()
+    public void registerListener(PlaybackListener listener) {
         player.addPlaybackListener(listener)
+    }
+
+    void close() {
+        player.close()
     }
 
 }

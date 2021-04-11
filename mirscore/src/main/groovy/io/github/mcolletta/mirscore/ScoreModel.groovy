@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -24,6 +24,9 @@
 package io.github.mcolletta.mirscore
 
 import java.io.File;
+
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Synthesizer;
 
 import com.xenoage.utils.exceptions.InvalidFormatException
 import com.xenoage.utils.document.io.FileOutput
@@ -97,6 +100,8 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class ScoreModel implements PlaybackListener {
 
+    Synthesizer synthesizer
+
     float DEFAULT_ZOOM = 2.0f
 
     @Bindable MP currentMP
@@ -105,6 +110,8 @@ class ScoreModel implements PlaybackListener {
 
 	Layout layout
     PlaybackLayouter playbackLayouter
+
+    Playback playback
 
     ScoreDoc scoreDoc
 
@@ -124,13 +131,16 @@ class ScoreModel implements PlaybackListener {
     Rectangle2i viewRect = new Rectangle2i(0,0,0,0)
     boolean needScroll = false
 
-	ScoreModel(boolean needInit=true) {
-        if (needInit) {
+	ScoreModel(Synthesizer synthesizer=null) {
+        this.synthesizer = synthesizer
+        if (synthesizer == null) {
             String appName = "MirScore"
     		JseZongPlatformUtils.init(appName)
-            SynthManager.init(false)
+            //SynthManager.init(false)
+            synthesizer = MidiSystem.getSynthesizer()
         }
-		Playback.registerListener(this)
+        playback = new Playback(synthesizer)
+		playback.registerListener(this)
 	}
 
     // read method from the Zong! project but check frames size > 0 instead of 1
@@ -208,14 +218,14 @@ class ScoreModel implements PlaybackListener {
     
     void loadScore(ScoreDoc doc) {
         setCurrentPage(0)
-        Playback.stop()
+        playback.stop()
         scoreDoc = doc
         setLayout(scoreDoc.getLayout())
         Score score = scoreDoc.getScore()
         layout.updateScoreLayouts(score)
         scoreLayout = layout.getScoreFrameChain(score).getScoreLayout()
         playbackLayouter = new PlaybackLayouter(scoreLayout)
-        Playback.openScore(scoreDoc.getScore())
+        playback.openScore(scoreDoc.getScore())
         // updatePageDimensions
         setCurrentZoom(DEFAULT_ZOOM)
     }
@@ -322,15 +332,15 @@ class ScoreModel implements PlaybackListener {
 
     void play() {
         lastSystemIndex = -1
-        Playback.start(getCurrentMP())
+        playback.start(getCurrentMP())
     }
 
     void pause() {
-        Playback.pause()
+        playback.pause()
     }
 
     void stop() {
-        Playback.stop()
+        playback.stop()
     }
 
     // Playback utils

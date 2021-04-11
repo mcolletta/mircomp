@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -71,6 +71,8 @@ import javafx.beans.property.SimpleObjectProperty
 
 import javafx.embed.swing.SwingFXUtils
 
+import javax.sound.midi.Synthesizer;
+
 import com.xenoage.utils.math.geom.Rectangle2i
 import com.xenoage.utils.math.geom.Point2i
 import com.xenoage.utils.math.geom.Point2f
@@ -110,9 +112,9 @@ class ScoreViewer  extends VBox {
     final void setMode(ScoreMode value) { mode.set(value) }
     ObjectProperty<ScoreMode> modeProperty() { return mode }
 
-	public ScoreViewer(boolean needInit=true) {
+	public ScoreViewer(Synthesizer synthesizer=null) {
 		loadControl()
-        scoreModel = new ScoreModel(needInit)
+        scoreModel = new ScoreModel(synthesizer)
 
         /*scoreImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
              @Override
@@ -250,12 +252,15 @@ class ScoreViewer  extends VBox {
         if (awtImage == null)
             return
 
-        Platform.runLater( {
-            try {
-                /*WritableImage scoreImage = JfxLayoutRenderer.paintToImage(scoreModel.getLayout(), 
-                                                                          scoreModel.getCurrentPage(), 
-                                                                          scoreModel.getCurrentZoom())*/
+        Platform.runLater( () -> {
+        // Platform.runLater( new Runnable() {
 
+        //     @Override
+        //     public void run() {
+            try {
+                // scoreImage = JfxLayoutRenderer.paintToImage(scoreModel.getLayout(), 
+                //                                             scoreModel.getCurrentPage(), 
+                //                                             scoreModel.getCurrentZoom())
 
                 scoreImage = SwingFXUtils.toFXImage(awtImage, scoreImage)                               
                 scoreImageView.setImage(scoreImage)
@@ -316,6 +321,7 @@ class ScoreViewer  extends VBox {
             } catch(Exception ex) {
                 println "Exception in draw: " + ex.getMessage()
             }
+            //} // end run
         } )
     }
 
@@ -511,5 +517,10 @@ class ScoreViewer  extends VBox {
 
     void zoomout() {
         scoreModel.setCurrentZoom(scoreModel.getCurrentZoom() - 0.25f)
+    }
+
+    // free resources
+    void close() {
+        scoreModel.playback.close()
     }
 }
