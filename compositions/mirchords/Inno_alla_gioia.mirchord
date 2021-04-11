@@ -1,0 +1,19 @@
+; Inno alla gioia - Ludwig van Beethoven
+; brano n.8 nel quadernone delle medie (il n.1 è la piccola melodia "Suono Subito")
+; copiata dalla lavagna, la trascrizione originale del professore usava una particolare notazione testuale:
+; 'd' per DO, 'r' per RE, 'm' per MI, ecc.. (suonata con il flauto non serviva una notazione per le ottave)
+; la lunghezza delle linee orizzontali sui quadretti funzionale per definire la durata delle note
+; - sezione H, succursale della scuola media L.C.
+
+
+=1 ~1 ; Part 1 Voice 1
+(time 4 4)
+(instr "flute")
+
+(* 2 {e e f g | g f e d | c c d e | e4. d8 d2 | 
+e4 e f g | g f d2 | c4 c d e | d4. c8 c2 |
+d4 d e c | d e8 f e4 c |  d e8 f e4 d | c d g2 |
+e4 e f g | g f e d | c c d e | d4. c8 c2 })
+
+{ d4 d e c | d e8 f e4 c | d e8 f e4 d | c d g2 |
+e4 e f g | g f e d | c c d e | d4. c8 c2 }
