@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -365,11 +365,11 @@ public trait FolderTreeListenerList {
         }
     }
 
-    public FolderTreeViewListener[] getFolderTreeViewListener() {
-        def _result = []
-        _result.addAll(listeners)
-        return _result as FolderTreeViewListener[]
-    }
+    // public FolderTreeViewListener[] getFolderTreeViewListener() {
+    //     def _result = []
+    //     _result.addAll(listeners)
+    //     return _result as FolderTreeViewListener[]
+    // }
 
     public void fireFolderTreeUpdated(FolderTreeViewEvent evt) {
         if (listeners != null && listeners.size() > 0) {

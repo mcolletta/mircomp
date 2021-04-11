@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -670,7 +670,8 @@ class ZongConverter {
 		// automatic beaming
 		Map<Integer, Map<String, Fraction>> pulses = getPulses(time)
 		// --------------------
-		VoiceContext voiceContext = [measureSize: measureDuration, mp: new_mpos, pulses:pulses] as VoiceContext
+		// VoiceContext voiceContext = [measureSize: measureDuration, mp: new_mpos, pulses:pulses] as VoiceContext
+		VoiceContext voiceContext = new VoiceContext(measureDuration, new_mpos, pulses)
 		context[mpos.staff][mpos.measure][currentVoice] = voiceContext
 		return voiceContext
     }
@@ -788,6 +789,12 @@ class ZongConverter {
 		MP mp
 		Map pulses
 		int lastPulse = 1
+
+		VoiceContext(Fraction measureSize, MP mp, Map pulses) {
+			this.measureSize = measureSize
+			this.mp = mp
+			this.pulses = pulses
+		}
 
 		def getCurrentPulse() {
 			return getBeatPulse(mp.beat, pulses)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -62,7 +62,7 @@ import javafx.scene.control.Dialog
 import javafx.scene.control.DialogPane
 import javafx.scene.control.ButtonType
 
-//import groovy.transform.CompileStatic
+import groovy.transform.CompileDynamic
 
 /*With CompileStatic got this error:
 [Static type checking] - Reference to method is ambiguous. 
@@ -70,7 +70,7 @@ Cannot choose between [void javafx.scene.control.Cell <T extends java.lang.Objec
 void io.github.mcolletta.mirfoldertreeview.PathTreeCell#startEdit(), 
 void javafx.scene.control.TreeCell <T extends java.lang.Object>#startEdit()]*/
 
-//@CompileStatic
+//@CompileDynamic
 public class PathTreeCell extends TreeCell<Path> {
 
     FolderTreeView owner
@@ -141,28 +141,31 @@ public class PathTreeCell extends TreeCell<Path> {
         addMirChordFileMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                owner.newFile(getTreeItem().getValue(), "mirchord")
+                Path path = getTreeItem().getValue()
+                owner.newFile(path, "mirchord")
             }
         })
         MenuItem addGroovyFileMenu = new MenuItem("New Groovy File")
         addGroovyFileMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                owner.newFile(getTreeItem().getValue(), "groovy")
+                Path path = getTreeItem().getValue()
+                owner.newFile(path, "groovy")
             }
         })
         MenuItem addMidiFileMenu = new MenuItem("New MIDI File")
         addMidiFileMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                owner.newFile(getTreeItem().getValue(), "mid")
+                Path path = getTreeItem().getValue()
+                owner.newFile(path, "mid")
             }
         })
         MenuItem renameFolderMenu = new MenuItem("Rename...");
         renameFolderMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                startEdit()
+                startEdit1()
             }
         })
         MenuItem pasteMenu = new MenuItem("Paste")
@@ -187,9 +190,10 @@ public class PathTreeCell extends TreeCell<Path> {
         deleteFolderMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                boolean ok = showConfirmDialog("Are you sure to delete " + getTreeItem().getValue().getFileName() + "?")
+                Path path = getTreeItem().getValue()
+                boolean ok = showConfirmDialog("Are you sure to delete " + path.getFileName() + "?")
                 if (ok)
-                    Files.deleteIfExists(getTreeItem().getValue())
+                    Files.deleteIfExists(path)
             }
         })
 
@@ -207,14 +211,15 @@ public class PathTreeCell extends TreeCell<Path> {
         openFileMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                owner.openFile(getTreeItem().getValue())
+                Path path = getTreeItem().getValue()
+                owner.openFile(path)
             }
         })
         MenuItem renameFileMenu = new MenuItem("Rename...")
         renameFileMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                startEdit()
+                startEdit1()
             }
         })
         MenuItem copyMenu = new MenuItem("Copy")
@@ -223,7 +228,8 @@ public class PathTreeCell extends TreeCell<Path> {
             public void handle(ActionEvent t) {
                 Clipboard clipboard = Clipboard.getSystemClipboard()
                 ClipboardContent content = new ClipboardContent()
-                content.putFiles(java.util.Collections.singletonList(getTreeItem().getValue().toFile()))
+                Path path = getTreeItem().getValue()
+                content.putFiles(java.util.Collections.singletonList(path.toFile()))
                 clipboard.setContent(content)
                 //cannotPaste.setValue(!clipboard.hasFiles())
             }
@@ -232,9 +238,10 @@ public class PathTreeCell extends TreeCell<Path> {
         deleteFileMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                boolean ok = showConfirmDialog("Are you sure to delete " + getTreeItem().getValue().getFileName() + "?")
+                Path path = getTreeItem().getValue()
+                boolean ok = showConfirmDialog("Are you sure to delete " + path.getFileName() + "?")
                 if (ok)
-                    Files.deleteIfExists(getTreeItem().getValue())
+                    Files.deleteIfExists(path)
             }
         })
 
@@ -248,9 +255,11 @@ public class PathTreeCell extends TreeCell<Path> {
             public void  handle(MouseEvent event){
                 if (event.getClickCount() > 1) {
                     //TableCell cell = (TableCell)event.getSource()
-                    isFolder = Files.isDirectory(treeItem.getValue(), LinkOption.NOFOLLOW_LINKS)
-                    if (!isFolder)
-                        owner.openFile(getTreeItem().getValue())
+                    Path path = getTreeItem().getValue()
+                    isFolder = Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)
+                    if (!isFolder) {
+                        owner.openFile(path)
+                    }
                 }
             }
         })
@@ -311,8 +320,8 @@ public class PathTreeCell extends TreeCell<Path> {
         }
     }
 
-    @Override
-    public void startEdit() {
+    //@Override
+    public void startEdit1() {
         super.startEdit()
         if (textField == null){
             createTextField()
@@ -376,7 +385,8 @@ public class PathTreeCell extends TreeCell<Path> {
             else
             	imageView.setImage(folderCollapsedImage)
         } else {
-            String fileType = getFileExt(getTreeItem().getValue())
+            Path path = getTreeItem().getValue()
+            String fileType = getFileExt(path)
             switch(fileType) {
                 case "mirchord":
                     imageView.setImage(musicImage)

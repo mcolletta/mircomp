@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -77,7 +77,9 @@ import org.w3c.dom.Document
 import org.w3c.dom.Element
 import netscape.javascript.JSObject
 
-import groovy.transform.CompileStatic
+//import groovy.transform.CompileDynamic
+
+//import NioGroovyMethods
 
 //import com.xenoage.utils.jse.io.JseStreamUtils
 //import groovy.text.GStringTemplateEngine
@@ -87,9 +89,11 @@ import io.github.mcolletta.mirfoldertreeview.FolderTreeViewListener
 import io.github.mcolletta.mirfoldertreeview.FolderTreeViewEvent
 import io.github.mcolletta.mirfoldertreeview.PathRequestType
 
+import io.github.mcolletta.mirutils.TabContent
 
-@CompileStatic
-class TextEditor extends VBox implements FolderTreeListenerList {
+
+//@CompileDynamic
+class TextEditor extends VBox implements FolderTreeListenerList, TabContent  {
 
     ObjectProperty<Path> filePath = new SimpleObjectProperty<>()
     Path getFilePath() {
@@ -123,6 +127,8 @@ class TextEditor extends VBox implements FolderTreeListenerList {
     boolean GUESS_TEXT_FILE = false
     final int MAX_FILE_SIZE = 500000
 
+    String getTabType() { return "TextEditor"; }
+
 	public TextEditor(Path path=null) {
 		loadControl()
 
@@ -154,16 +160,16 @@ class TextEditor extends VBox implements FolderTreeListenerList {
         } )
 
         // HACK for BUG https://bugs.openjdk.java.net/browse/JDK-8157413        
-        def timer = new Timer()
-        def task = timer.runAfter(10000) {
-            Platform.runLater( {
-                try {
-                    ensureLoadedDOM()
-                } catch(Exception ex) {
-                    println "Exception: " + ex.getMessage()
-                }
-            } )
-        }
+        // def timer = new Timer()
+        // def task = timer.runAfter(10000) {
+        //     Platform.runLater( {
+        //         try {
+        //             ensureLoadedDOM()
+        //         } catch(Exception ex) {
+        //             println "Exception: " + ex.getMessage()
+        //         }
+        //     } )
+        // }
         //-------------        
         
 
@@ -334,15 +340,21 @@ class TextEditor extends VBox implements FolderTreeListenerList {
 
     public registerCopyPasteEvents() {
         final KeyCombination keyCombinationCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN)
-        final KeyCombination keyCombinationPaste = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN)
+        final KeyCombination keyCombinationCut = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)
+        //final KeyCombination keyCombinationPaste = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN)
         final KeyCombination keyCombinationSave = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
         this.addEventFilter(KeyEvent.KEY_PRESSED, { KeyEvent evt ->
             if (keyCombinationCopy.match(evt)) {
                 copy()
+                evt.consume()
             }
-            if (keyCombinationPaste.match(evt)) {
-                paste()
+            if (keyCombinationCut.match(evt)) {
+                cut()
+                evt.consume()
             }
+            // if (keyCombinationPaste.match(evt)) {
+            //     paste()
+            // }
             if (keyCombinationSave.match(evt)) {
                 filesave()
             }
@@ -475,7 +487,8 @@ class TextEditor extends VBox implements FolderTreeListenerList {
         if (getFilePath() != null) {
             File file = getFilePath().toFile()
             try {
-                file.text = getValue()
+                //file.text = getValue()
+                file.setText(getValue())
                 markClean()
                 HandleUndoRedoButtons()
             } catch (IOException ex) {
@@ -503,7 +516,8 @@ class TextEditor extends VBox implements FolderTreeListenerList {
         File file = fileChooser.showSaveDialog(stage)
         if (file != null) {
             try {
-                file.text = getValue()
+                //file.text = getValue()
+                file.setText(getValue())
                 setFilePath(file.toPath())
                 markClean()
                 HandleUndoRedoButtons()
