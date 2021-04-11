@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -27,14 +27,14 @@ import com.xenoage.utils.math.Fraction
 import static com.xenoage.utils.math.Fraction.fr
 import static com.xenoage.utils.math.Fraction._0
 
-import groovy.transform.CompileStatic
 import groovy.transform.ToString
 import groovy.transform.TupleConstructor
 
-@CompileStatic
+
+
 enum ChordAltType { ADD, SUB, ALT }
 
-@CompileStatic
+
 class ChordAlteration {
 	int degree
 	int accidental
@@ -100,6 +100,7 @@ class ChordSymbol implements MusicElement {
 	String text = ""
 	
 	ChordSymbol(ChordSymbol chordsym) {
+		this.root = chordsym.root
 		this.kind = chordsym.kind
 		this.chordAlteration = chordsym.chordAlteration
 		this.bass = chordsym.bass

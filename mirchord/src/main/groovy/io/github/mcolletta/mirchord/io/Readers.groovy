@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -32,14 +32,25 @@ import static com.xenoage.utils.math.Fraction._0
 import io.github.mcolletta.mirchord.core.*
 import static io.github.mcolletta.mirchord.core.Utils.*
 
-import groovy.util.slurpersupport.NodeChildren
-import groovy.util.slurpersupport.NodeChild
-
 import java.util.zip.ZipFile
-import groovy.xml.*
-import groovy.util.XmlSlurper
+import java.util.zip.ZipEntry
+
+import javax.xml.xpath.*
+
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
+
+import static com.xenoage.utils.jse.xml.XMLReader.*
+import com.xenoage.utils.jse.xml.XMLReader
+import com.xenoage.utils.jse.xml.XMLWriter
+
+import groovy.transform.CompileStatic
+import groovy.transform.CompileDynamic
 
 
+@CompileDynamic
 trait LeadSheetReader {
 
 	void addLeadSheetListener(LeadSheetListener subscriber) {
@@ -68,26 +79,37 @@ class MusicXmlLeadSheetReader implements LeadSheetReader {
 
 	List<LeadSheetListener> leadSheetListeners = []
 	Map<String, Map<Integer, Integer>> chordStats = [:].withDefault{[:].withDefault{0}}
+
+	private static XPath xpath = XPathFactory.newInstance().newXPath()
+
+    static Element getElementFromXPath(Element element, String path) {
+        return xpath.evaluate(path, element, XPathConstants.NODE) as Element
+    }
+
+    static NodeList getElementListFromXPath(Element element, String path) {
+        return xpath.evaluate(path, element, XPathConstants.NODESET) as NodeList
+    }
+
+    static void updateElement(Element element, String text) {
+        element.setTextContent(text)
+    }
 	
-	void read(File folder) {
-		
-		def slurper = new XmlSlurper()
-		slurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-		slurper.setFeature("http://xml.org/sax/features/namespaces", false)
-		slurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
-		
+	void read(File folder) {		
 		folder.eachFileMatch(~/.*\.mxl/) { File f ->
 			def zipFile = new ZipFile(f)
-			def files = [:]
-			def mxml
-			zipFile.entries().each { zipEntry ->
-				def content = zipFile.getInputStream(zipEntry).text
-				files[zipEntry.name] = content
+			Map<String,String> files = [:]
+			String mxml
+			zipFile.entries().each { ZipEntry zipEntry ->
+				String content = zipFile.getInputStream(zipEntry).getText()
+				files[zipEntry.getName()] = content
 				if (zipEntry.name == "META-INF/container.xml") {
-					 List<String> paths = slurper.parseText(content).'**'.grep{ it.'@full-path' != '' }.'@full-path'*.text()
-					 if (paths && paths.size() == 1) {
-						 mxml = slurper.parseText(files[paths[0]])
-					 }
+					Document doc = XMLReader.read(content)
+        			Element root = XMLReader.root(doc)
+        			Element rootfile = getElementFromXPath(root, "//rootfile")
+        			String pathAttr = XMLReader.attribute(rootfile,"full-path")
+					if (pathAttr != null) {
+						mxml = files[pathAttr]
+					}
 				}
 			}
 			processXml(mxml)
@@ -95,23 +117,29 @@ class MusicXmlLeadSheetReader implements LeadSheetReader {
 		}
 
 		folder.eachFileMatch(~/.*\.xml/) { File f ->
-			processXml(slurper.parseText(f.text))
+			processXml(f.text)
 		}
 		
 		normalizeChordStats()
 	}
 	
 	void normalizeChordStats() {
-		chordStats.each { chord, pitch_histogram ->
-			def sum = pitch_histogram.values().sum()
-			pitch_histogram.each { k, v ->
-				pitch_histogram[k] = v/sum
+		chordStats.each { String chord, Map<Integer, Integer> pitch_histogram ->
+			int sum = (int) pitch_histogram.values().sum()
+			if (sum > 0) {
+				pitch_histogram.each { int k, int v ->
+					//println "$k $v $sum"
+					pitch_histogram[k] = (int) (v/sum)
+				}
 			}
 		}
 	}
 	
-	void processXml(xml) {
+	void processXml(String xml) {
 		fireNewSong()
+
+		Document doc = XMLReader.read(xml)
+        Element root = XMLReader.root(doc)
 
 		def keysig = new KeySignature()
 		List<Integer> sig = [0,0]
@@ -122,119 +150,149 @@ class MusicXmlLeadSheetReader implements LeadSheetReader {
 		int measureLength = 4
 		boolean tieStart = false
 
-		def measures = xml.'**'.grep{ it.name() == 'measure' }
-		measures.each { m->
-			// find for signature and divisions
-			if (m.attributes.divisions.size() > 0) {
-				int divisions = Integer.parseInt(m.attributes.divisions.text())
-				measureLength = divisions * 4
-			}
-
-			// find key in measure
-			if (m.attributes.key.size() > 0) {
-				keysig.fifths = Integer.parseInt(m.attributes.key.fifths.text())
-				String scaleName = m.attributes.key.mode.text()
-				if (scaleName) 
-					keysig.mode = Utils.ModeFromName(scaleName)
+        NodeList measures = getElementListFromXPath(root, "//measure")
+		if (measures != null) {
+			for(int i=0; i < measures.getLength(); i++) {
+				Element m = null
+				Node node = measures.item(i)
+				if (node.getNodeType() == Node.ELEMENT_NODE)
+					m = (Element) node
 				else
-				keysig.mode = 0
-				//possibly fire keysig
-				sig = [keysig.mode, keysig.fifths]
-				tonic = Utils.TonicFromKeySignature[sig]
-				transposition = (keysig.fifths * 7) % 12
-			}
-			
-			NodeChildren children = m.children()
-			children.each { NodeChild item ->
-				if (item.name() == 'backup' || item.name() == 'forward')
-					throw new Exception("Not a Leadsheet: element '${item.name()}' found.")
+					continue
 
-				if (item.name() == 'harmony') {
-					if (currentChord != null && currentChordDuration != _0) {
-						currentChord.duration = currentChordDuration
-						currentChordDuration = _0
-						fireChordSymbol(currentChord)
-					}
-					String _step = item.root.'root-step'.text()
-					int _alteration = 0
-					if (item.root.'root-alter'.size() > 0)
-						_alteration = Integer.parseInt(item.root.'root-alter'.text())
-					int _octave = 3
-					def root = new Pitch(_step, _octave, _alteration)
-					if (transposition > 0)
-							root.midiValue += transposition
-					String kindText = item.kind.toString()
-					
-					if (kindText != '') {
-						ChordKind kind = Utils.getChordSymboKind(kindText)
-						if (kind) {
-							def chordSymbol = new ChordSymbol(root, kind)
-							if (item.bass.size() > 0) {
-								String _bass_step = item.bass.'bass-step'.text()
-								int _bass_alteration = 0
-								if (item.bass.'bass-alter'.size() > 0)
-									_bass_alteration = Integer.parseInt(item.bass.'bass-alter'.text())
-								int _bass_octave = 3
-								chordSymbol.bass =  new Pitch(_bass_step, _bass_octave, _bass_alteration)
+			    if (m != null) {
+					ArrayList<Element> children = elements(m)
+					for(Element item: children) {
+						if (item.getNodeName() == 'backup' || item.getNodeName() == 'forward')
+							throw new Exception("Not a Leadsheet: element '${item.getNodeName()}' found.")
+
+						// find for signature and divisions
+						if (item.getNodeName() == "attributes") {
+							String divText = elementText(item,"divisions")
+							if (divText != null && divText != "") {
+							    int divisions = Integer.parseInt(divText)
+								measureLength = divisions * 4
 							}
-							currentChord  = chordSymbol
-						}
-						else
-							println "Chord kind of type $kindText not recognized"
-					}
-				}
-				if (item.name() == 'note') {
-					if (item.rest.size() > 0) {
-						def rest = new Rest()
-						if (item.duration.size() > 0)
-							rest.duration = fr(Integer.parseInt(item.duration.text()), measureLength)
-						currentChordDuration = currentChordDuration.add(rest.duration)
-						fireRest(rest)
-					}
-					if (item.pitch.size() > 0) {
-						def note = new Chord()
-						String _step = item.pitch.step.text()
-						int _alteration = 0
-						if (item.pitch.alter.size() > 0)
-							_alteration = Integer.parseInt(item.pitch.alter.text())
-						int _octave = Integer.parseInt(item.pitch.octave.text())
-						note.pitch =new Pitch(_step, _octave, _alteration)
-						if (item.duration.size() > 0)
-							note.duration = fr(Integer.parseInt(item.duration.text()), measureLength)
-						if (item.dot.size() > 0) {
-							note.duration = note.duration.add(note.duration.mult(fr(1,2)))
-						}
-						currentChordDuration = currentChordDuration.add(note.duration)
-
-						if (transposition > 0)
-							note.pitch.midiValue += transposition
-
-						if (tieStart) {
-							note.tieEnd = true
-							tieStart = false
-						}
-						if (item.tie.size() > 0) {
-							def tieType = item.tie.@type
-							if (tieType == "start") {
-								note.tieStart = true
-								tieStart = true
+							// find key in measure
+							Element keyElement = element(item,"key")
+							if (keyElement != null) {
+								keysig.fifths = Integer.parseInt(elementText(keyElement, "fifths"))
+								String scaleName = elementText(keyElement, "mode")
+								if (scaleName) 
+									keysig.mode = Utils.ModeFromName(scaleName)
+								//possibly fire keysig
+								println "KeySig $keysig"
+								int mode = (keysig.mode == KeyMode.MAJOR) ? 1 : 0
+								sig = [mode, keysig.fifths]
+								tonic = Utils.TonicFromKeySignature[sig]
+								transposition = (keysig.fifths * 7) % 12
 							}
 						}
 
-						if (currentChord != null) {
-							int curChordPitchClass = currentChord.root.midiValue % 12
-							chordStats[curChordPitchClass.toString() + "(" + currentChord.kind + ")"][note.pitch.midiValue % 12] += 1
+						if (item.getNodeName() == 'harmony') {
+							if (currentChord != null && currentChordDuration != _0) {
+								currentChord.duration = currentChordDuration
+								currentChordDuration = _0
+								fireChordSymbol(currentChord)
+							}
+
+							Element harmonyRoot = element(item, "root")
+							String _step = elementText(harmonyRoot, 'root-step')
+							int _alteration = 0
+							String rootAlter = elementText(harmonyRoot, 'root-alter')
+							if (rootAlter != null)
+								_alteration = Integer.parseInt(rootAlter)
+							int _octave = 3
+							//println "$_step $_octave $_alteration"
+							def pitch = new Pitch(_step, _octave, _alteration)
+							if (transposition > 0)
+								pitch.midiValue += transposition
+
+							Element harmonyKind = element(item, "kind")							
+							if (harmonyKind != null) {
+								String kindText = harmonyKind.getTextContent()
+								ChordKind kind = Utils.getChordSymboKind(kindText)
+								if (kind != null) {
+									def chordSymbol = new ChordSymbol(pitch, kind)
+									Element harmonyBass = element(item, "bass")
+									if (harmonyBass != null) {
+										String _bass_step = elementText(harmonyBass, "bass-step")
+										int _bass_alteration = 0
+										String _bass_alter = elementText(harmonyBass, "bass-alter")
+										if (_bass_alter != null)
+											_bass_alteration = Integer.parseInt(_bass_alter)
+										int _bass_octave = 3
+										chordSymbol.bass = new Pitch(_bass_step, _bass_octave, _bass_alteration)
+									}
+									currentChord = chordSymbol
+								} else 
+									println "Chord kind of type $kindText not recognized"
+							}
 						}
-						fireChord(note)
+
+						if (item.getNodeName() == 'note') {
+							String _duration = elementText(item, "duration")
+							Fraction duration = _0
+							if (_duration != null) {
+								duration = fr(Integer.parseInt(_duration), measureLength)
+								if (element(item, "dot") != null) {
+									duration = duration.add(duration.mult(fr(1,2)))
+								}
+							}
+							println "$duration"
+							if (element(item, "rest") != null) {
+								def rest = new Rest()
+								rest.duration = duration
+								currentChordDuration = currentChordDuration.add(rest.duration)
+								fireRest(rest)
+								continue
+							}
+							Element notePitch = element(item, "pitch")
+							if (notePitch != null) {
+								def note = new Chord()
+								String _step = elementText(notePitch, "step")
+								int _alteration = 0
+								String noteAlter = elementText(notePitch, "alter")
+								if (noteAlter != null)
+									_alteration = Integer.parseInt(noteAlter)
+								int _octave = Integer.parseInt(elementText(notePitch, "octave"))
+								note.pitch = new Pitch(_step, _octave, _alteration)
+								note.duration = duration
+								
+								currentChordDuration = currentChordDuration.add(note.duration)
+
+								if (transposition > 0)
+									note.pitch.midiValue += transposition
+
+								if (tieStart) {
+									note.tieEnd = true
+									tieStart = false
+								}
+								Element noteTie = element(item, "tie")
+								if (noteTie != null) {
+									String tieType = attribute(noteTie, "type")
+									if (tieType == "start") {
+										note.tieStart = true
+										tieStart = true
+									}
+								}
+
+								if (currentChord != null) {
+									int curChordPitchClass = currentChord.root.midiValue % 12
+									chordStats[curChordPitchClass.toString() + "(" + currentChord.kind + ")"][note.pitch.midiValue % 12] += 1
+								}
+								fireChord(note)
+							}
+						}
 					}
 				}
 			}
-		}
 
-		if (currentChord != null && currentChordDuration != _0) {
-			currentChord.duration = currentChordDuration
-			fireChordSymbol(currentChord)
+			if (currentChord != null && currentChordDuration != _0) {
+				currentChord.duration = currentChordDuration
+				fireChordSymbol(currentChord)
+			}
 		}
-
 	}
 }
+

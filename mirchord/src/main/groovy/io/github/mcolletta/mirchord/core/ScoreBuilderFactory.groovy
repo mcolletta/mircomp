@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -28,6 +28,7 @@ import groovy.transform.*
 import com.xenoage.utils.math.Fraction
 
 
+@CompileDynamic
 class ScoreBuilderFactory extends FactoryBuilderSupport {
 
     def nodeReferences = [:]
@@ -57,6 +58,7 @@ class ScoreBuilderFactory extends FactoryBuilderSupport {
     def build(){}
 }
 
+@CompileDynamic
 class ScoreNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         Score score = new Score()
@@ -69,6 +71,7 @@ class ScoreNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class PartNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         Part part = new Part()
@@ -85,6 +88,7 @@ class PartNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class VoiceNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         Voice voice = new Voice()
@@ -101,6 +105,7 @@ class VoiceNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class ChordNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         //return new Chord(nodeAttribs) // nodeAttribs=[midiPitch:72, duration:1/2]
@@ -134,6 +139,7 @@ class ChordNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class PitchNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         return new Pitch()
@@ -148,6 +154,7 @@ class PitchNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class RestNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         return new Rest()
@@ -162,6 +169,7 @@ class RestNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class PhraseNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         Phrase phrase = new Phrase()
@@ -178,6 +186,7 @@ class PhraseNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class AnchorNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         return new Anchor()
@@ -192,6 +201,7 @@ class AnchorNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class RepeatNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         return new Repeat()
@@ -206,6 +216,7 @@ class RepeatNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class InstrumentNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         def instrument = new Instrument()
@@ -225,6 +236,7 @@ class InstrumentNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class ClefNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         return new Clef()
@@ -239,6 +251,7 @@ class ClefNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class KeyNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         return new KeySignature()
@@ -253,6 +266,7 @@ class KeyNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class TimeNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         return new TimeSignature()
@@ -267,6 +281,7 @@ class TimeNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class TempoNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         return new Tempo()
@@ -281,6 +296,7 @@ class TempoNode extends AbstractFactory {
     }
 }
 
+@CompileDynamic
 class TupletNode extends AbstractFactory {
     public Object newInstance(FactoryBuilderSupport builder, Object nodeName, Object nodeArgs, Map nodeAttribs) {
         return new Tuplet()

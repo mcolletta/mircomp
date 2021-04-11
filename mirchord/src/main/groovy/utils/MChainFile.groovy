@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -30,6 +30,10 @@ import com.xenoage.utils.math.Fraction
 import static com.xenoage.utils.math.Fraction.fr
 import static com.xenoage.utils.math.Fraction._0
 
+import groovy.transform.CompileDynamic
+
+
+@CompileDynamic
 class MChain {
 
 	// ex. matrix[72][74] = 0.5

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -23,7 +23,6 @@
 
 package io.github.mcolletta.mirchord.interpreter
 
-import groovy.transform.CompileStatic
 
 import io.github.mcolletta.mirchord.core.*
 import static io.github.mcolletta.mirchord.core.Utils.*
@@ -38,7 +37,6 @@ import com.googlecode.lingwah.ParseResults
 import com.googlecode.lingwah.StringDocument
 
 
-@CompileStatic
 class MirChordInterpreter {
 	
 	MirChordGrammar PARSER
@@ -53,7 +51,7 @@ class MirChordInterpreter {
 	}
 	
 	Score evaluate(String source) {
-		String cleanSource = source.trim().replaceAll("(?s)/\\*.*?\\*/", "")
+		String cleanSource = source.trim().replaceAll(/;[^\n]*/, "")   // .replaceAll("(?s)/\\*.*?\\*/", "")
 		Document doc= new StringDocument(cleanSource)
 		ParseContext ctx= new ParseContext(doc)
 		ParseResults parseResults= ctx.getParseResults(PARSER.score, 0)
