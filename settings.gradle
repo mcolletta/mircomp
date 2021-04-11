@@ -6,6 +6,8 @@ include ":mirscore"
 include ":mirmidi"
 include ":mirfoldertreeview"
 include ":miride"
+include ":mirsynth"
+include ":mirutils"
 project(':mirchord').projectDir = new File('mirchord')
 project(':mirconverter').projectDir = new File('mirconverter')
 project(':demos').projectDir = new File('demos')
@@ -14,3 +16,5 @@ project(':mirscore').projectDir = new File('mirscore')
 project(':mirmidi').projectDir = new File('mirmidi')
 project(':mirfoldertreeview').projectDir = new File('mirfoldertreeview')
 project(':miride').projectDir = new File('miride')
+project(':mirsynth').projectDir = new File('mirsynth')
+project(':mirutils').projectDir = new File('mirutils')

@@ -1,0 +1,21 @@
+apply plugin: 'groovy'
+sourceCompatibility = 8
+apply plugin: 'application'
+ext.moduleName = 'io.github.mcolletta.mirsynth'
+
+
+dependencies {
+    implementation fileTree(dir: '../libs', include: ['*.jar'])
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+        resources {
+            srcDir 'resources'
+        }
+    }
+}
+
