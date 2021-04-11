@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -205,7 +205,7 @@ class PianoRollEditor {
         long right = (long)( left + w * midi.getResolution() / midi.getCurrentScaleX() )
 
         // Font
-        int fontScale = (int)Math.max(1.0, Math.floor(midi.getCurrentScaleY()))
+        int fontScale = (int)Math.max(1.0d, Math.floor(midi.getCurrentScaleY()))
         int fontSize = Math.max(8, fontScale)
 
         double note_height = Math.max(1, midi.scaleY(1) - 1)
@@ -230,7 +230,7 @@ class PianoRollEditor {
         }
 
         //measures
-        g.setStroke(Color.color(0.4, 0.4, 0.4))
+        g.setStroke(Color.color(0.4d, 0.4d, 0.4d))
         g.setFont(new Font("Verdana", fontSize))
         long measureLength = midi.getResolution() * 4 // in PPQ midi.getResolution() is the tick in a quarter
 
@@ -244,17 +244,17 @@ class PianoRollEditor {
             if (tk > left && tk < right) {
                 double tkToPx = midi.toX(tk)
                 if (isMeasure) {
-                    g.setStroke(Color.color(0.4, 0.4, 0.4))
+                    g.setStroke(Color.color(0.4d, 0.4d, 0.4d))
                     g.strokeText(msrIdx.toString(), tkToPx+5, 10)
                 } else {
-                    g.setStroke(Color.color(0.55, 0.55, 0.55))
+                    g.setStroke(Color.color(0.55d, 0.55d, 0.55d))
                 }
                 g.strokeLine(tkToPx, 0, tkToPx, canvas.getHeight())
             }
         }
         //---------
 
-        g.setStroke(Color.color(0.4, 0.4, 0.4))
+        g.setStroke(Color.color(0.4d, 0.4d, 0.4d))
         for(int pitch=0; pitch < 127; pitch++) {
             double y = midi.toY(pitch)
             String pitchStr = pitchNameMap[pitch] // "C5"
@@ -282,7 +282,7 @@ class PianoRollEditor {
 
                     double start = midi.toX(note.start)
                     double end = midi.toX(note.end)
-                    g.setFill(new Color(color.red, color.green, color.blue, (note.velocity)/127.0))
+                    g.setFill(new Color(color.red, color.green, color.blue, (note.velocity)/127.0d))
                     double duration = end - start
                     
                     Rectangle noteShape = new Rectangle(start, y, duration, note_height)
@@ -335,9 +335,9 @@ class PianoRollEditor {
         gl.clearRect(0, 0, canvas.layer.getWidth(), canvas.layer.getHeight())
         double pbPos = midi.toX(midi.getPlaybackPosition())
         gl.setStroke(Color.BLUE)
-        gl.setLineWidth(2.0)
+        gl.setLineWidth(2.0d)
         gl.strokeLine(pbPos, 0, pbPos, canvas.layer.getHeight())
-        gl.setLineWidth(1.0)
+        gl.setLineWidth(1.0d)
     }
 
     void humanization(double eps=0.1) {

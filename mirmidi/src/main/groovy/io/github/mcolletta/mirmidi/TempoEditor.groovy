@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -179,7 +179,7 @@ class TempoEditor {
         long right = (long)( left + w * midi.getResolution() / midi.getCurrentScaleX() )
 
         //measures
-        g.setStroke(Color.color(0.4, 0.4, 0.4))
+        g.setStroke(Color.color(0.4d, 0.4d, 0.4d))
         long measureLength = resolution * 4 // in PPQ resolution is the tick in a quarter
 
         int msrIdx = 0
@@ -192,9 +192,9 @@ class TempoEditor {
             if (tk > left && tk < right) {
                 double tkToPx = midi.toX(tk)
                 if (isMeasure) {
-                    g.setStroke(Color.color(0.4, 0.4, 0.4))
+                    g.setStroke(Color.color(0.4d, 0.4d, 0.4d))
                 } else {
-                    g.setStroke(Color.color(0.55, 0.55, 0.55))
+                    g.setStroke(Color.color(0.55d, 0.55d, 0.55d))
                 }
                 g.strokeLine(tkToPx, 0, tkToPx, canvas.getHeight())
             }
@@ -252,7 +252,7 @@ class TempoEditor {
             g.setStroke(Color.WHITE)
             g.strokeLine(screenX, rectHeight, endLineX, rectHeight)
             // Text
-            g.setStroke(Color.color(0.4, 0.4, 0.4))
+            g.setStroke(Color.color(0.4d, 0.4d, 0.4d))
             String label = val.toString()
             double y = rectHeight - 1
             double x = Math.max(screenX, leftX)
@@ -268,7 +268,7 @@ class TempoEditor {
                     g.setStroke(Color.WHITE)
                     g.strokeLine(leftX, rectHeight, default_tempo_duration, rectHeight)
                     // Text
-                    g.setStroke(Color.color(0.4, 0.4, 0.4))
+                    g.setStroke(Color.color(0.4d, 0.4d, 0.4d))
                     y = rectHeight - 1
                     g.strokeText(label, leftX+5, y-label_height)
                 }
@@ -284,7 +284,7 @@ class TempoEditor {
                 g.setStroke(Color.WHITE)
                 g.strokeLine(leftX, rectHeight, canvas.getWidth(), rectHeight)
                 // Text
-                g.setStroke(Color.color(0.4, 0.4, 0.4))
+                g.setStroke(Color.color(0.4d, 0.4d, 0.4d))
                 double y = rectHeight - 1
                 g.strokeText(label, leftX+5, y-label_height)
             }
@@ -297,9 +297,9 @@ class TempoEditor {
         gl.clearRect(0, 0, canvas.layer.getWidth(), canvas.layer.getHeight())
         double pbPos = midi.toX(midi.getPlaybackPosition())
         gl.setStroke(Color.BLUE)
-        gl.setLineWidth(2.0)
+        gl.setLineWidth(2.0d)
         gl.strokeLine(pbPos, 0, pbPos, canvas.layer.getHeight())
-        gl.setLineWidth(1.0)
+        gl.setLineWidth(1.0d)
     }
 
     void editTempo(long x, int y) {        

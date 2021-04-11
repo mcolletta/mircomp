@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -698,6 +698,14 @@ class MidiManager {
         }
     }
 
+    void close() {
+		if (sequencer != null) {
+            if (sequencer.isRunning())
+			    sequencer.stop();
+			sequencer.close();
+		}
+	}
+
     private class PlaybackThread extends Thread {
 
         private boolean stop = false
@@ -712,7 +720,7 @@ class MidiManager {
                     for (MidiPlaybackListener listener : listeners) {
                         listener.playbackAtTick(tick)
                     }
-                    Thread.sleep(1000 / timerRate)
+                    Thread.sleep((int)(1000 / timerRate))
                 }
             } catch (InterruptedException e) {
             }
@@ -869,7 +877,7 @@ class MidiNote {
     }
 
     long getDuration() {
-        return end - start
+        return getEnd() - getStart()
     }
 
     String toString() {

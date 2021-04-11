@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -223,7 +223,7 @@ class InstrumentsEditor {
                     g.setStroke(Color.color(color.red, color.green, color.blue))
                     g.strokeRect(screenX, screenY+lw, duration, rectHeight-lw)
                 } else {
-                    g.setFill(new Color(color.red, color.green, color.blue, 0.5))
+                    g.setFill(new Color(color.red, color.green, color.blue, 0.5d))
                     g.fillRect(screenX, screenY, duration, rectHeight)
                 }
                 // Instrument name
@@ -251,9 +251,9 @@ class InstrumentsEditor {
         gl.clearRect(0, 0, canvas.layer.getWidth(), canvas.layer.getHeight())
         double pbPos = midi.toX(midi.getPlaybackPosition())
         gl.setStroke(Color.BLUE)
-        gl.setLineWidth(2.0)
+        gl.setLineWidth(2.0d)
         gl.strokeLine(pbPos, 0, pbPos, canvas.layer.getHeight())
-        gl.setLineWidth(1.0)
+        gl.setLineWidth(1.0d)
     }
 
     void edit(int channel, long tick, int program) {

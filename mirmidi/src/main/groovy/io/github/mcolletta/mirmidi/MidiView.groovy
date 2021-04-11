@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -102,7 +102,7 @@ class MidiView extends MidiManager {
 
     double toX(long tick) {
         // (tick - getHorizontalOffset()) translation to new coord system
-        return (double)Math.floor((tick - getHorizontalOffset()) * getCurrentScaleX() / getResolution())
+        return (double)Math.floor( (double)( (tick - getHorizontalOffset()) * getCurrentScaleX() / getResolution() ) )
     }
 
     double toY(int pitch) {

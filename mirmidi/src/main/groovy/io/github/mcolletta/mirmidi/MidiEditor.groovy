@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -114,6 +114,8 @@ import io.github.mcolletta.mirfoldertreeview.FolderTreeViewListener
 import io.github.mcolletta.mirfoldertreeview.FolderTreeViewEvent
 import io.github.mcolletta.mirfoldertreeview.PathRequestType
 
+import io.github.mcolletta.mirutils.TabContent
+
 import groovy.transform.CompileStatic
 import groovy.transform.Canonical
 
@@ -140,7 +142,7 @@ class ChannelItem {
 }
 
 @CompileStatic
-class MidiEditor  extends VBox implements MidiPlaybackListener, FolderTreeListenerList {
+class MidiEditor extends VBox implements MidiPlaybackListener, FolderTreeListenerList, TabContent {
 
     MidiView midi
     
@@ -188,6 +190,8 @@ class MidiEditor  extends VBox implements MidiPlaybackListener, FolderTreeListen
 
     String suggestedOpenSaveFolder = System.getProperty("user.home")
     String suggestedOpenSaveFileName = "newfile.mid"
+
+    String getTabType() { return "MidiEditor"; }
 
 	public MidiEditor(Path path=null, Synthesizer synth=null) {
 		loadControl()
@@ -716,6 +720,10 @@ class MidiEditor  extends VBox implements MidiPlaybackListener, FolderTreeListen
 
     void stop() {
         midi.stop()
+    }
+
+    void close() {
+        midi.close()
     }
 
     // MIDI Playback Listener
