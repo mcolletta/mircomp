@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -60,7 +60,8 @@ public class MirIDE extends Application {
             @Override
             public void handle(WindowEvent event) {
                 if (editor.confirmClosing()) {
-                    editor.folderTreeView.stopWatching()
+                    //editor.folderTreeView.stopWatching()
+                    editor.close()
                     stop()
                     Platform.exit()
                 } else

@@ -1,16 +1,13 @@
 apply plugin: 'groovy'
-sourceCompatibility = 8
+// sourceCompatibility = 9
 
 apply plugin: 'application'
 
 dependencies {
-    //compile localGroovy()
-    compile name: 'groovy-all-2.4.10-indy'
-    compile fileTree(dir: '../libs', include: ['*.jar'])
-    compile project(':mirchord')
-    compile project(':mirconverter')
-    compile project(':mirscore')
-    compile project(':mirtext')
+    implementation project(':mirchord')
+    implementation project(':mirconverter')
+    implementation project(':mirscore')
+    implementation project(':mirtext')
 }
 
 sourceSets {

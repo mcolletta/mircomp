@@ -1,23 +1,18 @@
 apply plugin: 'groovy'
-sourceCompatibility = 8
+//sourceCompatibility = 8
 
 apply plugin: 'application'
 mainClassName = 'io.github.mcolletta.miride.MirIDE'
 
 dependencies {
-    // compile localGroovy()
-    compile name: 'groovy-all-2.4.10-indy'
-    compile fileTree(dir: '../libs', include: ['*.jar'])
-    compile project(':mirchord')
-    compile project(':mirconverter')
-    compile project(':mirscore')
-    compile project(':mirtext')
-    compile project(':mirmidi')
-    compile project(':mirfoldertreeview')
-}
-
-tasks.withType(GroovyCompile) {
-    groovyOptions.optimizationOptions.indy = true
+    implementation project(':mirchord')
+    implementation project(':mirconverter')
+    implementation project(':mirscore')
+    implementation project(':mirtext')
+    implementation project(':mirmidi')
+    implementation project(':mirsynth')
+    implementation project(':mirfoldertreeview')
+    implementation project(':mirutils')
 }
 
 sourceSets {
@@ -31,7 +26,7 @@ sourceSets {
     }
 }
 
-// version = 1.0.0-alpha.1
+// version = 1.0.0-alpha.2
 
 distZip {
     into(project.name) {
@@ -42,7 +37,7 @@ distZip {
         include 'README.md'
     }
     doLast {
-        file("$destinationDir/$archiveName").renameTo("$destinationDir/mircomp-1.0.0-alpha.1.zip")
+        file("$destinationDir/$archiveName").renameTo("$destinationDir/mircomp-1.0.0-alpha.2.zip")
     }
 }
 
@@ -50,10 +45,87 @@ jar {
     manifest.attributes 'Created-By': 'Mirco Colletta'
 }
 
+
+def javaPackageHome = System.getenv('JAVA_PACKAGE_HOME')
+def javaHome = System.getenv('JAVA_HOME')
+def javaFxHome = System.getenv('JAVAFX_HOME')
+def javaFxJmods = System.getenv('JAVAFX_JMODS_HOME')
+
+def distPath = "/path/to/dist/miride"
+
+
+task inputPackage {
+    dependsOn build
+    doLast {
+        def projects = rootProject.subprojects
+        def build_paths = ['../libs']
+        projects.each() { subproject ->
+            build_paths << "../${subproject.name}/build/libs/"
+        }
+        ant.with {
+            echo("create jars folder")
+            def destDir = "build/jars"
+            if (!new File(destDir).exists())
+                mkdir(dir: destDir)
+            build_paths.each { path ->
+                if (new File(path).exists()) {
+                    echo("adding $path")
+                    copy(todir: destDir) {
+                        fileset(dir: path) {
+                            include(name: "**/*.jar")
+                        }
+                    }
+                }
+            }
+            echo("done")
+        }
+    }
+}
+
+task jlink(type: Exec) {
+    dependsOn build
+    workingDir 'build'
+    commandLine "${javaHome}/bin/jlink",
+                "--module-path", "${javaHome}/jmods${File.pathSeparatorChar}${javaFxJmods}",
+                "--add-modules", "java.se,java.base,java.desktop,java.logging,java.scripting,jdk.jsobject,javafx.fxml,javafx.web,javafx.swing",
+                "--output", distPath + "/jlinkimage",
+                "--strip-native-commands",
+                "--strip-debug",
+                "--compress", "2",
+                "--no-header-files",
+                "--no-man-pages"
+}
+
+task jpackage(type: Exec) {
+    dependsOn clean
+    dependsOn jlink, inputPackage
+    workingDir 'build'
+    commandLine "${javaPackageHome}/bin/jpackage",
+                "--name", "MirIDE",
+                "--type", "app-image",
+                "--runtime-image", distPath + "/jlinkimage",
+                "--icon", "../../resources/icon.png",
+                "--main-class", mainClassName,
+                "--input", "jars",
+                "--dest", distPath + "/app",
+                "--main-jar", "miride.jar"
+}
+
+task createApp(type: Copy) {
+    dependsOn jpackage
+    from (["../LICENSE", "../LICENSE-ALLJARS", "../licenses"])
+    into ("build/application/MirIDE/app/legal")
+}
+
 task runMirIDE(type: JavaExec) {
     description 'Run MirIDE'
     main = 'io.github.mcolletta.miride.MirIDE'
     classpath = sourceSets.main.runtimeClasspath
+
+    jvmArgs = [
+        '--module-path', "${System.getenv('JAVAFX_HOME')}/lib",
+        "--add-modules=javafx.graphics,javafx.fxml,javafx.swing,javafx.web",
+    ]
 
     if (project.hasProperty('custom_arg')) {
         args project.getProperty('custom_arg')

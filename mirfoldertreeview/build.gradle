@@ -1,16 +1,8 @@
 apply plugin: 'groovy'
-sourceCompatibility = 8
+//sourceCompatibility = 9
 
 apply plugin: 'application'
 
-dependencies {
-    // compile localGroovy()
-    compile name: 'groovy-all-2.4.10-indy'
-}
-
-tasks.withType(GroovyCompile) {
-    groovyOptions.optimizationOptions.indy = true
-}
 
 sourceSets {
     main {

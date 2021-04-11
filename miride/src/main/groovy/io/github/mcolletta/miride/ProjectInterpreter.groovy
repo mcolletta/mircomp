@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -52,9 +52,9 @@ import com.xenoage.zong.core.Score
 
 
 @CompileStatic
-class ProjectInterpreter {
+protected class ProjectInterpreter {
 
-    boolean PRINT_STACKTRACE = false
+    boolean PRINT_STACKTRACE = true
 
     boolean staticCompile = false
     CompilerConfiguration configuration
@@ -64,16 +64,20 @@ class ProjectInterpreter {
     Map<String,GroovyScriptImportType> imports = [:]
     Path projectPath
     List<URL> roots = []
-    Binding binding = new Binding()
+    Binding binding
 
     String includeRegex = /\(include\s+\"(.*?)\"\s*\)/
     Pattern includePattern = Pattern.compile(includeRegex, Pattern.CASE_INSENSITIVE)
 
 
-    ProjectInterpreter(String strPrjPath=null, boolean typecheck=false) {
+    ProjectInterpreter(String strPrjPath=null, boolean typecheck=false, Binding parmBinding=null) {
         if (strPrjPath != null)
             projectPath = Paths.get(strPrjPath)
         staticCompile = typecheck
+        if (parmBinding != null)
+            binding = parmBinding
+        else
+            binding = new Binding()
         createEngine()
     }
 
@@ -113,10 +117,16 @@ class ProjectInterpreter {
             })
             engine = new GroovyScriptEngine(roots as URL[], this.class.classLoader)
             engineClassLoader = engine.getGroovyClassLoader()
-            shell = new GroovyShell(engineClassLoader, configuration)
+            shell = new GroovyShell(engineClassLoader, binding, configuration)
         } else {
-            shell = new GroovyShell(configuration)
+            shell = new GroovyShell(binding, configuration)
         }
+    }
+
+    void setBindingProperty(String property, Object newValue) {
+        binding.setProperty(property, newValue)
+        if (shell != null)
+            shell.setProperty(property, newValue)
     }
 
     void setDefaultImports(ImportCustomizer importCustomizer) {
@@ -126,6 +136,8 @@ class ProjectInterpreter {
         importCustomizer.addStaticStars 'io.github.mcolletta.mirconverter.Helper'
         importCustomizer.addImports 'com.xenoage.utils.math.Fraction'
     	importCustomizer.addStaticStars 'com.xenoage.utils.math.Fraction'
+        importCustomizer.addStaticStars 'io.github.mcolletta.miride.UtilsFx'
+        importCustomizer.addStarImports 'io.github.mcolletta.mirsynth'
     }
 
     void addImports(ImportCustomizer importCustomizer) {

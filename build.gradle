@@ -1,13 +1,53 @@
 apply plugin: 'groovy'
-sourceCompatibility = 8
+sourceCompatibility = 9
 
 apply plugin: 'application'
 
-allprojects {
-    repositories {
-       flatDir {
-           dirs '../libs'
-       }
+
+subprojects {
+    afterEvaluate {
+        repositories {
+            flatDir {
+		       dirs '../libs', "${System.getenv('JAVAFX_HOME')}/lib"
+		   }
+        }
+
+        compileGroovy {
+            configure(groovyOptions) {
+                configurationScript = file("config/src/main/groovy/compiler-config.groovy")
+            }
+        }
+
+        configurations {
+            libs
+        }
+
+		dependencies {
+            implementation name: 'zong-all'
+            implementation name: 'lingwah'
+
+		    implementation name: 'groovy-3.0.7'
+            implementation name: 'groovy-ant-3.0.7'
+            implementation name: 'groovy-console-3.0.7'
+            implementation name: 'groovy-nio-3.0.7'
+            implementation name: 'groovy-xml-3.0.7'
+
+            implementation name: 'javafx.base'
+            implementation name: 'javafx.controls'
+            implementation name: 'javafx.graphics'
+            implementation name: 'javafx.fxml'
+            implementation name: 'javafx.swing'
+            implementation name: 'javafx.web'
+
+            libs name: 'groovy-3.0.7'
+            libs name: 'groovy-ant-3.0.7'
+            libs name: 'groovy-console-3.0.7'
+            libs name: 'groovy-nio-3.0.7'
+            libs name: 'groovy-xml-3.0.7'
+            libs name: 'lingwah'
+            libs name: 'zong-all'
+            libs name: 'mirnn'
+		}
+
     }
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -26,17 +26,23 @@ package io.github.mcolletta.miride
 import java.nio.file.Path
 import java.nio.file.Paths
 
+import javax.sound.midi.Synthesizer
+
 import javafx.geometry.Orientation
 
 import javafx.scene.layout.VBox
 import javafx.scene.control.SplitPane
 
+import io.github.mcolletta.mirutils.TabContent
+
 import io.github.mcolletta.mirtext.Mode
 import io.github.mcolletta.mirtext.TextEditor
 import io.github.mcolletta.mirscore.ScoreViewer
 
+import io.github.mcolletta.mirmidi.MidiEditor
 
-class MirChordEditor extends VBox {
+
+class MirChordEditor extends VBox implements TabContent {
 
 	SplitPane splitPane
     TextEditor editor
@@ -44,11 +50,11 @@ class MirChordEditor extends VBox {
 
     Path filePath
 
-    MirChordEditor(Path path=null) {
+    MirChordEditor(Path path=null, Synthesizer synthesizer=null) {
     	splitPane = new SplitPane()
     	editor = new TextEditor(path)
         editor.setMode(Mode.MirChord)
-        viewer = new ScoreViewer(false)
+        viewer = new ScoreViewer(synthesizer)
         splitPane.setOrientation(Orientation.VERTICAL)
         splitPane.getItems().add(editor)
         splitPane.getItems().add(viewer)
@@ -70,4 +76,6 @@ class MirChordEditor extends VBox {
     Path getFilePath() {
         return editor.getFilePath()
     }
+
+    String getTabType() { return "MirChordEditor"; }
 }

@@ -1,18 +1,12 @@
 apply plugin: 'groovy'
-sourceCompatibility = 8
+//sourceCompatibility = 9
 
 apply plugin: 'application'
 
 dependencies {
-    // compile localGroovy()
-    compile name: 'groovy-all-2.4.10-indy'
-    compile fileTree(dir: '../libs', include: ['*.jar'])
-    compile project(':mirchord')
-    compile project(':mirfoldertreeview')
-}
-
-tasks.withType(GroovyCompile) {
-    groovyOptions.optimizationOptions.indy = true
+    implementation project(':mirchord')
+    implementation project(':mirfoldertreeview')
+    implementation project(':mirutils')
 }
 
 sourceSets {

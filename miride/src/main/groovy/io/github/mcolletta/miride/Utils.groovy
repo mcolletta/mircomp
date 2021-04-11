@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -29,9 +29,9 @@ import java.nio.file.Path
 
 //import java.security.MessageDigest
 
-public class Utils {
+protected class Utils {
 
-    public static final File makeDir(File parentFolder, String name) {
+    protected static final File makeDir(File parentFolder, String name) {
         File folder
         if (parentFolder.isDirectory()) {
             folder = new File(parentFolder,name)
@@ -46,7 +46,7 @@ public class Utils {
         return folder
     }
 
-    public static String getFileExt(Path path) {
+    protected static String getFileExt(Path path) {
         String ext = ""
         String fileName = path.getFileName()
         int i = fileName.toString().lastIndexOf('.')
@@ -56,7 +56,7 @@ public class Utils {
         return ext
     }
 
-    /*public static String getFileHash(Path filePath, String algorithm="MD5") {
+    /*protected static String getFileHash(Path filePath, String algorithm="MD5") {
         MessageDigest.getInstance(algorithm).digest(filePath.toFile().getBytes()).encodeHex().toString()
     }*/
 

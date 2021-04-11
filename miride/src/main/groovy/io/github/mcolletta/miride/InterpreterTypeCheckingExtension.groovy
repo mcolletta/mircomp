@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -22,6 +22,8 @@
  */
 
 package io.github.mcolletta.miride
+
+import io.github.mcolletta.mirsynth.SimpleMidiPlayer
 
 import java.nio.file.Path
 
@@ -47,6 +49,7 @@ public class InterpreterTypeCheckingExtension extends AbstractTypeCheckingExtens
         typesMap.put("projectPath", make(Path))
         ClassNode configNode = makeClassSafeWithGenerics(make(Map.class), new GenericsType(make(String.class)), new GenericsType(make(Path.class)))
         typesMap.put("config", configNode)
+        typesMap.put("MidiPlayer", make(SimpleMidiPlayer))
     }
 
     /*@Override

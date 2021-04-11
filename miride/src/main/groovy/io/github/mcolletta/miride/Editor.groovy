@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -23,7 +23,7 @@
 
 package io.github.mcolletta.miride
 
-import java.lang.reflect.Method
+//import java.lang.reflect.Method
 
 import java.security.Policy
 
@@ -41,6 +41,7 @@ import javafx.application.Platform
 import javafx.application.Application
 
 import javafx.scene.Scene
+import javafx.scene.Node
 import javafx.scene.layout.VBox
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.Region
@@ -104,8 +105,12 @@ import io.github.mcolletta.mirchord.interpreter.GroovyScriptInterpreter
 
 import io.github.mcolletta.mirchord.core.ScoreBuilder
 
+import io.github.mcolletta.mirsynth.SynthManager
+import io.github.mcolletta.mirsynth.SimpleMidiPlayer
+
+import io.github.mcolletta.mirutils.TabContent
+
 import com.xenoage.zong.core.Score
-import com.xenoage.zong.desktop.io.midi.out.SynthManager
 import com.xenoage.zong.desktop.utils.JseZongPlatformUtils
 import com.xenoage.utils.exceptions.InvalidFormatException
 
@@ -120,6 +125,9 @@ import groovy.transform.CompileDynamic
 
 @CompileStatic
 public class Editor implements FolderTreeViewListener {
+
+    private SynthManager synthManager
+    public SimpleMidiPlayer midiPlayer
 
     private Map<Tab,Path> openedTabs = [:]
     private Map<Tab,Path> tabsFileRemoved = [:]
@@ -146,7 +154,7 @@ public class Editor implements FolderTreeViewListener {
     
     @FXML private SplitPane splitPane
     @FXML private StackPane tabPaneContainer
-    @FXML private FolderTreeView folderTreeView
+    @FXML protected FolderTreeView folderTreeView
     @FXML private TabPane tabPane
 
     @FXML private TabPane tabConsole
@@ -199,13 +207,14 @@ public class Editor implements FolderTreeViewListener {
                 public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab tab) {
                     runButton.setDisable(true)
                     if (tab != null) {
-                        def tabContent = tab.getContent()
-                        if ((tabContent != null) &&
-                            (tabContent instanceof TextEditor || tabContent instanceof MirChordEditor)) {
-                            Mode mode = (Mode)tabContent.invokeMethod("getMode", null)
-                            if (mode in [Mode.MirChord, Mode.Groovy])
-                                runButton.setDisable(false)
-                        }
+                        TabContent tabContent = (TabContent) tab.getContent()
+                        Mode mode = null
+                        if (tabContent.getTabType() == "TextEditor")
+                            mode = ((TextEditor)tabContent).getMode()
+                        if (tabContent.getTabType() == "MirChordEditor")
+                            mode = ((MirChordEditor)tabContent).getMode()
+                        if (mode != null && mode in [Mode.MirChord, Mode.Groovy])
+                            runButton.setDisable(false)
                     }
                 }
             }
@@ -213,7 +222,7 @@ public class Editor implements FolderTreeViewListener {
 
         initMidi()
         setupSecurity()
-        interpreter = new ProjectInterpreter(null, typecheckButton.selected)        
+        interpreter = new ProjectInterpreter(null, typecheckButton.selected, new Binding(["MidiPlayer":midiPlayer]))
     }
 
     void showLicenseAgreementDialog() {
@@ -262,7 +271,9 @@ public class Editor implements FolderTreeViewListener {
     void initMidi() {
         String appName = "MirIDE"
         JseZongPlatformUtils.init(appName)
-        SynthManager.init(false)
+        synthManager = new SynthManager()
+        midiPlayer = new SimpleMidiPlayer(synthManager.getSynthesizer())
+
     }
 
     void loadSoundbank() {
@@ -281,8 +292,8 @@ public class Editor implements FolderTreeViewListener {
             } finally {
                 fis.close()
             }
-            Soundbank soundbank = SynthManager.getSoundbank()
-            Synthesizer synthesizer = SynthManager.getSynthesizer()
+            Soundbank soundbank = synthManager.getSoundbank()
+            Synthesizer synthesizer = synthManager.getSynthesizer()
             if (soundbank != null)
                 synthesizer.unloadAllInstruments(soundbank)
             soundbank = newSB
@@ -308,16 +319,8 @@ public class Editor implements FolderTreeViewListener {
         boolean clean = false
 
         if (openedTabs[tab] != null) {
-            def tabContent = tab.getContent()
-            Method m = null
-            try {
-                m = tabContent.class.getMethod("isClean")
-                if (m != null) {
-                    clean = (boolean)tabContent.invokeMethod("isClean", null)
-                }
-            } catch (Exception e) {
-                println "method not found"
-            }
+            TabContent tabContent = (TabContent) tab.getContent()
+            clean = tabContent.isClean()
         } 
 
         if (!clean) {
@@ -359,6 +362,8 @@ public class Editor implements FolderTreeViewListener {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override public void handle(Event e) {
                 // println e.getTarget()
+                TabContent tabContent = (TabContent) tab.getContent()
+                tabContent.close()
                 removeTabHandler(tab)
                 if (tabsFileRemoved.containsKey(tab))
                     tabsFileRemoved.remove(tab)
@@ -371,7 +376,7 @@ public class Editor implements FolderTreeViewListener {
         for(Map.Entry<Tab,Path> e : openedTabs) {
             Tab tab = e.getKey()
             Path path = e.getValue()
-            def tabContent = tab.getContent()
+            TabContent tabContent = (TabContent) tab.getContent()
 
             // println "path=$path    changedPath=$changedPath    ${evt.requestType}"
 
@@ -381,9 +386,7 @@ public class Editor implements FolderTreeViewListener {
                     Platform.runLater( {
                         setTabLabelText(tab, "untitled")
                     })
-                    if (tabContent.hasProperty("filePath")) {
-                        tabContent.invokeMethod("setFilePath", null)
-                    }
+                    tabContent.setFilePath(null)
                     e.setValue(null)
                 }
                 if (evt.requestType == PathRequestType.MODIFY) {
@@ -400,9 +403,7 @@ public class Editor implements FolderTreeViewListener {
                 if (evt.requestType == PathRequestType.NEW 
                     && tabsFileRemoved.containsKey(tab)) {
                     if (changedPath == tabsFileRemoved[tab]) {
-                        if (tabContent.hasProperty("filePath")) {
-                            tabContent.invokeMethod("setFilePath", changedPath)
-                        }
+                       tabContent.setFilePath(changedPath)
                         Platform.runLater( {
                             setTabLabelText(tab, changedPath.getFileName().toString())
                         })  
@@ -410,14 +411,12 @@ public class Editor implements FolderTreeViewListener {
                         e.setValue(changedPath)
                     }
                 } else {
-                    if (tabContent.hasProperty("filePath")) {
-                        Path filePath = (Path) tabContent.invokeMethod("getFilePath", null)
-                        if (filePath != null && filePath == changedPath) {
-                            Platform.runLater( {
-                                setTabLabelText(tab, filePath.getFileName().toString())
-                            })                    
-                            openedTabs[tab] = filePath
-                        }
+                    Path filePath = tabContent.getFilePath()
+                    if (filePath != null && filePath == changedPath) {
+                        Platform.runLater( {
+                            setTabLabelText(tab, filePath.getFileName().toString())
+                        })                    
+                        openedTabs[tab] = filePath
                     }
                 }
             }
@@ -538,15 +537,15 @@ public class Editor implements FolderTreeViewListener {
         Tab tab = createTab()
         MirChordEditor mirchordEditor
         if (open) {
-            mirchordEditor = new MirChordEditor(path)
+            mirchordEditor = new MirChordEditor(path, synthManager.getSynthesizer())
             setTabLabelText(tab, path.getFileName().toString())
         }
         else {
-            mirchordEditor = new MirChordEditor()
+            mirchordEditor = new MirChordEditor(null, synthManager.getSynthesizer())
             TextEditor editor = mirchordEditor.getEditor()
             editor.setSuggestedOpenSaveFolder(path.toString())
             editor.setSuggestedOpenSaveFileName("untitled")
-            editor.setValue("=1 ~1 /* Part 1 Voice 1 */ \n")
+            editor.setValue("=1 ~1 ; Part 1 Voice 1 \n")
         }
         mirchordEditor.getEditor().addFolderTreeViewListener(this) 
         tab.setContent(mirchordEditor)
@@ -557,11 +556,11 @@ public class Editor implements FolderTreeViewListener {
         Tab tab = createTab()
         MidiEditor midiEditor
         if (open) {
-            midiEditor = new MidiEditor(path,SynthManager.getSynthesizer())
+            midiEditor = new MidiEditor(path,synthManager.getSynthesizer())
             setTabLabelText(tab, path.getFileName().toString())
         }
         else {
-            midiEditor = new MidiEditor(null,SynthManager.getSynthesizer())
+            midiEditor = new MidiEditor(null,synthManager.getSynthesizer())
             midiEditor.setSuggestedOpenSaveFolder(path.toString())
             midiEditor.setSuggestedOpenSaveFileName("untitled")
         }
@@ -615,7 +614,7 @@ public class Editor implements FolderTreeViewListener {
             dialogPane.getButtonTypes().addAll(reloadBtn, closeBtn)
             dialog.getDialogPane().lookupButton(reloadBtn)
             Optional<ButtonType> result = dialog.showAndWait()
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (result.isPresent() && result.get() == reloadBtn) {
                 setupProject()
             }
         }
@@ -706,14 +705,15 @@ public class Editor implements FolderTreeViewListener {
         showtree()
         try {
             folderTreeView.setRoot(projectFolder.get().getPath())
-            interpreter = new ProjectInterpreter(projectFolder.get().getPath(), typecheckButton.selected)
+            interpreter = new ProjectInterpreter(projectFolder.get().getPath(), typecheckButton.selected, new Binding(["MidiPlayer": midiPlayer]))
             setupProject()
             // copy the config for the binding
             Map<String,Path> configBinding = [:]
             config.each { String k, Path v ->
                 configBinding[k] = Paths.get(v.toString())
             }
-            interpreter.setBinding(new Binding([projectPath: projectFolder.get().toPath(), "config":configBinding]))
+            interpreter.setBindingProperty("projectPath", projectFolder.get().toPath())
+            interpreter.setBindingProperty("config", configBinding)
         } catch(Exception ex) {
             println "Exception: " + ex.getMessage()
         }
@@ -744,9 +744,9 @@ public class Editor implements FolderTreeViewListener {
         Tab tab = tabPane.getSelectionModel().getSelectedItem()
         Path path = openedTabs[tab]
 
-        def tabContent = tab.getContent()
+        TabContent tabContent = (TabContent) tab.getContent()
 
-        if (tabContent instanceof MirChordEditor) {
+        if (tabContent.getTabType() == "MirChordEditor") {
             MirChordEditor editor = (MirChordEditor) tabContent
             String source = editor.getValue()
             Path codePath = projectFolder.get() != null ? projectFolder.get().toPath() : null
@@ -755,7 +755,7 @@ public class Editor implements FolderTreeViewListener {
             runMirChord(source, codePath, editor)
         }
 
-        if (tabContent instanceof TextEditor) {
+        if (tabContent.getTabType() ==  "TextEditor") {
             TextEditor editor = (TextEditor) tabContent
             String source = editor.getValue()
             String scriptName = (path != null) ? path.toString() : null
@@ -797,7 +797,9 @@ public class Editor implements FolderTreeViewListener {
                 stopButton.setDisable(false)
                 def result = interpreter.executeScriptSource(source, scriptName)
                 if (!(result instanceof InterpreterException)) {
-                    println "\nRESULT: " + result.toString()
+					if (result instanceof Node)
+						Platform.runLater( { UtilsFx.showDialogFx((Node)result) })
+					println "\nRESULT: " + result.toString()
                 } else {
                     showErrorConsole(true)
                 }
@@ -894,23 +896,25 @@ public class Editor implements FolderTreeViewListener {
         System.exit(0)
     }
 
+    void close() {
+        folderTreeView.stopWatching()
+        synthManager.close()
+        midiPlayer.close()
+    }
+
     boolean confirmClosing() {
         boolean clean = true
         for(Tab tab : tabPane.getTabs()) {
-            def tabContent = tab.getContent()
-            Method m = null
+            TabContent tabContent = (TabContent) tab.getContent()
             try {
-                m = tabContent.class.getMethod("isClean")
-                if (m != null) {
-                    clean = (boolean)tabContent.invokeMethod("isClean", null)
-                    if (!clean) {
-                        Alert alert = new Alert(AlertType.CONFIRMATION, "Changes in tabs not saved. Close anyway?")
-                        Optional<ButtonType> result = alert.showAndWait();
-                        if (result.isPresent() && result.get() == ButtonType.OK) {
-                            return true
-                        } else 
-                            return false
-                    }
+                clean = tabContent.isClean()
+                if (!clean) {
+                    Alert alert = new Alert(AlertType.CONFIRMATION, "Changes in tabs not saved. Close anyway?")
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        return true
+                    } else 
+                        return false
                 }
             } catch (Exception e) { }
         }
