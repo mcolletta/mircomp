@@ -57,7 +57,7 @@ class MirChordInterpreter {
 		ParseResults parseResults= ctx.getParseResults(PARSER.score, 0)
 		if (!parseResults.success())
 				throw parseResults.getError()
-		Score score = processor.process(parseResults)		
+		Score score = processor.process(parseResults)
 		return score
 	}
 	
@@ -70,7 +70,6 @@ class MirChordInterpreter {
 
 }
 
-@CompileStatic
 class MirchordAddon {
 
 	@MirChord 

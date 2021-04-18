@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2021 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -516,7 +516,7 @@ class MirChordProcessor extends AbstractProcessor {
         putResult(match.getText())
     }
 	
-	void processPitch(Pitch pitch, int octaveSteps, int alterations) {
+	void processPitch(Pitch pitch, int octaveSteps, int alterations, boolean natural) {
 		Map scope = getScope()
 		def scopeOctave = getVarFromScopes('octave')
 		if (scopeOctave != null) {
@@ -544,15 +544,21 @@ class MirChordProcessor extends AbstractProcessor {
 
 		scope['octave'] = pitch.octave
 		scope['symbol'] = pitch.symbol
-		
-		if (alterations != 0)
-			pitch.alteration = alterations
-			
-		KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
-		if (currentKey != null) {
-			int keysig = currentKey.getFifths()
-			pitch.alterForKeySignature(keysig)
+
+		if (!natural) {
+			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
+			if (currentKey != null) {
+				int keysig = currentKey.getFifths()
+				pitch.alterForKeySignature(keysig)
+			}
+
+			if (alterations != 0)
+				pitch.alteration = alterations
+		} else {
+			// println "natural pitch " + pitch
+			pitch.alteration = 0
 		}
+
 	}
     
     void completePitch(Match match) {
@@ -583,7 +589,10 @@ class MirChordProcessor extends AbstractProcessor {
 		*/
 			
 		int alterations = (accidentals != null) ? getAlterationFromAccidentals(accidentals) : 0
-		processPitch(pitch, (int)octaveSteps.sum(), alterations)
+		boolean natural = false
+		if (accidentals.size() > 0 && accidentals[-1] == ACCIDENTALS.NATURAL)
+			natural = true
+		processPitch(pitch, (int)octaveSteps.sum(), alterations, natural)
 		
 		putResult(pitch)
     }
@@ -844,7 +853,10 @@ class MirChordProcessor extends AbstractProcessor {
 		}			
 		int octaveSteps = 0			
 		int alterations = (accidentals != null) ? getAlterationFromAccidentals(accidentals) : 0
-		processPitch(pitch, octaveSteps, alterations)			
+		boolean natural = false
+		if (accidentals.size() > 0 && accidentals[-1] == ACCIDENTALS.NATURAL)
+			natural = true
+		processPitch(pitch, octaveSteps, alterations, natural)			
 		putResult(pitch)
 	}		
 	

@@ -97,14 +97,12 @@ abstract class DigitalSignal {
 
 
 // SIGNALS
-@CompileStatic
 class RectangularWindowSignal extends DigitalSignal {
 	float sample(int n) {    
        return (n <= (N/2)) ? 1.0f : 0.0f
     }
 }
 
-@CompileStatic
 class CosineSignal extends DigitalSignal {
 
 	float A = 1.0f     // Sinusoidal amplitude
@@ -118,7 +116,6 @@ class CosineSignal extends DigitalSignal {
     }
 }
 
-@CompileStatic
 class WindowedCosineSignal extends DigitalSignal {
 
 	float A = 1.0f
@@ -135,7 +132,6 @@ class WindowedCosineSignal extends DigitalSignal {
     }
 }
 
-@CompileStatic
 class HannWindowedCosineSignal extends DigitalSignal {
 
 	float A = 1.0f
@@ -155,7 +151,6 @@ class HannWindowedCosineSignal extends DigitalSignal {
 	}
 }
 
-@CompileStatic
 class DoubleFrequencyModulation extends DigitalSignal {
 	float A
     float I1
@@ -186,7 +181,6 @@ class DoubleFrequencyModulation extends DigitalSignal {
 }
 
 //FILTERS
-@CompileStatic
 class AverageFilter extends DigitalSignal {
 	float prev = 0.0f
 
@@ -198,7 +192,6 @@ class AverageFilter extends DigitalSignal {
     }
 }
 
-@CompileStatic
 class TwoPolesFilter extends DigitalSignal {
 	float b_0
 	float R
@@ -234,7 +227,6 @@ class TwoPolesFilter extends DigitalSignal {
     }
 }
 
-@CompileStatic
 class TwoZerosFilter extends DigitalSignal {
 	float b_0
 	float b_1

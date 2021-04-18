@@ -10,7 +10,7 @@
 
 (def :A1 { r4 b g' r | r a e' r | r a, f' r | r g, d' r | r a e' r | r1 | r8 e, g b r2 | r1 | } )
 
-(def :B1 { ^5 b2_ _b8 c d e | a,2_ _a8 b c d | g,4 g'8 e c2_ | _c8 a' f d c4 b8 c | b d b g f§4 e8 f§ | e f f g g2_ _g8 f g e f4. g8 | g1_ | g1  })
+(def :B1 { ^5 b2_ _b8 c d e | a,2_ _a8 b c d | g,4 g'8 e c2_ | _c8 a' f d c4 b8 c | b d b g f§4 e8 f§ | e f f g g2_ | _g8 f g e f4. g8 | g1_ | g1  })
 
 
 :intro1 :A1 :intro1 :B1

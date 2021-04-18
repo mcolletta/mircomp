@@ -87,7 +87,6 @@ vii°	-> 		I, iii
 
  */
 
-@CompileStatic
 @ToString
 @TupleConstructor()
 class ChordSymbol implements MusicElement {
@@ -197,7 +196,6 @@ class ChordSymbol implements MusicElement {
 	}
 }
 
-@CompileStatic
 enum ChordKind {
 	MAJOR,
 	MINOR,

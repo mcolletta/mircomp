@@ -51,8 +51,31 @@ def javaHome = System.getenv('JAVA_HOME')
 def javaFxHome = System.getenv('JAVAFX_HOME')
 def javaFxJmods = System.getenv('JAVAFX_JMODS_HOME')
 
-def distPath = "/path/to/dist/miride"
+def sep = "/" // File.pathSeparatorChar
+def distPath = null
 
+def getDistPath() {
+    if (project.hasProperty('distPath')) {
+        File distFolder = new File(project.getProperty('distPath'))
+        if (distFolder.isDirectory()) {
+            return distFolder.getPath()
+        }
+    }
+    return null
+}
+
+// task distFolder {
+//     doFirst {
+//         if (project.hasProperty('distPath')) {
+//             File distFolder = new File(project.getProperty('distPath'))
+//             if (distFolder.isDirectory()) {
+//                 distPath = distFolder.getPath()
+//                 println "distPath=" + distPath
+//             }
+//         } else
+//             project.distPath = "build/dist"
+//     }
+// }
 
 task inputPackage {
     dependsOn build
@@ -88,9 +111,10 @@ task jlink(type: Exec) {
     commandLine "${javaHome}/bin/jlink",
                 "--module-path", "${javaHome}/jmods${File.pathSeparatorChar}${javaFxJmods}",
                 "--add-modules", "java.se,java.base,java.desktop,java.logging,java.scripting,jdk.jsobject,javafx.fxml,javafx.web,javafx.swing",
-                "--output", distPath + "/jlinkimage",
+                "--output", getDistPath() + "/runtimeimage",
                 "--strip-native-commands",
-                "--strip-debug",
+                // "--strip-debug",  // need binutils
+                "--strip-java-debug-attributes",
                 "--compress", "2",
                 "--no-header-files",
                 "--no-man-pages"
@@ -100,22 +124,26 @@ task jpackage(type: Exec) {
     dependsOn clean
     dependsOn jlink, inputPackage
     workingDir 'build'
-    commandLine "${javaPackageHome}/bin/jpackage",
+    commandLine "${javaHome}/bin/jpackage", //"create-image",
                 "--name", "MirIDE",
                 "--type", "app-image",
-                "--runtime-image", distPath + "/jlinkimage",
+                "--runtime-image", getDistPath() + "/runtimeimage",
+                //"--output", "application",
                 "--icon", "../../resources/icon.png",
                 "--main-class", mainClassName,
                 "--input", "jars",
-                "--dest", distPath + "/app",
+                "--dest", getDistPath() + "/app",
                 "--main-jar", "miride.jar"
 }
+
 
 task createApp(type: Copy) {
     dependsOn jpackage
     from (["../LICENSE", "../LICENSE-ALLJARS", "../licenses"])
-    into ("build/application/MirIDE/app/legal")
+    into (getDistPath() + sep + 'app' + sep + 'legal')
 }
+
+// ~/mircomp/miride$ gradle createApp -PdistPath="/home/path/to/dist/miride"
 
 task runMirIDE(type: JavaExec) {
     description 'Run MirIDE'
@@ -123,7 +151,7 @@ task runMirIDE(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 
     jvmArgs = [
-        '--module-path', "${System.getenv('JAVAFX_HOME')}/lib",
+        "--module-path", "${javaFxHome}/lib",
         "--add-modules=javafx.graphics,javafx.fxml,javafx.swing,javafx.web",
     ]
 
