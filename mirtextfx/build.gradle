@@ -1,0 +1,43 @@
+apply plugin: 'groovy'
+
+apply plugin: 'application'
+
+dependencies {
+    implementation project(':mirfoldertreeview')
+    implementation project(':mirutils')
+    implementation name: 'richtextfx-fat-0.10.7'
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+        resources {
+            srcDirs = ["src/main/groovy"]
+        }
+    }
+}
+
+jar {
+    manifest.attributes 'Created-By': 'Mirco Colletta'
+}
+
+task runScript(type: JavaExec) {
+    description 'Run Simple Demo'
+    main = 'io.github.mcolletta.mirtextfx.Demo'
+    classpath = sourceSets.main.runtimeClasspath
+
+    doFirst {
+        jvmArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'javafx.base,javafx.controls,javafx.graphics,javafx.fxml'
+        ]
+    }
+
+    if (project.hasProperty('custom_arg')) {
+        args project.getProperty('custom_arg')
+    }
+}
+
+defaultTasks 'runScript'

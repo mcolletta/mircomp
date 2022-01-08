@@ -117,7 +117,7 @@ import com.xenoage.utils.exceptions.InvalidFormatException
 import static io.github.mcolletta.miride.Utils.getFileExt
 import static io.github.mcolletta.miride.DraggableTabs.*
 
-import groovy.ui.SystemOutputInterceptor
+import groovy.console.ui.SystemOutputInterceptor
 
 import groovy.transform.CompileStatic
 import groovy.transform.CompileDynamic

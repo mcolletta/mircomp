@@ -1,0 +1,114 @@
+<!--
+ * Copyright (C) 2016-2022 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.collections.*?>
+<?import io.github.mcolletta.mirfoldertreeview.*?>
+<?import io.github.mcolletta.mirtextfx.*?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="io.github.mcolletta.mircomposer.Editor" stylesheets="@styles.css">
+  <children>
+    <MenuBar>
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#openfile" text="Open file..." />
+            <Menu mnemonicParsing="false" text="New file">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#newmirchordfile" text="New Mirchord file" />
+                <MenuItem mnemonicParsing="false" onAction="#newmidifile" text="New Midi file" />
+              </items>
+            </Menu>
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#onExit" text="Quit" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="View">
+          <items>
+            <CheckMenuItem fx:id="consoleMenu" mnemonicParsing="false" onAction="#showconsole" text="Show/Hide Console" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Tools">
+          <items>
+            <MenuItem fx:id="runMenu" mnemonicParsing="false" onAction="#runscript" text="Run" />
+            <MenuItem fx:id="stopMenu" mnemonicParsing="false" onAction="#stopscript" text="Stop" />
+            <MenuItem fx:id="propertiesMenu" mnemonicParsing="false" onAction="#editproperties" text="Edit properties..." />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#showInfoDialog" text="About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+        <items>
+            <Button fx:id="openfileButton" onAction="#openfile" styleClass="openfile-button" text="Open file..." mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="runButton" onAction="#runscript" styleClass="run-button" disable="true" text="Run" mnemonicParsing="false"/>
+            <Button fx:id="stopButton" onAction="#stopscript" styleClass="stop-button" disable="true" text="Stop" mnemonicParsing="false"/>
+            <ToggleButton fx:id="consoleButton" onAction="#showconsole" styleClass="console-button" text="Show/Hide Console" selected="false" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="propertiesButton" onAction="#editproperties" styleClass="properties-button" text="Edit properties..." mnemonicParsing="false"/>
+        </items>
+    </ToolBar>
+            
+    <VBox maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+        <children>
+            <!-- Editor -->
+            <StackPane fx:id="tabPaneContainer" styleClass="background-logo" focusTraversable="true" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+              <children>
+                <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" side="TOP" TabClosingPolicy="ALL_TABS">
+                    <tabs>
+                    </tabs>
+                </TabPane>
+              </children>
+            </StackPane>
+            <!-- Console -->
+            <TabPane fx:id="tabConsole" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" maxWidth="Infinity" maxHeight="Infinity">
+                <tabs>
+                    <Tab text="Output">
+                      <content>
+                        <TextArea fx:id="outputConsole" prefHeight="200.0" prefWidth="200.0"
+                                  editable="false" focusTraversable="false"
+                                  maxWidth="Infinity" maxHeight="Infinity" wrapText="true"/>
+                      </content>
+                    </Tab>
+                    <Tab text="Error">
+                      <content>
+                        <TextArea fx:id="errorConsole" styleClass="textarea-colors"
+                                  editable="false" focusTraversable="false"
+                                  prefHeight="200.0" prefWidth="200.0"
+                                  style="-fx-text-fill: red"
+                                  maxWidth="Infinity" maxHeight="Infinity" wrapText="true"/>
+                      </content>
+                    </Tab>
+                </tabs>
+            </TabPane>
+        </children>
+    </VBox>
+    
+    <Label alignment="CENTER" text="MirComposer - MirComp Composer" />
+  </children>
+</VBox>
+
+

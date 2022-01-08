@@ -105,7 +105,7 @@ public class FolderTreeView extends VBox implements FolderTreeListenerList {
 		root = getPathTreeItem(rootPath) 
 		root.setExpanded(true) 
 		treeView.setRoot(root)
-		treeView.setCellFactory({ TreeView<Path> p -> 
+		treeView.setCellFactory({ p -> 
                 PathTreeCell treeCell = new PathTreeCell(this)
                 makeDraggable(treeCell)
                 return treeCell
@@ -145,18 +145,18 @@ public class FolderTreeView extends VBox implements FolderTreeListenerList {
 	}
 
     void TreeItemUpdater(TreeItem root, Path path, WatchEvent.Kind kind) {
-		def toVisit = new Stack<TreeItem>()
-		def visited = new Stack<TreeItem>()
+		def toVisit = new Stack<TreeItem<Path>>()
+		def visited = new Stack<TreeItem<Path>>()
 		toVisit.push(root)
 		while (toVisit.size() > 0) {
-	        def node = toVisit.peek()
+	        TreeItem<Path> node = toVisit.peek()
             //println "kind=" + kind + " node.getValue()=" + node.getValue()  + " path.getParent()=" + path.getParent()
 	        if (kind == ENTRY_MODIFY && node.getValue() == path) {
 	        	// println "Modified  node= " + node.getValue()
 				return
 	        }
 	        if (kind == ENTRY_CREATE && node.getValue() == path.getParent()) {
-	        	TreeItem newItem = new TreeItem<Path>(path)
+	        	TreeItem<Path> newItem = new TreeItem<Path>(path)
 	        	node.getChildren() << newItem
 	        	//println "Added  node= " + newItem + " to node= " + node.getValue()
 				return
@@ -166,7 +166,7 @@ public class FolderTreeView extends VBox implements FolderTreeListenerList {
 	                visited.push(node)
 	                def children = node.getChildren()
 	                for(int i = children.size()-1; i >= 0; i--) {
-	                	TreeItem child = children[i]
+	                	TreeItem<Path> child = children[i]
 	                	if (kind == ENTRY_DELETE && child.getValue() == path) {
 	                		node.getChildren().remove(child)
 					        //println "Deleted  child= " + child.getValue() + " from parent= " + node.getValue()
@@ -198,7 +198,7 @@ public class FolderTreeView extends VBox implements FolderTreeListenerList {
 	                visited.push(node)
 	                def children = node.getChildren()
 	                children.reverseEach {
-	                	toVisit.push(it)
+	                	toVisit.push((TreeItem)it)
 	                }
 	                continue
 	            }

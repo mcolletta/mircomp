@@ -144,8 +144,8 @@ class MidiManager {
 
     Map<Integer,MidiControllerInfo> controllersInfo = [:]
 
-    Comparator sortByEndComparator = { MidiNote left, MidiNote right -> return (int)(left.getEnd() - right.getEnd())} as Comparator
-    Comparator sortByDurationComparator = { MidiNote left, MidiNote right -> return (int)(left.getDuration() - right.getDuration())} as Comparator
+    Comparator<MidiNote> sortByEndComparator = { MidiNote left, MidiNote right -> return (int)(left.getEnd() - right.getEnd())} as Comparator<MidiNote> 
+    Comparator<MidiNote>  sortByDurationComparator = { MidiNote left, MidiNote right -> return (int)(left.getDuration() - right.getDuration())} as Comparator<MidiNote> 
 
 
     ListChangeListener<MidiNote> noteListener = { ListChangeListener.Change<? extends MidiNote> change ->

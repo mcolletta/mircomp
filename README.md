@@ -11,7 +11,7 @@ MirComp is implemented with the [Groovy programming language](http://www.groovy-
 
 ## LICENSE
 
-Copyright (C) 2016-2017 Mirco Colletta
+Copyright (C) 2016-2022 Mirco Colletta
 
 MirComp is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

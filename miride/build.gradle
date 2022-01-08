@@ -26,7 +26,7 @@ sourceSets {
     }
 }
 
-// version = 1.0.0-alpha.2
+// version = 1.0.0-alpha.3
 
 distZip {
     into(project.name) {
@@ -37,7 +37,7 @@ distZip {
         include 'README.md'
     }
     doLast {
-        file("$destinationDir/$archiveName").renameTo("$destinationDir/mircomp-1.0.0-alpha.2.zip")
+        file("$destinationDir/$archiveName").renameTo("$destinationDir/mircomp-1.0.0-alpha.3.zip")
     }
 }
 
@@ -129,6 +129,7 @@ task jpackage(type: Exec) {
                 "--type", "app-image",
                 "--runtime-image", getDistPath() + "/runtimeimage",
                 //"--output", "application",
+                "--java-options", "--add-exports java.desktop/com.sun.media.sound=ALL-UNNAMED",
                 "--icon", "../../resources/icon.png",
                 "--main-class", mainClassName,
                 "--input", "jars",
@@ -153,6 +154,8 @@ task runMirIDE(type: JavaExec) {
     jvmArgs = [
         "--module-path", "${javaFxHome}/lib",
         "--add-modules=javafx.graphics,javafx.fxml,javafx.swing,javafx.web",
+        "--add-exports", "java.desktop/com.sun.media.sound=ALL-UNNAMED",
+        // "--add-exports", "java.desktop/com.sun.media.sound.AudioSynthesizer=ALL-UNNAMED",
     ]
 
     if (project.hasProperty('custom_arg')) {

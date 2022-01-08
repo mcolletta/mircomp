@@ -2,19 +2,23 @@ include ":mirchord"
 include ":mirconverter"
 include ":demos"
 include ":mirtext"
+include ":mirtextfx"
 include ":mirscore"
 include ":mirmidi"
 include ":mirfoldertreeview"
 include ":miride"
+include ":mircomposer"
 include ":mirsynth"
 include ":mirutils"
 project(':mirchord').projectDir = new File('mirchord')
 project(':mirconverter').projectDir = new File('mirconverter')
 project(':demos').projectDir = new File('demos')
 project(':mirtext').projectDir = new File('mirtext')
+project(':mirtextfx').projectDir = new File('mirtextfx')
 project(':mirscore').projectDir = new File('mirscore')
 project(':mirmidi').projectDir = new File('mirmidi')
 project(':mirfoldertreeview').projectDir = new File('mirfoldertreeview')
 project(':miride').projectDir = new File('miride')
+project(':mircomposer').projectDir = new File('mircomposer')
 project(':mirsynth').projectDir = new File('mirsynth')
 project(':mirutils').projectDir = new File('mirutils')

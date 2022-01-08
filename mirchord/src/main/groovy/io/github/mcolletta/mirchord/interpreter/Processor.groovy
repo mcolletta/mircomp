@@ -169,7 +169,7 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	private Map getScope() {
 		ensureScope()
-		return getEnvironment().peek()
+		return (Map)getEnvironment().peek()
 	}
 
 	private void ensureScope() {

@@ -168,7 +168,7 @@ class ScoreBuilder {
                 attributes ['unpitched'] = true
             }
             if (attributes.containsKey('midiPitch')) {
-                int midiPitch = attributes.remove('midiPitch')          
+                int midiPitch = (int)attributes.remove('midiPitch')          
                 Pitch pitch = new Pitch()
                 pitch.setMidiValue(midiPitch)
                 attributes['pitch'] = pitch

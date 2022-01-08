@@ -1,0 +1,88 @@
+/*
+ * Copyright (C) 2016-2022 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/**
+ * @author Mirco Colletta
+ */
+ 
+.openproject-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/project_open.png');
+}
+.newproject-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/window_new.png');
+}
+.openfile-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/fileopen.png');
+}
+.run-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/runprog.png');
+}
+.stop-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/stop.png');
+}
+.tree-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/view_tree.png');
+}
+.console-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/xconsole.png');
+}
+.sandbox-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/locked.png');
+}
+.typecheck-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/checkedclipboard.png');
+}
+.reload-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/reload.png');
+}
+.properties-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_controlproperties.png');
+}
+
+.editfield-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/edit.png');
+}
+
+.text-area {
+    -fx-text-fill: #1E1E1E;
+}
+
+.text-area .content {
+    -fx-background-color: #E9E9E9;
+}
+
+.background-logo {
+    -fx-background-image: url('resources/images/logo.png');
+    -fx-background-repeat: no-repeat;   
+    -fx-background-size: 722 327;
+    -fx-background-position: center center;
+    -fx-background-color: white;
+}

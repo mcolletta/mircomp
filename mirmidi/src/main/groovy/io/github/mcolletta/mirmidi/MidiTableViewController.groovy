@@ -88,7 +88,7 @@ class MidiTableViewController {
 	@FXML private TableView<MidiEventItem> tableView
 	ObservableList<MidiEventItem> events
     SortedList<MidiEventItem> sortedEvents
-    Comparator sortByTickComparator = { MidiEventItem left, MidiEventItem right -> return (int)(left.getTick() - right.getTick())} as Comparator
+    Comparator<MidiEventItem> sortByTickComparator = { MidiEventItem left, MidiEventItem right -> return (int)(left.getTick() - right.getTick())} as Comparator<MidiEventItem>
 
 	MidiTableViewController() {}
 

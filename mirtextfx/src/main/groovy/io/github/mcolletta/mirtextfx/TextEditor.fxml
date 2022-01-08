@@ -1,0 +1,95 @@
+<!--
+ * Copyright (C) 2016-2022 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.collections.*?>
+<?import org.fxmisc.richtext.CodeArea?>
+<?import org.fxmisc.flowless.VirtualizedScrollPane?>
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml" stylesheets="@styles.css">
+	<ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+        <items>
+            <Button fx:id="fileopenButton"  onAction="#fileopen" styleClass="fileopen-button" text="Open..." mnemonicParsing="false"/>
+            <Button fx:id="filesaveButton"  onAction="#filesave" styleClass="filesave-button" text="Save" mnemonicParsing="false"/>
+            <Button fx:id="filesaveasButton"  onAction="#filesaveas" styleClass="filesaveas-button" text="Save as..." mnemonicParsing="false"/>
+            <Button fx:id="reloadfileButton"  onAction="#reloadfile" styleClass="reloadfile-button" text="Reload file..." mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="cutButton"  onAction="#cut" styleClass="cut-button" text="Cut" mnemonicParsing="false"/>
+            <Button fx:id="copyButton" onAction="#copy" styleClass="copy-button" text="Copy" mnemonicParsing="false"/>
+            <Button fx:id="pasteButton" onAction="#paste" styleClass="paste-button" text="Paste" mnemonicParsing="false"/>
+            <Button fx:id="commentButton" onAction="#comment" styleClass="comment-button" text="Toggle Comment" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="undoButton" disable="true" onAction="#undo" styleClass="undo-button" text="Undo" mnemonicParsing="false"/>
+            <Button fx:id="redoButton" disable="true" onAction="#redo" styleClass="redo-button" text="Redo" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <ToggleButton fx:id="showSearchButton" styleClass="find-button" text="Find" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" /> 
+            <Label fx:id="modeIcon" styleClass="syntax-icon" />
+            <ComboBox fx:id="selectMode" disable="true" promptText="Syntax..." styleClass="mode-list" />
+            <Label fx:id="themeIcon" styleClass="theme-icon" />
+            <ComboBox fx:id="selectTheme" promptText="Theme..." styleClass="theme-list" />
+            <Label fx:id="fontsIcon" styleClass="fonts-icon" />
+            <ComboBox fx:id="selectFontSize" promptText="Font size...">
+				<items>
+				<FXCollections fx:factory="observableArrayList">
+				  <String fx:value="8pt" />
+				  <String fx:value="9pt" />
+				  <String fx:value="10pt" />
+				  <String fx:value="11pt" />
+				  <String fx:value="12pt" />
+				</FXCollections>
+				</items>
+			</ComboBox>
+            <Separator orientation="VERTICAL" /> 
+            <Button fx:id="tabsToSpacesButton"  onAction="#replaceTabswithSpaces" text="TABs to spaces" mnemonicParsing="false"/>
+        </items>
+    </ToolBar>
+    <VirtualizedScrollPane fx:id="vScrollPane" maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+        <content>
+            <CodeArea fx:id="codeArea"/>
+        </content>
+    </VirtualizedScrollPane>
+
+    <VBox fx:id="searchBox" alignment="center" spacing="10" maxWidth="Infinity" maxHeight="100" VBox.vgrow="ALWAYS">
+        <children>
+            <HBox alignment="center_left" spacing="15">
+                <VBox.margin><Insets left="50"/></VBox.margin>
+                <children>
+                    <Label text="Find: " prefWidth="100"/>
+                    <TextField fx:id="findText" onAction="#find" text="" prefWidth="500"/>
+                    <Button fx:id="findButton" onAction="#find" text="Find" mnemonicParsing="false"/>
+                    <Button fx:id="prevButton" onAction="#prev" text="Prev" disable="true" mnemonicParsing="false"/>
+                    <Button fx:id="nextButton" onAction="#next" text="Next" disable="true" mnemonicParsing="false"/>
+                    <Button fx:id="closeSearchButton" onAction="#hideSearch" text="Close" mnemonicParsing="false"/>
+                </children>
+            </HBox>
+            <HBox alignment="center_left" spacing="15">
+                <VBox.margin><Insets left="50"/></VBox.margin>
+                <children>
+                    <Label text="Replace: "  prefWidth="100"/>
+                    <TextField fx:id="replaceText" onAction="#replace" text="" prefWidth="500"/>
+                    <Button fx:id="replaceButton" onAction="#replace" text="Replace" mnemonicParsing="false"/>
+                    <Button fx:id="replaceAllButton" onAction="#replaceAll" text="Replace All" mnemonicParsing="false"/>
+                </children>
+            </HBox>
+        </children>
+    </VBox>
+</fx:root>

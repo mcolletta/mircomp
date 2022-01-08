@@ -1,0 +1,87 @@
+/*
+ * Copyright (C) 2016-2022 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/**
+ * @author Mirco Colletta
+ */
+ 
+.fileopen-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/fileopen.png');
+}
+.filesave-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_save.png');
+}
+.filesaveas-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_saveas.png');
+}
+.reload-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/reload.png');
+}
+.reloadfile-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_reload.png');
+}
+.cut-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/editcut.png');
+}
+.copy-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/editcopy.png');
+}
+.paste-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/editpaste.png');
+}
+.comment-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/comment.png');
+}
+.undo-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/undo.png');
+}
+.redo-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/redo.png');
+}
+.find-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/find.png');
+}
+.replace-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/filefind.png');
+}
+.syntax-icon {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/templates.png');
+}
+.theme-icon {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/colorize.png');
+}
+.fonts-icon {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/fonts.png');
+}

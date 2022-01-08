@@ -178,7 +178,7 @@ class MidiEditor extends VBox implements MidiPlaybackListener, FolderTreeListene
     @FXML private Button filesaveButton
     @FXML private TextField currentZoomField
 
-    @FXML private Spinner tempoSpinner
+    @FXML private Spinner<Integer> tempoSpinner
 
     ObjectProperty<Path> filePath = new SimpleObjectProperty<>()
     Path getFilePath() {

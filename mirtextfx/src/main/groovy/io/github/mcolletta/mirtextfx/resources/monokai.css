@@ -1,0 +1,147 @@
+/*.debug {-fx-fill: #8346F2;-fx-font-weight: bold;}*/
+
+.code-area {
+  -fx-background-color: #272822;
+  /*-fx-text-fill: #F8F8F2;*/
+}
+
+.code-area .text {
+    -fx-fill: #F8F8F2;
+}
+
+.code-area .lineno {
+    -fx-background-color: black;
+    -fx-text-fill: grey;
+}
+
+/*.paragraph-text .text{*/
+/*.text-color {
+    -fx-fill: #F8F8F2;
+}*/
+
+/*.styled-text-area .selection {
+    -fx-fill: blue;
+}*/
+
+.code-area .tagmark,
+.code-area .keyword {
+    -fx-fill: #F92672;  /*rosso*/
+    -fx-font-weight: bold;
+}
+
+.code-area .semicolon {
+    -fx-font-weight: bold;
+}
+
+.code-area .paren {
+    /*-fx-fill: #49483E;*/
+    -fx-fill: #F8F8F2;
+    -fx-font-weight: bold;
+}
+
+.code-area .bracket {
+    -fx-fill: #F8F8F2;
+    -fx-font-weight: bold;
+}
+
+.code-area .brace {
+    -fx-fill: #F8F8F2;
+    -fx-font-weight: bold;
+}
+
+.code-area .punctuation {
+    -fx-fill: #fff;
+    /*-fx-fill: #FD971F;*/
+}
+
+.code-area .anytag,
+.code-area .function {
+    -fx-fill: #A6E22E;  /*verde*/
+}
+
+.code-area .attribute,
+.code-area .type {
+    -fx-fill: #66D9EF; /*celeste*/
+}
+
+.code-area .alphabetic,
+.code-area .parameter {
+    -fx-fill: #FD971F;  /*arancione*/
+    /*-fx-font-style: italic;*/
+}
+
+.code-area .numeric {
+    -fx-fill: #AE81FF;  /*viola*/
+}
+
+.code-area .avalue,
+.code-area .string {
+    -fx-fill: #E6DB74;
+}
+
+.code-area .comment {
+	-fx-fill: #75715E;
+}
+
+.code-area .accidental {
+    -fx-fill: #F92672;
+}
+
+/*.paragraph-text {
+    -fx-background-color: #272822;
+    -fx-text-fill: #F8F8F2
+}*/
+
+.code-area .paragraph-box {
+    -fx-background-color: #272822;
+    -fx-text-fill: #F8F8F2
+}
+
+.code-area .paragraph-box:has-caret {
+    /*-fx-background-color: #202020;*/
+    -fx-background-color: #272822;
+    -fx-text-fill: #F8F8F2
+}
+
+/*.virtualized-scroll-pane:focused {*/
+.code-area:focused {
+    -fx-background-color: #272822;
+    -fx-text-fill: #F8F8F2
+}
+
+.code-area .caret {
+    /*-fx-text-fill: #F8F8F0;*/
+    -fx-stroke: #F8F8F0;
+}
+
+.code-area .searched {
+    /*-fx-border-radius: 10 10 0 0;
+    -fx-background-radius: 10 10 0 0;*/
+    /*-fx-fill: #E69500;*/
+    -rtfx-border-stroke-color: fff;
+    -rtfx-border-stroke-width: 1;
+    -rtfx-border-stroke-type: centered;
+}
+
+/*.caret {
+    -fx-stroke: red;
+}*/
+
+.code-folded {
+    visibility: hidden;
+    /*visibility: collapse;*/
+    -fx-background-color: #E69500;
+}
+
+
+/*TEST*/
+
+/*.list-cell .label {
+  display: inline-block;
+  -fx-min-width: 50px;
+  -fx-background-color: lightyellow;
+}
+.list-cell:empty .label {
+  -fx-background-color: transparent;
+  -fx-border-width: 0px;
+}*/

@@ -1,0 +1,167 @@
+apply plugin: 'groovy'
+
+apply plugin: 'application'
+mainClassName = 'io.github.mcolletta.mircomposer.MirComposer'
+
+dependencies {
+    implementation project(':mirchord')
+    implementation project(':mirconverter')
+    implementation project(':mirscore')
+    implementation project(':mirtextfx')
+    implementation project(':mirmidi')
+    implementation project(':mirsynth')
+    implementation project(':mirutils')
+    implementation project(':mirfoldertreeview')
+    implementation name: 'richtextfx-fat-0.10.7'
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+        resources {
+            srcDirs = ["src/main/groovy"]
+        }
+    }
+}
+
+// version = 1.0.0-alpha.3
+
+distZip {
+    into(project.name) {
+        from '..'
+        include 'licenses/*'
+        include 'LICENSE'
+        include 'LICENSE-ALLJARS'
+        include 'README.md'
+    }
+    doLast {
+        file("$destinationDir/$archiveName").renameTo("$destinationDir/mircomp-1.0.0-alpha.3.zip")
+    }
+}
+
+jar {
+    manifest.attributes 'Created-By': 'Mirco Colletta'
+}
+
+
+def javaPackageHome = System.getenv('JAVA_PACKAGE_HOME')
+def javaHome = System.getenv('JAVA_HOME')
+def javaFxHome = System.getenv('JAVAFX_HOME')
+def javaFxJmods = System.getenv('JAVAFX_JMODS_HOME')
+
+def sep = "/" // File.pathSeparatorChar
+def distPath = null
+
+def getDistPath() {
+    if (project.hasProperty('distPath')) {
+        File distFolder = new File(project.getProperty('distPath'))
+        if (distFolder.isDirectory()) {
+            return distFolder.getPath()
+        }
+    }
+    return null
+}
+
+//TODO: manage data folder (config.xml does not necessarly exists at start) 
+// Caused by: java.io.FileNotFoundException: data/config.xml (No such file or directory)
+// legal folder is not copied
+
+
+task inputPackage {
+    dependsOn build
+    doLast {
+        def projects = rootProject.subprojects
+        def build_paths = ['../libs']
+        projects.each() { subproject ->
+            build_paths << "../${subproject.name}/build/libs/"
+        }
+        ant.with {
+            echo("create jars folder")
+            def destDir = "build/jars"
+            if (!new File(destDir).exists())
+                mkdir(dir: destDir)
+            build_paths.each { path ->
+                if (new File(path).exists()) {
+                    echo("adding $path")
+                    copy(todir: destDir) {
+                        fileset(dir: path) {
+                            include(name: "**/*.jar")
+                        }
+                    }
+                }
+            }
+            echo("done")
+        }
+    }
+}
+
+task jlink(type: Exec) {
+    dependsOn build
+    workingDir 'build'
+    commandLine "${javaHome}/bin/jlink",
+                "--module-path", "${javaHome}/jmods${File.pathSeparatorChar}${javaFxJmods}",
+                "--add-modules", "java.se,java.base,java.desktop,java.logging,javafx.base,javafx.controls,javafx.graphics,javafx.fxml,javafx.swing",
+                "--output", getDistPath() + "/runtimeimage",
+                "--strip-native-commands",
+                // "--strip-debug",  // need binutils
+                "--strip-java-debug-attributes",
+                "--compress", "2",
+                "--no-header-files",
+                "--no-man-pages"
+}
+
+task jpackage(type: Exec) {
+    dependsOn clean
+    dependsOn jlink, inputPackage
+    workingDir 'build'
+    commandLine "${javaHome}/bin/jpackage", //"create-image",
+                "--name", "MirComposer",
+                "--type", "app-image",
+                "--runtime-image", getDistPath() + "/runtimeimage",
+                //"--output", "application",
+                "--java-options", "--add-exports java.desktop/com.sun.media.sound=ALL-UNNAMED",
+                "--icon", "../../resources/icon.png",
+                "--main-class", mainClassName,
+                "--input", "jars",
+                "--dest", getDistPath() + "/app",
+                "--main-jar", "mircomposer.jar"                
+}
+
+task createApp(type: Copy) {
+    doFirst {
+        if (project.hasProperty('distPath')) {
+            File distFolder = new File(project.getProperty('distPath'))
+            if (distFolder.isDirectory()) {
+                println "distFolder.getPath() = " + distFolder.getPath()
+                distPath = distFolder.getPath()
+            }
+        } 
+    }
+    dependsOn jpackage
+    from (["../LICENSE", "../LICENSE-ALLJARS", "../licenses"])
+    into (distPath + sep + 'app' + sep + 'legal')
+    // into ("build/application/MirComposer/app/legal")
+}
+
+task runMirComposer(type: JavaExec) {
+    description 'Run MirComposer'
+    main = 'io.github.mcolletta.mircomposer.MirComposer'
+    classpath = sourceSets.main.runtimeClasspath
+
+    doFirst {
+        jvmArgs = [
+            '--module-path', "${System.getenv('JAVAFX_HOME')}/lib",
+            "--add-modules=javafx.base,javafx.controls,javafx.graphics,javafx.fxml,javafx.swing",
+            "--add-exports", "java.desktop/com.sun.media.sound=ALL-UNNAMED",
+        ]
+    }
+
+    if (project.hasProperty('custom_arg')) {
+        args project.getProperty('custom_arg')
+    }
+}
+
+defaultTasks 'runMirComposer'
+
