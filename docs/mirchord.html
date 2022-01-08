@@ -9,18 +9,7 @@
     <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
 
     <title>
-      MirComp: computer music composition framework
-      
-      
-      
-      
-       - MirChord
-      
-      
-      
-      
-      
-      
+      MirComp: computer music composition framework - MirChord
     </title>
 
     <link rel="author license" href="about_site.html">
@@ -29,6 +18,8 @@
     <link href="./assets/css/bootstrap.css" rel="stylesheet">
     <!-- Bootstrap theme -->
     <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
+    <!-- highlight -->
+    <!-- <link href="./assets/css/monokai.min.css" rel="stylesheet"> -->
 
     <!-- Custom styles for this template -->
     <link href="./assets/css/mircomp.css" rel="stylesheet">
@@ -44,11 +35,11 @@
       <div class="container">
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li  ><a href="index.html">Home</a></li>
+            <!-- <li class="active" ><a href="index.html">Home</a></li>
             <li  ><a href="getting_started.html">Getting Started</a></li>
             <li  ><a href="documentation.html">Documentation</a></li>
-            <li  ><a href="download.html">Download</a></li>
-            <!-- <li><a href="about.html">About</a></li> -->
+            <li  ><a href="download.html">Download</a></li> -->
+            <li><a href="index.html">Home</a></li><li><a href="getting_started.html">Getting Started</a></li><li><a href="documentation.html">Documentation</a></li><li><a href="download.html">Download</a></li>
           </ul>
         </div>
       </div>
@@ -57,7 +48,8 @@
     <div class="container theme-showcase" role="main">
 
       <div>
-        
+
+                
 <div class="jumbotron">
     <h1>MirChord</h1>
     <p>An overview of the MirChord notation language and a reference to the most common elements, symbols and commands. Learn how to write an entire multipart and multivoice score.</p>
@@ -68,8 +60,8 @@
     <h2>Comments</h1>
 </div>
 
-<p>Everything between <code>/*</code> and <code>*/</code> is ignored by the interpreter.</p>
-<pre>/* This is a comment */</pre>
+<p>Everything that starts with <code>;</code> is ignored by the interpreter.</p>
+<pre><code class="mirchord">; This is a comment</code></pre>
 
 <div class="page-header">
     <h2>Parts and Voices</h2>
@@ -104,11 +96,10 @@
 <p>Clefs can be defined using the <mark>clef</mark> command.<br/>
 <p class="bg-info">Tip: the most convenient way to write down clef is by using the autocomplete feature of the editor.</p>
 
-<pre>
-=1 ~1 (clef "treble")
+<pre><code class="mirchord">=1 ~1 (clef "treble")
 =2 ~1 (clef "bass")
 =3 ~1 (clef "percussion")
-</pre>
+</code></pre>
 
 <div class="page-header">
     <h2>Instruments</h2>
@@ -134,10 +125,9 @@
 
 <p>An example with rests:</p>
 
-<pre>
-=1 ~1
+<pre><code class="mirchord">=1 ~1
 c8 r8 r4 r2 r1
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/rests.png" />
 
@@ -168,19 +158,17 @@ The following code <code>c# e&</code> produces:
 <p class="bg-info">When you get lost o messed up within the score use the octave command to change the current octave value.
 
 <p>For example what follows is a C major scale that spans over two octaves</p>
-<pre> 
-=1 ~1
+<pre><code class="mirchord">=1 ~1
 (key "C" "maj")
 c d e f g a b c d e f g a b c
-</pre>
+</code></pre>
 <img class="img-responsive" src="./assets/images/screenshots/scale.png" />
 
 <p>Example of octave marks:</p>
 
-<pre>
-=1 ~1
+<pre><code class="mirchord">=1 ~1
 c c, c''
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/octave-marks.png" />
 
@@ -203,10 +191,9 @@ c c, c''
 <p class="bg-info">For note longer than an <em>whole</em> ties are required.
 <p class="bg-info">If a note duration does not fit within a measure length it is divided in more notes and ties are applied automatically between measure boundaries</p>
 
-<pre>
-=1 ~1
+<pre><code class="mirchord">=1 ~1
 c2. e2 g2.
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/automatic-notes-split.png" />
 
@@ -231,10 +218,9 @@ c2. e2 g2.
 
 <p>What follows is an example of a triplet:</p>
 
-<pre>
-=1 ~1 
+<pre><code class="mirchord">=1 ~1 
 (tp "3/2" g8 f e)
-</pre>
+</code></pre>
 <img class="img-responsive" src="./assets/images/screenshots/triplet.png" />
 
 
@@ -247,10 +233,9 @@ c2. e2 g2.
     With a phrase it is possible to group a list of notes in a short motif with a dedicated scope (see below).</p>
 </p>
 
-<pre>
-=1 ~1 
+<pre><code class="mirchord">=1 ~1 
 {c e g}
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/phrase.png" />
 
@@ -292,10 +277,9 @@ Some remarks on invertions:<br/>
 
 
 <p>Major chord first and second inversion</p>
-<pre>
-=1 ~1 
+<pre><code class="mirchord">=1 ~1 
 C C\E C\G
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/chords-inversions.png" />
 
@@ -304,10 +288,9 @@ C C\E C\G
 </p>
 
 <p>Example of a chords progression</p>
-<pre>
-=1 ~1 
+<pre><code class="mirchord">=1 ~1 
 %4 C / / / | Dm / / / | F / / / | G / / /
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/chords-progression.png" />
 
@@ -315,10 +298,9 @@ C C\E C\G
 Other examples:<br/>
 </p>
 
-<pre>
-=1 ~1 
+<pre><code class="mirchord">=1 ~1 
 [c e g]4 ^4 %4 C7 Cmaj7 Cmaj13(#11) ^5 %2 C %4 C/E C\E /
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/chord-symbols.png" />
 
@@ -348,8 +330,7 @@ Other examples:<br/>
 
 <p>Let's see an example with two different voices</p>
 
-<pre>
-=1
+<pre><code class="mirchord">=1
 
 ~1 
 (clef "percussion")
@@ -361,7 +342,7 @@ x4 x x x x2 x2 x x8 x x x
 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8
 
 ~1 (* 3 {o16 o o o})
-</pre> 
+</code></pre> 
 <img class="img-responsive" src="./assets/images/screenshots/unpitched-rhythm.png" />
 
 
@@ -373,8 +354,7 @@ x8 x4 x x8 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8
     <mark>Fra Martino</mark>, the Italian version of the well known French nursery rhyme <em>Frère Jacque</em>
 </p>
 
-<pre>
-=1 ~1
+<pre><code class="mirchord">=1 ~1
 (instr "flute")
 (key "D" "min")
 
@@ -383,7 +363,7 @@ x8 x4 x x8 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8
 ^5 c8 d c b a4 f | ^5 c8 d c b a4 f
 
 ^4 f4 c f2 | f4 c f2
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/FraMartino.png" />
 
@@ -393,8 +373,7 @@ x8 x4 x x8 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8
     First measures from <mark>Invention N. 1</mark> by <em>Johann Sebastian Bach</em>
 </p>
 
-<pre>
-=1  ~1
+<pre><code class="mirchord">=1  ~1
 (key "C" "maj")
 (clef "treble")
 (name "Voice 1")
@@ -410,7 +389,7 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 
 =2
 ^4 c8 b c d e g, a b | c e, f# g a b c4
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/Bach-Invention1.png" />
 
@@ -422,8 +401,7 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 
 <p>A <em>Marche</em> by <em>Carl Philipp Emanuel Bach</em></p>
 
-<pre>
-=1 ~1
+<pre><code class="mirchord">=1 ~1
 (instr "acoustic grand piano")
 (key "E&" "maj")
 (clef "treble")
@@ -436,7 +414,7 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
     
 =1 
 (tp "3/2" f8 e d) d d d f e d
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/Marche.png" />
 
@@ -453,11 +431,10 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
     Symbols are similar to constants definition in programming languages and are tipically employed to reuse a particular motif (possibly transformed) several times.
 </p>
 
-<pre>
-=1 ~1
+<pre><code class="mirchord">=1 ~1
 (def :mysymbol {c e g})
 :mysymbol :mysymbol :mysymbol
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/mysymbol.png" />
 
@@ -484,11 +461,10 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
     With this command it is possible to combine the pitches of the first phrase with the durations of the second phrase (a rhythmic pattern).
 </p>
 
-<pre>
-=1 ~1 
-/* equivalent to { ^5 c8 d c b a4 f }*/
+<pre><code class="mirchord">=1 ~1 
+; equivalent to { ^5 c8 d c b a4 f }
 (zip {^5 c d c b a f} {x8 x x x x4 x4})
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/zip-phrase-pattern.png" />
 
@@ -496,11 +472,10 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
     Another common transformation allows to <mark>transpose</mark> every element  of the phrase by a fixed number of semitones (half-steps):
 </p>
 
-<pre>
-=1 ~1
+<pre><code class="mirchord">=1 ~1
 (def :fra  { ^4 f4 g a f })
 :fra (transpose 12 :fra)
-</pre>
+</code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/transpose-phrase.png" />
 
@@ -522,21 +497,20 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 Thanks to symbols definitions and the special commands that we have presented above we are now able to write a "smarter" and more synthetic version of <em>Fra Martino</em>
 </p>
 
-<pre>
-=1 ~1
+<pre><code class="mirchord">=1 ~1
 (instr "flute")
 (key "D" "min")
 
-(def :fra  { ^4 f4 g a f })             /* Fra Martino campanaro */
+(def :fra  { ^4 f4 g a f })             ; Fra Martino campanaro
 
-(def :dormi  { ^4 a4 b c2 })            /* dormi tu? */
+(def :dormi  { ^4 a4 b c2 })            ; dormi tu?
             
-(def :campane  { ^5 c8 d c b a4 f })    /* suona le campane */
+(def :campane  { ^5 c8 d c b a4 f })    ; suona le campane
 
-(def :din { ^4 f4 c f2 })               /* din don dan */       
+(def :din { ^4 f4 c f2 })               ; din don dan       
 
 (* 2 :fra) (* 2 :dormi) (* 2 :campane) (* 2 :din)
-</pre>
+</code></pre>
 that is rendered as above.<br/>
 
 <hr>
@@ -548,7 +522,6 @@ that is rendered as above.<br/>
 
 
 
-
       </div>
 
       <hr/>
@@ -556,12 +529,12 @@ that is rendered as above.<br/>
       <!-- FOOTER -->
       <footer>
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2017 Mirco Colletta - <a href="about_site.html">About the site</a></p>
+        <p>© 2016-2022 Mirco Colletta - <a href="about_site.html">About the site</a></p>
       </footer>
 
     </div> <!-- /container -->
 
-    <script src="./assets/js/mircomp.js"></script>
+    
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -570,6 +543,12 @@ that is rendered as above.<br/>
     <script src="./assets/js/docs.min.js"></script> -->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
+    
+    <!-- <script src="./assets/js/mircomp.js"></script>    
+    <script src="./assets/js/mirchord.min.js"></script>
+    <script src="./assets/js/groovy.min.js"></script>
+    <script src="./assets/js/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script> -->
   
 
   </body>

@@ -9,18 +9,7 @@
     <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
 
     <title>
-      MirComp: computer music composition framework
-      
-      
-       - Getting Started
-      
-      
-      
-      
-      
-      
-      
-      
+      MirComp: computer music composition framework - Getting Started
     </title>
 
     <link rel="author license" href="about_site.html">
@@ -29,6 +18,8 @@
     <link href="./assets/css/bootstrap.css" rel="stylesheet">
     <!-- Bootstrap theme -->
     <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
+    <!-- highlight -->
+    <!-- <link href="./assets/css/monokai.min.css" rel="stylesheet"> -->
 
     <!-- Custom styles for this template -->
     <link href="./assets/css/mircomp.css" rel="stylesheet">
@@ -44,11 +35,11 @@
       <div class="container">
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li  ><a href="index.html">Home</a></li>
-            <li class="active" ><a href="getting_started.html">Getting Started</a></li>
+            <!-- <li class="active" ><a href="index.html">Home</a></li>
+            <li  ><a href="getting_started.html">Getting Started</a></li>
             <li  ><a href="documentation.html">Documentation</a></li>
-            <li  ><a href="download.html">Download</a></li>
-            <!-- <li><a href="about.html">About</a></li> -->
+            <li  ><a href="download.html">Download</a></li> -->
+            <li><a href="index.html">Home</a></li><li class="active"><a href="getting_started.html">Getting Started</a></li><li><a href="documentation.html">Documentation</a></li><li><a href="download.html">Download</a></li>
           </ul>
         </div>
       </div>
@@ -57,8 +48,8 @@
     <div class="container theme-showcase" role="main">
 
       <div>
-        
-<div class="jumbotron">
+
+        <div class="jumbotron">
     <h1>Getting Started</h1>
     <p>Learn how to setup MirComp with instruction on how to install the IDE and create your first music project.</p>
 </div>
@@ -68,37 +59,16 @@
 </div>
 
 <div class="spaced">
-	<h4>Java version</h4> 
-	<p class="spaced">
-		Make sure you have a recent version of the Java Runtime Environment (JRE) installed. MirComp requires Java 8 >= 1.8.0_74.<br/>
-		If you already have Java installed please check your current version opening a terminal and typing <code>java -version</code>.<br/>
-		Get <a target="_blank" href="http://openjdk.java.net">Java</a> if it is not already installed on your machine (or if you have an old version and you want to upgrade).<br/>
-		Java is available for all the major operating systems (Windows, Linux and OSX).
+	<h4>Download and build the application</h4> 
+	<p class="spaced">		
+		Follow the instructions on the <a target="_blank" href="download.html">Download</a> page.
 	</p>
 </div>
 
-<div class="page-header">
- 	<h2>Installation</h2>
-</div>
-
 <div class="spaced">
-	<h4>Download the IDE</h4>
+	<h4>Launch the application</h4>
 	<p class="spaced">
-		Download the <a href="download.html">MirComp Integrated Development Environment (MirIDE)</a> and unzip it into a folder of your choice.<br/>
-		Run the  main app from the bin folder.<br/>
-		On Windows double click on the <em>miride.bat</em> file.<br/>
-		On Linux open a terminal, navigate to the <em>bin</em> folder and type <code>./miride</code>. 
-	</p>
-</div>
-
-<div class="page-header">
- 	<h2>Set up a project</h2>
-</div>
-
-<div class="spaced">
-	<h4>Launch the main app</h4>
-	<p class="spaced">
-		When MiIDE starts you will see, after the agreement dialog, the splash screen of the app with the official logo.
+		When the program starts you will see, after the agreement dialog, the splash screen of the app with the official logo.
 	</p>
 
 	<figure>
@@ -107,10 +77,96 @@
 	</figure>
 </div>
 
+
+<div class="spaced">
+	<h4>Create a new score</h4>
+	<p class="spaced">
+		We are almost ready to write our first composition.<br/>
+		There are two ways to start composing. <br/>
+		<ul>
+			<li>
+				The simplest choice is to create a new mirchord file and edit the score using the MirChord notation. In this case there will be a special window divided in two panes with a syntax highlighted code editor and a score viewer and MIDI player.
+			</li>
+			<li>
+				On the other hand, it is possible to create a new MIDI file and in this case you can start composing by means of a full-blown MIDI sequencer and editor.
+			</li>
+		</ul>		
+	</p>
+</div>
+
+<div class="spaced">
+	<h4>Using the MirChord notation language</h4>
+	<p class="spaced">
+		Examples are a conventient way to explore the software capabilities and in this short tutorial you are invited to cut and paste the first four measures of <em>Invention n. 1</em> by the well known German composer and musician <em>Johann Sebastian Bach</em>
+	</p>
+	<p class="bg-info spaced">
+	    You can visit the <a href="mirchord.html">reference page</a> for details about MirChord.
+	</p>
+
+	<pre><code class="mirchord">	=1  ~1
+	(key "C" "maj")
+	(clef "treble")
+	(name "Voice 1")
+	r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
+
+	=2 ~2
+	(clef "bass")
+	(name "Voice 2")
+	^3 r2 r16 c d e f d e c | g'8 g, r4 r16 g a b c a b g |
+
+	=1
+	^5 e16 a g f e g f a g f e d c e d f | e d c b a c b d c b a g f# a g b
+
+	=2
+	^4 c8 b c d e g, a b | c e, f# g a b c4
+	</code></pre>
+
+	<p class="spaced">
+		To perform the score generation task you have to press the <mark>Run</mark> action (the button with the "gears" or the equivalent menu item).
+	</p>
+
+	<figure>
+		<img class="img-responsive" src="./assets/images/screenshots/Bach-Invention1.png" />
+		<figcaption>J.S. Bach - Invention N.1</figcaption>
+	</figure>
+
+	<p class="spaced">
+		On the bottom part of the application you should see a graphical representation of the score defined above.<br/>
+		You can now press the <mark>Play</mark> button in the middle toolbar to start the midi playback.
+	</p>
+
+	<figure>
+		<img class="img-responsive" src="./assets/images/screenshots/mirscore-playback.png" />
+		<figcaption>Midi Playback</figcaption>
+	</figure>
+</div>
+
+<div class="spaced">
+	<h4>Create a score using the MirMidi sequencer.</h4>
+	<p class="spaced">
+		As stated above the other option is to create a new MIDI file or open an exisisting one (there are tons of them over the Internet).<br/>
+		In this case the MIDI editor shows up.
+	</p>
+	<p class="bg-info spaced">
+	    You can import an existing file into the <em>midi</em> folder of the project by means of the <mark>Import...</mark> command of the mouse menu over the specific tree folder.
+		<br/>
+	    You can visit the <a href="mirmidi.html">MirMidi</a> page for details about the sequencer.
+	</p>
+	<figure>
+		<img class="img-responsive" src="./assets/images/screenshots/mirmidi.png" />
+		<figcaption>MirMidi sequencer and editor</figcaption>
+	</figure>
+</div>
+
+
+<div class="page-header">
+ 	<h2>Set up a project (only MirIDE)</h2>
+</div>
+
 <div class="spaced">
 	<h4>Create a new project</h4>
 	<p class="spaced">
-		Now you can create a new project from scratch using the <em>New Project</em> button that opens the following dialog.
+		You can create a new project from scratch using the <em>New Project</em> button that opens the following dialog.
 	</p>
 	<figure>
 		<img class="img-responsive" src="./assets/images/screenshots/new-project-dialog.png" />
@@ -135,89 +191,8 @@
 		<br/>
 	</p>
 	<figure>
-		<img class="img-responsive" src="./assets/images/screenshots/project-tree.png" />
-		<figcaption>Project tree</figcaption>
-	</figure>
-</div>
-
-<div class="spaced">
-	<h4>Create a new score</h4>
-	<p class="spaced">
-		We are almost ready to write our first composition.<br/>
-		There are two ways now to start composing. <br/>
-		<ul>
-			<li>
-				The simplest choice is to create a new mirchord file and edit the score using the MirChord notation. In this case there will be a special window divided in two panes with a syntax highlighted code editor and a score viewer and MIDI player.
-			</li>
-			<li>
-				On the other hand, it is possible to create a new MIDI file and in this case you can start composing by means of a full-blown MIDI sequencer and editor.
-			</li>
-		</ul>		
-	</p>
-</div>
-
-<div class="spaced">
-	<h4>Using the MirChord notation language</h4>
-	<p class="spaced">
-		Examples are a conventient way to explore the software capabilities and in this short tutorial you are invited to cut and paste the first four measures of <em>Invention n. 1</em> by the well known German composer and musician <em>Johann Sebastian Bach</em>
-	</p>
-	<p class="bg-info spaced">
-	    You can visit the <a href="mirchord.html">reference page</a> for details about MirChord.
-	</p>
-
-	<pre>
-	=1  ~1
-	(key "C" "maj")
-	(clef "treble")
-	(name "Voice 1")
-	r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
-
-	=2 ~2
-	(clef "bass")
-	(name "Voice 2")
-	^3 r2 r16 c d e f d e c | g'8 g, r4 r16 g a b c a b g |
-
-	=1
-	^5 e16 a g f e g f a g f e d c e d f | e d c b a c b d c b a g f# a g b
-
-	=2
-	^4 c8 b c d e g, a b | c e, f# g a b c4
-	</pre>
-
-	<p class="spaced">
-		To perform the score generation task you have to press the <mark>Run</mark> action (the button with the "gears" or the equivalent menu item).
-	</p>
-
-	<figure>
-		<img class="img-responsive" src="./assets/images/screenshots/Bach-Invention1.png" />
-		<figcaption>J.S. Bach - Invention N.1</figcaption>
-	</figure>
-
-	<p class="spaced">
-		On the bottom part of the application you should see a graphical representation of the score defined above.<br/>
-		You can now press the <mark>Play</mark> button in the middle toolbar to start the midi playback.
-	</p>
-
-	<figure>
 		<img class="img-responsive" src="./assets/images/screenshots/MirIDE-example.png" />
-		<figcaption>Midi Playback</figcaption>
-	</figure>
-</div>
-
-<div class="spaced">
-	<h4>Create a score using the MirMidi sequencer.</h4>
-	<p class="spaced">
-		As stated above the other option is to create a new MIDI file or open an exisisting one (there are tons of them over the Internet).<br/>
-		In this case the MIDI editor shows up.
-	</p>
-	<p class="bg-info spaced">
-	    You can import an existing file into the <em>midi</em> folder of the project by means of the <mark>Import...</mark> command of the mouse menu over the specific tree folder.
-		<br/>
-	    You can visit the <a href="mirmidi.html">MirMidi</a> page for details about the sequencer.
-	</p>
-	<figure>
-		<img class="img-responsive" src="./assets/images/screenshots/mirmidi.png" />
-		<figcaption>MirMidi sequencer and editor</figcaption>
+		<figcaption>Project tree</figcaption>
 	</figure>
 </div>
 
@@ -225,6 +200,7 @@
 <hr/>
 
 Back to the <a href="documentation.html">documentation</a> page.
+
       </div>
 
       <hr/>
@@ -232,12 +208,12 @@ Back to the <a href="documentation.html">documentation</a> page.
       <!-- FOOTER -->
       <footer>
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2017 Mirco Colletta - <a href="about_site.html">About the site</a></p>
+        <p>© 2016-2022 Mirco Colletta - <a href="about_site.html">About the site</a></p>
       </footer>
 
     </div> <!-- /container -->
 
-    <script src="./assets/js/mircomp.js"></script>
+    
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -246,6 +222,12 @@ Back to the <a href="documentation.html">documentation</a> page.
     <script src="./assets/js/docs.min.js"></script> -->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
+    
+    <!-- <script src="./assets/js/mircomp.js"></script>    
+    <script src="./assets/js/mirchord.min.js"></script>
+    <script src="./assets/js/groovy.min.js"></script>
+    <script src="./assets/js/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script> -->
   
 
   </body>

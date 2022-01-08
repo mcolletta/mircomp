@@ -9,18 +9,7 @@
     <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
 
     <title>
-      MirComp: computer music composition framework
-      
-       - Download
-      
-      
-      
-      
-      
-      
-      
-      
-      
+      MirComp: computer music composition framework - Download
     </title>
 
     <link rel="author license" href="about_site.html">
@@ -29,6 +18,8 @@
     <link href="./assets/css/bootstrap.css" rel="stylesheet">
     <!-- Bootstrap theme -->
     <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
+    <!-- highlight -->
+    <!-- <link href="./assets/css/monokai.min.css" rel="stylesheet"> -->
 
     <!-- Custom styles for this template -->
     <link href="./assets/css/mircomp.css" rel="stylesheet">
@@ -44,11 +35,11 @@
       <div class="container">
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li  ><a href="index.html">Home</a></li>
+            <!-- <li class="active" ><a href="index.html">Home</a></li>
             <li  ><a href="getting_started.html">Getting Started</a></li>
             <li  ><a href="documentation.html">Documentation</a></li>
-            <li class="active" ><a href="download.html">Download</a></li>
-            <!-- <li><a href="about.html">About</a></li> -->
+            <li  ><a href="download.html">Download</a></li> -->
+            <li><a href="index.html">Home</a></li><li><a href="getting_started.html">Getting Started</a></li><li><a href="documentation.html">Documentation</a></li><li class="active"><a href="download.html">Download</a></li>
           </ul>
         </div>
       </div>
@@ -57,26 +48,117 @@
     <div class="container theme-showcase" role="main">
 
       <div>
+
         <div class="jumbotron">
-    <h1>Download and Build</h1>
+    <h1>Download e build the code</h1>
     <p>Get the latest release of MirComp.</p>
 </div>
 
+
 <div class="page-header">
- 	<h2>Latest release</h2>
+ 	<h2>Download</h2>
 </div>
 
+
 <p>
-	TODO
+	<h3>Build the code</h3>
 </p>
 
-<!--  <div class="page-header">
- 	<h2>GitHub Releases</h2>
-</div>
 
 <p>
- Check out all the <a href="https://github.com/mcolletta/mircomp/releases">releases</a>
-</p> -->
+	Download the latest <strong>alpha 3</strong> code release: <a href="https://github.com/mcolletta/mircomp/releases">GitHub releases page</a>
+	<br/>
+	or clone the git repository
+	<br/>
+	<pre>git clone https://github.com/mcolletta/mircomp.git</pre>
+</p>
+
+<p class="bg-warning">	
+	At the moment there are not pre-built binaries available for MirIDE and MirComposer.
+</p>
+
+<div class="spaced">
+	<h4>Java 17</h4> 
+	<p class="spaced">
+		You need Java 17 to build and run MirComp.<br/>
+		Java is available for all the major operating systems (Windows, Linux and OSX).<br/>
+		There are several excellent open source options out there.<br/>
+		For example you can get OpenJdk 17 from  <a target="_blank" href="https://jdk.java.net/17/">jdk.java.net</a>.<br/>	
+		Untar the downloaded file and move the content to a folder of your choice (e.g. <em>programs</em>).
+	</p>
+</div>
+
+<div class="spaced">
+	<h4>JavaFX 17.0.0.1</h4> 
+	<p class="spaced">
+		Download JavaFx 17.0.0.1 SDK and JMODS from the <a target="_blank" href="https://gluonhq.com/products/javafx/">official website</a>.<br/>
+		Unzip both files and move their content to a folder of your choice.
+	</p>
+</div>
+
+<div class="spaced">
+	<h4>Groovy 4.0.0-rc-2</h4> 
+	<p class="spaced">
+		Download Groovy version 4.0.0-rc-2 from the <a target="_blank" href="https://groovy.apache.org/download.html">official website</a>.<br/>
+		Unzip the file and move it's content to a folder of your choice.
+	</p>
+</div>
+
+<div class="spaced">
+	<h4>Gradle 7.3</h4> 
+	<p class="spaced">
+		Finally you need Gradle to build MirComp.<br/>
+		While there are several ways to install gradle we describe the manual one.<br/>
+		Download the Gradle 7.3 binary-only zip from the <a target="_blank" href="https://gradle.org/releases/">official web site</a>.<br/>
+		As always unzip the folder and move its content to a folder of your choice.
+	</p>
+</div>
+
+	
+<div class="spaced">
+	<h4>Set up your environment variables</h4> 
+	<p class="spaced">
+		(e.g. on Ubuntu 20.04) Supposing the folder is named "programs" you can type at the end of your ~/.bashrc file something like this:<br/>
+		<pre>
+export JAVA_HOME=/path/to/programs/jdk-17
+export JRE_HOME=$JAVA_HOME
+export JAVAFX_HOME=/path/to/programs/javafx-sdk-17.0.0.1
+export JAVAFX_JMODS_HOME=/path/to/programs/javafx-jmods-17.0.0.1
+export GRADLE_HOME=/path/to/programs/gradle-7.3
+export GROOVY_HOME=/path/to/programs/groovy-4.0.0-rc-2
+export PATH=$PATH:$JAVA_HOME/bin:$GRADLE_HOME/bin:$GROOVY_HOME/bin
+		</pre>
+		to make effect you should type (or in alternative open a new shell tab)<br/>
+		<pre>source ~/.bashrc</pre>
+	</p>
+	<p class="spaced">
+		On Windows 10 there is a similar approach using Powershell profiles.
+	</p>
+</div>
+
+
+<div class="spaced">
+	<h4>Create a self-contained private MirIDE (or MirComposer) application</h4>
+	<p class="spaced">
+		NOTE: MirComposer is a Lite version of MirIDE that does not support Groovy scripting and uses an experimental text editor without the javafx.web component.
+		Moreover, it does not support projects but only single files.
+	</p>
+	<p class="spaced">
+		We are almost ready to finally create our own desktop application.<br/>
+		First, create a dist/miride (or dist/mircomposer) folder and then launch the gradle createApp task<br/>
+		<pre>
+mkdir dist
+cd dist
+mkdir miride
+cd /path/to/mircomp/miride
+gradle createApp -pDistpath ...
+		</pre>
+		You can finally run the main executable inside the created self-contained application:<br/>
+		<pre>dist/miride/app/bin/MirIDE</pre>
+	</p>
+</div>
+
+
       </div>
 
       <hr/>
@@ -84,12 +166,12 @@
       <!-- FOOTER -->
       <footer>
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2021 Mirco Colletta - <a href="about_site.html">About the site</a></p>
+        <p>© 2016-2022 Mirco Colletta - <a href="about_site.html">About the site</a></p>
       </footer>
 
     </div> <!-- /container -->
 
-    <script src="./assets/js/mircomp.js"></script>
+    
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -98,6 +180,12 @@
     <script src="./assets/js/docs.min.js"></script> -->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
+    
+    <!-- <script src="./assets/js/mircomp.js"></script>    
+    <script src="./assets/js/mirchord.min.js"></script>
+    <script src="./assets/js/groovy.min.js"></script>
+    <script src="./assets/js/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script> -->
   
 
   </body>

@@ -9,18 +9,7 @@
     <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
 
     <title>
-      MirComp: computer music composition framework
-      
-      
-      
-      
-      
-       - Extending MirChord
-      
-      
-      
-      
-      
+      MirComp: computer music composition framework - Extending MirChord
     </title>
 
     <link rel="author license" href="about_site.html">
@@ -29,6 +18,8 @@
     <link href="./assets/css/bootstrap.css" rel="stylesheet">
     <!-- Bootstrap theme -->
     <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
+    <!-- highlight -->
+    <!-- <link href="./assets/css/monokai.min.css" rel="stylesheet"> -->
 
     <!-- Custom styles for this template -->
     <link href="./assets/css/mircomp.css" rel="stylesheet">
@@ -44,11 +35,11 @@
       <div class="container">
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li  ><a href="index.html">Home</a></li>
+            <!-- <li class="active" ><a href="index.html">Home</a></li>
             <li  ><a href="getting_started.html">Getting Started</a></li>
             <li  ><a href="documentation.html">Documentation</a></li>
-            <li  ><a href="download.html">Download</a></li>
-            <!-- <li><a href="about.html">About</a></li> -->
+            <li  ><a href="download.html">Download</a></li> -->
+            <li><a href="index.html">Home</a></li><li><a href="getting_started.html">Getting Started</a></li><li><a href="documentation.html">Documentation</a></li><li><a href="download.html">Download</a></li>
           </ul>
         </div>
       </div>
@@ -57,7 +48,9 @@
     <div class="container theme-showcase" role="main">
 
       <div>
-        <div class="jumbotron">
+
+        
+<div class="jumbotron">
     <h1>Extending MirChord</h1>
     <p>A short guide to extend the notation functionality with music "logic".</p>
 </div>
@@ -76,8 +69,7 @@
         Transposition is available from the standard set of built-in functions but as a little exercise we now define it again as a custom transformation. First, you should create in the <em>src</em> folder a groovy file named <em>Transformations.groovy</em> and paste the following code.
     </p>
 
-    <pre>
-    @MirChord 
+    <pre><code class="groovy">    @MirChord 
     public Phrase myTranspose(int halfSteps, Phrase phrase) {
         Phrase newPhrase = phrase.copy()
         for(MusicElement el : newPhrase.elements) {
@@ -90,14 +82,13 @@
         }
         return newPhrase
     }
-    </pre>
+    </code></pre>
 
     <p class="spaced">
         Now we can use the new defined transformation inside our MirChord scores using the <mark>include</mark> command.
     </p>
 
-    <pre>
-    =1 ~1
+    <pre><code class="mirchord">    =1 ~1
     (instr "flute")
     (key "D" "min")
 
@@ -110,9 +101,10 @@
     (include "src/Transformations.groovy")
 
     (myTranspose 3 { ^4 f4 c f2 | f4 c f2 })
-    </pre>
+    </code></pre>
 
 </div>
+
       </div>
 
       <hr/>
@@ -120,12 +112,12 @@
       <!-- FOOTER -->
       <footer>
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2017 Mirco Colletta - <a href="about_site.html">About the site</a></p>
+        <p>© 2016-2022 Mirco Colletta - <a href="about_site.html">About the site</a></p>
       </footer>
 
     </div> <!-- /container -->
 
-    <script src="./assets/js/mircomp.js"></script>
+    
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -134,6 +126,12 @@
     <script src="./assets/js/docs.min.js"></script> -->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
+    
+    <!-- <script src="./assets/js/mircomp.js"></script>    
+    <script src="./assets/js/mirchord.min.js"></script>
+    <script src="./assets/js/groovy.min.js"></script>
+    <script src="./assets/js/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script> -->
   
 
   </body>
