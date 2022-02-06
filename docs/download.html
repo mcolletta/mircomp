@@ -66,7 +66,7 @@
 
 
 <p>
-	Download the latest <strong>alpha 3</strong> code release: <a href="https://github.com/mcolletta/mircomp/releases">GitHub releases page</a>
+	Download the latest code release from: <a href="https://github.com/mcolletta/mircomp/releases">GitHub releases page</a>
 	<br/>
 	or clone the git repository
 	<br/>
@@ -89,20 +89,13 @@
 </div>
 
 <div class="spaced">
-	<h4>JavaFX 17.0.0.1</h4> 
+	<h4>JavaFX 17.0.0.2</h4> 
 	<p class="spaced">
-		Download JavaFx 17.0.0.1 SDK and JMODS from the <a target="_blank" href="https://gluonhq.com/products/javafx/">official website</a>.<br/>
+		Download JavaFx 17.0.0.2 SDK and JMODS from the <a target="_blank" href="https://gluonhq.com/products/javafx/">official website</a>.<br/>
 		Unzip both files and move their content to a folder of your choice.
 	</p>
 </div>
 
-<div class="spaced">
-	<h4>Groovy 4.0.0-rc-2</h4> 
-	<p class="spaced">
-		Download Groovy version 4.0.0-rc-2 from the <a target="_blank" href="https://groovy.apache.org/download.html">official website</a>.<br/>
-		Unzip the file and move it's content to a folder of your choice.
-	</p>
-</div>
 
 <div class="spaced">
 	<h4>Gradle 7.3</h4> 
@@ -116,24 +109,31 @@
 
 	
 <div class="spaced">
-	<h4>Set up your environment variables</h4> 
+	<h4>Set up your environment variables</h4>
 	<p class="spaced">
-		(e.g. on Ubuntu 20.04) Supposing the folder is named "programs" you can type at the end of your ~/.bashrc file something like this:<br/>
+		Supposing the folder is named "Programs"<br/>
+		On Windows 10 you can open a powershell and enter:<br/>
 		<pre>
-export JAVA_HOME=/path/to/programs/jdk-17
-export JRE_HOME=$JAVA_HOME
-export JAVAFX_HOME=/path/to/programs/javafx-sdk-17.0.0.1
-export JAVAFX_JMODS_HOME=/path/to/programs/javafx-jmods-17.0.0.1
-export GRADLE_HOME=/path/to/programs/gradle-7.3
-export GROOVY_HOME=/path/to/programs/groovy-4.0.0-rc-2
-export PATH=$PATH:$JAVA_HOME/bin:$GRADLE_HOME/bin:$GROOVY_HOME/bin
+[Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Programs\jdk-17.0.1", [System.EnvironmentVariableTarget]::Process)
+[Environment]::SetEnvironmentVariable("JRE_HOME", $env:JAVA_HOME, [System.EnvironmentVariableTarget]::Process)
+[Environment]::SetEnvironmentVariable("JAVAFX_HOME", "C:\Programs\javafx-sdk-17.0.2", [System.EnvironmentVariableTarget]::Process)
+[Environment]::SetEnvironmentVariable("JAVAFX_JMODS_HOME", "C:\Programs\javafx-jmods-17.0.2", [System.EnvironmentVariableTarget]::Process)
+[Environment]::SetEnvironmentVariable("GRADLE_HOME", "C:\Programs\gradle-7.3.3", [System.EnvironmentVariableTarget]::Process)
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";" + $env:JAVA_HOME + "\bin;" + $env:GRADLE_HOME + "\bin", [System.EnvironmentVariableTarget]::Process)
 		</pre>
-		to make effect you should type (or in alternative open a new shell tab)<br/>
-		<pre>source ~/.bashrc</pre>
 	</p>
 	<p class="spaced">
-		On Windows 10 there is a similar approach using Powershell profiles.
+		On Ubuntu 20.04:<br/>
+		<pre>
+export JAVA_HOME=/home/programs/jdk-17
+export JRE_HOME=$JAVA_HOME
+export JAVAFX_HOME=/home/programs/javafx-sdk-17.0.2
+export JAVAFX_JMODS_HOME=/home/programs/javafx-jmods-17.0.2
+export GRADLE_HOME=/home/programs/gradle-7.3
+export PATH=$PATH:$JAVA_HOME/bin:$GRADLE_HOME/bin
+		</pre>
 	</p>
+
 </div>
 
 
@@ -146,15 +146,24 @@ export PATH=$PATH:$JAVA_HOME/bin:$GRADLE_HOME/bin:$GROOVY_HOME/bin
 	<p class="spaced">
 		We are almost ready to finally create our own desktop application.<br/>
 		First, create a dist/miride (or dist/mircomposer) folder and then launch the gradle createApp task<br/>
+		On Ubuntu 20.04:<br/>
 		<pre>
 mkdir dist
 cd dist
 mkdir miride
-cd /path/to/mircomp/miride
-gradle createApp -pDistpath ...
+cd /home/programs/mircomp/miride
+gradle createApp -PdistPath="/home/programs/dist/miride"
 		</pre>
 		You can finally run the main executable inside the created self-contained application:<br/>
-		<pre>dist/miride/app/bin/MirIDE</pre>
+		<pre>
+cd /home/programs/dist/miride/app/MirIDE/bin
+./MirIDE
+		</pre>
+		Similar on Windows 10:
+		<pre>
+C:\Programs\mircomp\miride> gradle createApp -PdistPath="C:\Programs\dist\miride"
+		</pre>
+where inside the just created dist folder is sufficient a double click on the exec file.
 	</p>
 </div>
 

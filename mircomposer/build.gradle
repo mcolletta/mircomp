@@ -141,9 +141,14 @@ task createApp(type: Copy) {
     }
     dependsOn jpackage
     from (["../LICENSE", "../LICENSE-ALLJARS", "../licenses"])
-    into (distPath + sep + 'app' + sep + 'legal')
-    // into ("build/application/MirComposer/app/legal")
+    into (getDistPath() + sep + 'app' + sep + 'legal')
+    doLast {
+        delete "${getDistPath()}/runtimeimage"
+    }
 }
+
+// ~/mircomp/mircomposer$ gradle createApp -PdistPath="/home/programs/dist/mircomposer"
+// C:\Programs\mircomp\mircomposer> gradle createApp -PdistPath="C:\Programs\dist\mircomposer"
 
 task runMirComposer(type: JavaExec) {
     description 'Run MirComposer'

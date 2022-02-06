@@ -124,7 +124,7 @@ task jpackage(type: Exec) {
     dependsOn clean
     dependsOn jlink, inputPackage
     workingDir 'build'
-    commandLine "${javaHome}/bin/jpackage", //"create-image",
+    commandLine "${javaHome}/bin/jpackage", //"create-image", "--win-console"
                 "--name", "MirIDE",
                 "--type", "app-image",
                 "--runtime-image", getDistPath() + "/runtimeimage",
@@ -142,9 +142,13 @@ task createApp(type: Copy) {
     dependsOn jpackage
     from (["../LICENSE", "../LICENSE-ALLJARS", "../licenses"])
     into (getDistPath() + sep + 'app' + sep + 'legal')
+    doLast {
+        delete "${getDistPath()}/runtimeimage"
+    }
 }
 
-// ~/mircomp/miride$ gradle createApp -PdistPath="/home/path/to/dist/miride"
+// ~/mircomp/miride$ gradle createApp -PdistPath="/home/programs/dist/miride"
+// C:\Programs\mircomp\miride> gradle createApp -PdistPath="C:\Programs\dist\miride"
 
 task runMirIDE(type: JavaExec) {
     description 'Run MirIDE'

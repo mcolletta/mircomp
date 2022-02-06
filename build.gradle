@@ -1,5 +1,5 @@
 apply plugin: 'groovy'
-sourceCompatibility = 9
+// sourceCompatibility = 17
 
 apply plugin: 'application'
 
@@ -8,8 +8,8 @@ subprojects {
     afterEvaluate {
         repositories {
             flatDir {
-		        dirs '../libs', "${System.getenv('JAVAFX_HOME')}/lib", "${System.getenv('GROOVY_HOME')}/lib"
-		   }
+                dirs '../libs', "${System.getenv('JAVAFX_HOME')}/lib"
+           }
         }
 
         compileGroovy {
@@ -22,15 +22,15 @@ subprojects {
             libs
         }
 
-		dependencies {
+        dependencies {
             implementation name: 'zong-all'
             implementation name: 'lingwah'
 
-		    implementation name: 'groovy-4.0.0-rc-2'
-            implementation name: 'groovy-ant-4.0.0-rc-2'
-            implementation name: 'groovy-console-4.0.0-rc-2'
-            implementation name: 'groovy-nio-4.0.0-rc-2'
-            implementation name: 'groovy-xml-4.0.0-rc-2'
+            implementation name: 'groovy-4.0.0'
+            implementation name: 'groovy-ant-4.0.0'
+            implementation name: 'groovy-console-4.0.0'
+            implementation name: 'groovy-nio-4.0.0'
+            implementation name: 'groovy-xml-4.0.0'
 
             implementation name: 'javafx.base'
             implementation name: 'javafx.controls'
@@ -39,15 +39,15 @@ subprojects {
             implementation name: 'javafx.swing'
             implementation name: 'javafx.web'
 
-            // libs name: 'groovy-4.0.0-rc-2'
-            // libs name: 'groovy-ant-4.0.0-rc-2'
-            // libs name: 'groovy-console-4.0.0-rc-2'
-            // libs name: 'groovy-nio-4.0.0-rc-2'
-            // libs name: 'groovy-xml-4.0.0-rc-2'
+            libs name: 'groovy-4.0.0'
+            libs name: 'groovy-ant-4.0.0'
+            libs name: 'groovy-console-4.0.0'
+            libs name: 'groovy-nio-4.0.0'
+            libs name: 'groovy-xml-4.0.0'
             libs name: 'lingwah'
             libs name: 'zong-all'
             libs name: 'mirnn'
-		}
+        }
 
     }
 }
