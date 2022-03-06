@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -34,9 +34,8 @@ import java.nio.file.*
 import java.util.regex.Pattern
 import java.util.regex.Matcher
 
-import groovy.transform.CompileStatic
-
 import groovy.util.GroovyScriptEngine
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
 import org.codehaus.groovy.control.CompilerConfiguration
@@ -51,7 +50,6 @@ import io.github.mcolletta.mirchord.interpreter.MirChordInterpreter
 import com.xenoage.zong.core.Score
 
 
-@CompileStatic
 protected class ProjectInterpreter {
 
     boolean PRINT_STACKTRACE = true

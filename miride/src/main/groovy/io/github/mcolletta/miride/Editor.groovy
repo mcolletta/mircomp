@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -119,11 +119,9 @@ import static io.github.mcolletta.miride.DraggableTabs.*
 
 import groovy.console.ui.SystemOutputInterceptor
 
-import groovy.transform.CompileStatic
 import groovy.transform.CompileDynamic
 
 
-@CompileStatic
 public class Editor implements FolderTreeViewListener {
 
     private SynthManager synthManager

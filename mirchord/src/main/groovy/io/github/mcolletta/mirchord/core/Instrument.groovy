@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -23,10 +23,8 @@
 
 package io.github.mcolletta.mirchord.core
 
-import groovy.transform.CompileStatic
 import groovy.transform.ToString
 
-@CompileStatic
 @ToString
 class Instrument implements MusicElement {
 	String id = "acoustic grand"

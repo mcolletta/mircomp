@@ -44,9 +44,7 @@ import javafx.stage.StageStyle
 import javafx.geometry.Pos
 import javafx.geometry.Orientation
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 public class UtilsFx {
 
 	public static void showDialogFx(Node node, int width=700, int height=500) {

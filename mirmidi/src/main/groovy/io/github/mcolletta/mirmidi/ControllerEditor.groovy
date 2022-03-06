@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -48,9 +48,7 @@ import javafx.scene.Cursor;
 import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 class ControllerEditor {
 
     double clickX

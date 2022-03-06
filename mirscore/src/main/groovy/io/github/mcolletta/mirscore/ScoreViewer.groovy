@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -84,11 +84,8 @@ import com.xenoage.zong.renderer.awt.AwtLayoutRenderer
 import java.awt.image.BufferedImage
 
 
-import groovy.transform.CompileStatic
-
 enum ScoreMode { SELECT, PANNING }
 
-@CompileStatic
 class ScoreViewer  extends VBox { 
 
     ScoreModel scoreModel

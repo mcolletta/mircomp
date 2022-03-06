@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -34,9 +34,7 @@ import java.util.PropertyPermission
 
 import java.lang.SecurityException
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 public class InterpreterPolicy extends Policy {
 
 	String filePath
@@ -73,7 +71,7 @@ public class InterpreterPolicy extends Policy {
     }
 }
 
-@CompileStatic
+
 class InterpreterSecurityManager extends SecurityManager {
 	@Override public void checkExit(int status) {
         try {

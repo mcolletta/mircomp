@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -37,9 +37,7 @@ import static java.nio.file.StandardWatchEventKinds.*
 
 import javafx.concurrent.Task
 
-import groovy.transform.CompileStatic
 
- @CompileStatic
 public class WatchFolderTask extends Task<Void> {
 
     Path root

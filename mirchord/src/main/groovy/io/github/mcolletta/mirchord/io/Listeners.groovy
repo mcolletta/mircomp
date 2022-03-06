@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -28,7 +28,6 @@ import io.github.mcolletta.mirchord.core.*
 import static com.xenoage.utils.math.Fraction.fr
 //import javax.sound.midi.*
 
-import groovy.transform.CompileStatic
 
 interface LeadSheetListener {
 
@@ -41,7 +40,6 @@ interface LeadSheetListener {
 	void rest(Rest event)
 }
 
-@CompileStatic
 class LeadSheetSubscriber implements LeadSheetListener {
 	
 	List<MusicElement> melody
@@ -75,7 +73,7 @@ class LeadSheetSubscriber implements LeadSheetListener {
 	
 }
 
-@CompileStatic
+
 class MelodicIntervalsSubscriber implements LeadSheetListener {
 	
 	int lastValue = -1

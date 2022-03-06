@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -32,9 +32,7 @@ import static com.xenoage.utils.math.Fraction._0
 
 import static io.github.mcolletta.mirchord.core.Utils.*
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 class Utils {
 
 	static boolean isPowerOfTwo(long n) {

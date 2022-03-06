@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -26,8 +26,6 @@ package io.github.mcolletta.mirchord.interpreter
 import java.math.RoundingMode
 import java.util.List
 
-import groovy.transform.CompileStatic
-
 import com.googlecode.lingwah.Grammar
 import com.googlecode.lingwah.Parser
 import com.googlecode.lingwah.parser.ParserReference
@@ -37,7 +35,6 @@ import com.googlecode.lingwah.ParseResults
 import com.googlecode.lingwah.ParseContext
 
 
-@CompileStatic
 public class MirChordGrammar extends Grammar {
 		public final Parser measure = str("|")
 		public final Parser ws = oneOrMore(regex("[ \\\t\n\f\r]"))

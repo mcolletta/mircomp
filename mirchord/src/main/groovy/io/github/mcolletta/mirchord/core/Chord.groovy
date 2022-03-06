@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -27,12 +27,11 @@ import com.xenoage.utils.math.Fraction
 import static com.xenoage.utils.math.Fraction.fr
 import static com.xenoage.utils.math.Fraction._0
 
-import groovy.transform.CompileStatic
 import groovy.transform.Canonical
 import groovy.transform.ToString
 import groovy.transform.TupleConstructor
 
-@CompileStatic
+
 class Pitch implements MusicElement, Comparable<Pitch> {
 	
 	private String symbol
@@ -217,7 +216,6 @@ enum ACCIDENTALS {
 	public int value() { return value }
 }
 
-@CompileStatic
 @Canonical
 class Rest implements MusicElement  {
 	Fraction duration
@@ -250,7 +248,6 @@ class Rest implements MusicElement  {
 	}
 }
 
-@CompileStatic
 class Chord implements MusicElement {
 	
 	List<Pitch> pitches = []

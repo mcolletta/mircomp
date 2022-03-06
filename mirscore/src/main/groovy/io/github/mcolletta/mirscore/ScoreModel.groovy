@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -94,10 +94,8 @@ import static com.xenoage.zong.musiclayout.settings.LayoutSettings.defaultLayout
 import static com.xenoage.zong.util.ZongPlatformUtils.zongPlatformUtils
 
 import groovy.beans.*
-import groovy.transform.CompileStatic
 
 
-@CompileStatic
 class ScoreModel implements PlaybackListener {
 
     Synthesizer synthesizer

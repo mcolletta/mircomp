@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -63,9 +63,7 @@ import javafx.scene.image.WritableImage
 
 import javafx.concurrent.Task
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 public class FolderTreeView extends VBox implements FolderTreeListenerList {
 
 	@FXML private TreeView treeView
@@ -348,7 +346,6 @@ public class FolderTreeView extends VBox implements FolderTreeListenerList {
 }
 
 
-@CompileStatic
 public trait FolderTreeListenerList {
 
     private List<FolderTreeViewListener> listeners = []
@@ -399,7 +396,6 @@ enum PathRequestType {
 	OPEN, NEW, DELETE, MODIFY
 }
 
-@CompileStatic
 class FolderTreeViewEvent {
     Object origin
     Path path

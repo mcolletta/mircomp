@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -61,9 +61,8 @@ import java.util.Map;
 
 import groovy.transform.TupleConstructor
 import groovy.transform.ToString
-import groovy.transform.CompileStatic
 
-@CompileStatic
+
 class MidiManager {
 
     final static int MESSAGE_TEMPO_TYPE = 0x51  // decimal 81
@@ -837,7 +836,6 @@ class MidiManager {
 }
 
 
-@CompileStatic
 //@ToString(includeNames=true, includeFields=true, excludes='startEvent,endEvent')
 @TupleConstructor // in addition to default name-arg constructor
 class MidiNote {
@@ -886,7 +884,6 @@ class MidiNote {
 
 }
 
-@CompileStatic
 @ToString(includeNames=true, includeFields=true, excludes='midiEvent')
 @TupleConstructor
 class MidiData {
@@ -906,7 +903,6 @@ class MidiData {
     int track
 }
 
-@CompileStatic
 class MidiCC extends MidiData {
 
     int getController() {
@@ -927,7 +923,6 @@ class MidiCC extends MidiData {
 
 }
 
-@CompileStatic
 class MidiPC extends MidiData {
 
     int getInstrument() {
@@ -942,7 +937,6 @@ class MidiPC extends MidiData {
 
 }
 
-@CompileStatic
 @TupleConstructor
 class MidiControllerInfo {
     String info
@@ -954,7 +948,6 @@ class MidiControllerInfo {
     }
 }
 
-@CompileStatic
 @ToString(includeNames=true, includeFields=true, excludes='midiEvent')
 @TupleConstructor
 class MidiMeta {
@@ -974,7 +967,6 @@ class MidiMeta {
     int track
 }
 
-@CompileStatic
 class MidiTempo extends MidiMeta {
 
     int getBPM() {

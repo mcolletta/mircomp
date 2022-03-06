@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -46,7 +46,6 @@ import static com.xenoage.utils.jse.xml.XMLReader.*
 import com.xenoage.utils.jse.xml.XMLReader
 import com.xenoage.utils.jse.xml.XMLWriter
 
-import groovy.transform.CompileStatic
 import groovy.transform.CompileDynamic
 
 

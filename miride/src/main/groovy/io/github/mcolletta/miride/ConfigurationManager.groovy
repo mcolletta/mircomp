@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -37,9 +37,7 @@ import org.w3c.dom.Element
 import com.xenoage.utils.jse.xml.XMLReader
 import com.xenoage.utils.jse.xml.XMLWriter
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 class ConfigurationManager {
 
     private static XPath xpath = XPathFactory.newInstance().newXPath()

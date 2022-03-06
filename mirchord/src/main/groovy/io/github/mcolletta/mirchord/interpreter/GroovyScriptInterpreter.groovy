@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -25,16 +25,15 @@ package io.github.mcolletta.mirchord.interpreter
 
 import java.util.Map
 
-import groovy.transform.CompileStatic
 import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
 import org.codehaus.groovy.control.CompilerConfiguration
+import groovy.transform.CompileStatic
 
 import io.github.mcolletta.mirchord.core.*
 import static io.github.mcolletta.mirchord.core.Utils.*
 
 
-@CompileStatic
 class GroovyScriptInterpreter {
     boolean staticCompileScript = true
     GroovyShell shell
@@ -91,7 +90,6 @@ class GroovyScriptInterpreter {
 }
 
 
-@CompileStatic
 enum GroovyScriptImportType {
 		IMPORTS,
 		IMPORTS_STAR, 

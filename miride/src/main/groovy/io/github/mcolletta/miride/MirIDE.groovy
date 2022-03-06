@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -38,9 +38,7 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.layout.VBox
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 public class MirIDE extends Application {
 
 	public static Editor editor    

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -28,13 +28,11 @@ import com.xenoage.utils.math.Fraction
 import static com.xenoage.utils.math.Fraction.fr
 import static com.xenoage.utils.math.Fraction._0
 
-import groovy.transform.CompileStatic
 import groovy.transform.Canonical
 import groovy.transform.ToString
 import groovy.transform.TupleConstructor
 
 
-@CompileStatic
 enum ClefType { 
 		TREBLE, 
 		BASS, 
@@ -42,7 +40,6 @@ enum ClefType {
 	}
 
 
-@CompileStatic
 public enum KeyMode {
 			MAJOR,
 			MINOR,
@@ -56,7 +53,6 @@ public enum KeyMode {
 		}
 
 
-@CompileStatic
 public enum StemDirection {
 			UP,
 			DOWN,
@@ -64,7 +60,6 @@ public enum StemDirection {
 		}
 
 
-@CompileStatic
 public enum ChordsMode { 
 		LEADSHEET, 
 		STAFF, 
@@ -93,7 +88,6 @@ class Score {
 	CompositionInfo info = null
 }
 
-@CompileStatic
 @Canonical
 class Part {
 	String id
@@ -105,14 +99,12 @@ class Part {
 	}
 }
 
-@CompileStatic
 @Canonical
 class Voice {
 	String id
 	List<MusicElement> elements
 }
 
-@CompileStatic
 @Canonical
 class Phrase implements MusicElement {
 	List<MusicElement> elements = []
@@ -139,7 +131,6 @@ class Phrase implements MusicElement {
 	}
 }
 
-@CompileStatic
 @Canonical
 class Tuplet implements MusicElement {
 	// fr(3, 2) as in lilypond means a ratio of 2/3
@@ -175,19 +166,16 @@ class Tuplet implements MusicElement {
 	}
 }
 
-@CompileStatic
 @Canonical
 class Anchor implements MusicElement {
 	String id
 }
 
-@CompileStatic
 @Canonical
 class Clef implements MusicElement {
 	ClefType type
 }
 
-@CompileStatic
 @Canonical
 class KeySignature implements MusicElement {
 
@@ -210,13 +198,11 @@ class KeySignature implements MusicElement {
 	}
 }
 
-@CompileStatic
 @Canonical
 class TimeSignature implements MusicElement {
 	Fraction time
 }
 
-@CompileStatic
 @Canonical
 class Tempo implements MusicElement {
 	Fraction baseBeat
@@ -250,7 +236,6 @@ class Tempo implements MusicElement {
 }
 
 
-@CompileStatic
 @Canonical
 class CompositionInfo {
 	String title
@@ -259,7 +244,6 @@ class CompositionInfo {
 	ChordsMode chordsMode
 }
 
-@CompileStatic
 @Canonical
 class Lyrics implements MusicElement {
 	String text
@@ -269,14 +253,12 @@ class Lyrics implements MusicElement {
 	}
 }
 
-@CompileStatic
 @Canonical
 class ControlChange implements MusicElement {
 	int index
 	int value
 }
 
-@CompileStatic
 @Canonical
 class Repeat implements MusicElement {
 	boolean start = true

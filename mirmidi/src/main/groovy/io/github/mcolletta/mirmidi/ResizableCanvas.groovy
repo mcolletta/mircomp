@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -31,9 +31,7 @@ import javafx.scene.canvas.GraphicsContext
 import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 class ResizableCanvas extends Region {  
   
     Canvas canvas = new Canvas()

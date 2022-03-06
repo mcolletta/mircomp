@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -33,7 +33,6 @@ import javafx.beans.property.SimpleLongProperty
 
 import javafx.scene.paint.Color
 
-import groovy.transform.CompileStatic
 
 enum TempoEditMode {
     EDITED, AXIS
@@ -47,7 +46,6 @@ enum Mode {
     EDIT, SELECT, PANNING, SET_PLAYBACK_POSITION
 }
 
-@CompileStatic
 class MidiView extends MidiManager {
 
     Mode mode = Mode.EDIT
@@ -142,7 +140,6 @@ class MidiView extends MidiManager {
 
 }
 
-@CompileStatic
 class MidiInstrument {
     String name
     int program

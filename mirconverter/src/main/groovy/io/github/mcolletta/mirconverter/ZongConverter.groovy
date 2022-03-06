@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -134,9 +134,7 @@ import com.xenoage.zong.utils.exceptions.MeasureFullException
 
 import com.xenoage.utils.math.Fraction
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 class ZongConverter {
 
 	Score score

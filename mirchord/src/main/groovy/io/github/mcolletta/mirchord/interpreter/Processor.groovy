@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -25,8 +25,6 @@ package io.github.mcolletta.mirchord.interpreter
 
 import io.github.mcolletta.mirchord.core.*
 import static io.github.mcolletta.mirchord.core.Utils.*
-
-import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ImportCustomizer
@@ -57,7 +55,6 @@ import java.lang.annotation.RetentionPolicy
 }
 
 
-@CompileStatic
 @Processes(MirChordGrammar.class)
 class MirChordProcessor extends AbstractProcessor {
 

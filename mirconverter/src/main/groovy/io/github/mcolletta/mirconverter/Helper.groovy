@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -58,9 +58,7 @@ import com.xenoage.zong.desktop.io.png.out.PngScoreDocFileOutput
 import com.xenoage.zong.desktop.io.midi.out.MidiScoreDocFileOutput
 import com.xenoage.zong.desktop.io.DocumentIO
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 class Helper {
 
 	static Score convertScore(MirScore mirscore) {

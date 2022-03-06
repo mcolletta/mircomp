@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -55,9 +55,7 @@ import javafx.beans.value.ChangeListener
 
 import io.github.mcolletta.mirchord.core.Instrument
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 class InstrumentsEditor {
 
     MidiPC selectedItem

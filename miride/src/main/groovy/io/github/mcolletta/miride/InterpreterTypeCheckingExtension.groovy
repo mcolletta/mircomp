@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -37,9 +37,7 @@ import org.codehaus.groovy.ast.GenericsType
 import static org.codehaus.groovy.ast.ClassHelper.make
 import static org.codehaus.groovy.ast.tools.GenericsUtils.makeClassSafeWithGenerics
 
-import groovy.transform.CompileStatic
 
-@CompileStatic
 public class InterpreterTypeCheckingExtension extends AbstractTypeCheckingExtension {
 
 	Map<String, ClassNode> typesMap = new HashMap<String, ClassNode>()                 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2022 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -116,7 +116,6 @@ import io.github.mcolletta.mirfoldertreeview.PathRequestType
 
 import io.github.mcolletta.mirutils.TabContent
 
-import groovy.transform.CompileStatic
 import groovy.transform.Canonical
 
 @Canonical
@@ -141,7 +140,6 @@ class ChannelItem {
     }
 }
 
-@CompileStatic
 class MidiEditor extends VBox implements MidiPlaybackListener, FolderTreeListenerList, TabContent {
 
     MidiView midi
