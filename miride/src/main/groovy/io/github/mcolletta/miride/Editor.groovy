@@ -163,8 +163,8 @@ public class Editor implements FolderTreeViewListener {
     private SystemOutputInterceptor systemOutInterceptor
     private SystemOutputInterceptor systemErrorInterceptor
 
-    private InterpreterSecurityManager interpreterSecurityManager = new InterpreterSecurityManager()
-    private InterpreterPolicy interpreterPolicy = new InterpreterPolicy()
+    //private InterpreterSecurityManager interpreterSecurityManager = new InterpreterSecurityManager()
+    //private InterpreterPolicy interpreterPolicy = new InterpreterPolicy()
 
     private ObjectProperty<File> projectFolder = new SimpleObjectProperty<>()
 
@@ -255,15 +255,15 @@ public class Editor implements FolderTreeViewListener {
     }
 
     void setupSecurity() {
-        if (sandboxButton.selected) {
-            if (projectFolder.get() != null)
-                interpreterPolicy.setFilePath(projectFolder.get().getPath())
-            Policy.setPolicy(interpreterPolicy)
-            System.setSecurityManager(interpreterSecurityManager)
-        } else {
-            if (System.getSecurityManager() != null)
-                System.setSecurityManager(null)
-        }
+        // if (sandboxButton.selected) {
+        //     if (projectFolder.get() != null)
+        //         interpreterPolicy.setFilePath(projectFolder.get().getPath())
+        //     Policy.setPolicy(interpreterPolicy)
+        //     System.setSecurityManager(interpreterSecurityManager)
+        // } else {
+        //     if (System.getSecurityManager() != null)
+        //         System.setSecurityManager(null)
+        // }
     }
 
     void initMidi() {

@@ -21,64 +21,64 @@
  * @author Mirco Colletta
  */
 
-package io.github.mcolletta.miride
+// package io.github.mcolletta.miride
 
-import java.security.Policy
-import java.security.Permission
-import java.security.Permissions
-import java.security.PermissionCollection
-import java.security.ProtectionDomain
-import java.security.AllPermission
-import java.io.FilePermission
-import java.util.PropertyPermission
+// import java.security.Policy
+// import java.security.Permission
+// import java.security.Permissions
+// import java.security.PermissionCollection
+// import java.security.ProtectionDomain
+// import java.security.AllPermission
+// import java.io.FilePermission
+// import java.util.PropertyPermission
 
-import java.lang.SecurityException
+// import java.lang.SecurityException
 
 
-public class InterpreterPolicy extends Policy {
+// public class InterpreterPolicy extends Policy {
 
-	String filePath
+// 	String filePath
 
-	InterpreterPolicy(String filePath=null) {
-		this.filePath = filePath
-	}
+// 	InterpreterPolicy(String filePath=null) {
+// 		this.filePath = filePath
+// 	}
     
-    @Override
-    public PermissionCollection getPermissions(ProtectionDomain domain) {
-        if (domain.getClassLoader() instanceof GroovyClassLoader) {
-            return restrictedPermissions()
-        }
-        else {
-            return applicationPermissions()
-        }        
-    }
+//     @Override
+//     public PermissionCollection getPermissions(ProtectionDomain domain) {
+//         if (domain.getClassLoader() instanceof GroovyClassLoader) {
+//             return restrictedPermissions()
+//         }
+//         else {
+//             return applicationPermissions()
+//         }        
+//     }
 
-    private PermissionCollection restrictedPermissions() {
-        Permissions permissions = new Permissions()
-        if (filePath != null) {
-        	String path = filePath + "/-"
-        	permissions.add(new FilePermission(path, "read,write"))
-        	permissions.add(new PropertyPermission("file.encoding", "read,write"))
+//     private PermissionCollection restrictedPermissions() {
+//         Permissions permissions = new Permissions()
+//         if (filePath != null) {
+//         	String path = filePath + "/-"
+//         	permissions.add(new FilePermission(path, "read,write"))
+//         	permissions.add(new PropertyPermission("file.encoding", "read,write"))
 
-        }
-        return permissions
-    }
+//         }
+//         return permissions
+//     }
 
-    private PermissionCollection applicationPermissions() {
-        Permissions permissions = new Permissions()
-        permissions.add(new AllPermission())
-        return permissions
-    }
-}
+//     private PermissionCollection applicationPermissions() {
+//         Permissions permissions = new Permissions()
+//         permissions.add(new AllPermission())
+//         return permissions
+//     }
+// }
 
 
-class InterpreterSecurityManager extends SecurityManager {
-	@Override public void checkExit(int status) {
-        try {
-            checkExec("java -version")
-        } catch(Exception ex) {
-            throw new SecurityException("Cannot call method exit in this context")
-        }
-        super.checkExit(status)
-	}
-}
+// class InterpreterSecurityManager extends SecurityManager {
+// 	@Override public void checkExit(int status) {
+//         try {
+//             checkExec("java -version")
+//         } catch(Exception ex) {
+//             throw new SecurityException("Cannot call method exit in this context")
+//         }
+//         super.checkExit(status)
+// 	}
+// }
