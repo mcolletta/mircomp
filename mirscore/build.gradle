@@ -1,7 +1,6 @@
 apply plugin: 'groovy'
-// sourceCompatibility = 9
-
 apply plugin: 'application'
+
 
 sourceSets {
     main {
@@ -20,7 +19,7 @@ jar {
 
 task runScript(type: JavaExec) {
     description 'Run Simple Demo'
-    main = 'io.github.mcolletta.mirscore.Demo'
+    mainClass = 'io.github.mcolletta.mirscore.Demo'
     classpath = sourceSets.main.runtimeClasspath
 
     if (project.hasProperty('custom_arg')) {

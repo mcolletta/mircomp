@@ -5,7 +5,7 @@ apply plugin: 'application'
 dependencies {
     implementation project(':mirfoldertreeview')
     implementation project(':mirutils')
-    implementation name: 'richtextfx-fat-0.10.7'
+    implementation("org.fxmisc.richtext:richtextfx:0.11.1")
 }
 
 sourceSets {
@@ -25,7 +25,7 @@ jar {
 
 task runScript(type: JavaExec) {
     description 'Run Simple Demo'
-    main = 'io.github.mcolletta.mirtextfx.Demo'
+    mainClass = 'io.github.mcolletta.mirtextfx.Demo'
     classpath = sourceSets.main.runtimeClasspath
 
     doFirst {

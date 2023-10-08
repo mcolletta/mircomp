@@ -44,8 +44,9 @@ class MirChordInterpreter {
 	
 	MirChordInterpreter(List ext=[]) {
 		PARSER = MirChordGrammar.INSTANCE
-		List extensions=[new MirchordAddon()]
-		if (ext.size() > 0)
+		List extensions = []
+		extensions.add(new MirchordAddon())
+		if (ext != null && ext.size() > 0)
 			extensions.addAll(ext)
 		processor = new MirChordProcessor(extensions)
 	}

@@ -1,6 +1,4 @@
 apply plugin: 'groovy'
-//sourceCompatibility = 9
-
 apply plugin: 'application'
 
 
@@ -21,7 +19,7 @@ jar {
 
 task runScript(type: JavaExec) {
     description 'Run Simple Demo'
-    main = 'io.github.mcolletta.mirfoldertreeview.Demo'
+    mainClass = 'io.github.mcolletta.mirfoldertreeview.Demo'
     classpath = sourceSets.main.runtimeClasspath
 
     if (project.hasProperty('custom_arg')) {

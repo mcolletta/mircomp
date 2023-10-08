@@ -1,7 +1,5 @@
 apply plugin: 'groovy'
-// sourceCompatibility = 9
 apply plugin: 'application'
-
 
 
 sourceSets {
@@ -21,7 +19,7 @@ jar {
 
 task runScript(type: JavaExec) {
     description 'Run Simple Demo'
-    main = 'io.github.mcolletta.mirchord.interpreter.MirChordInterpreter'
+    mainClass = 'io.github.mcolletta.mirchord.interpreter.MirChordInterpreter'
     classpath = sourceSets.main.runtimeClasspath
 
     if (project.hasProperty('custom_arg')) {

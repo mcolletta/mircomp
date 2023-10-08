@@ -135,14 +135,12 @@ public class Editor implements FolderTreeViewListener {
     @FXML private CheckMenuItem treeMenu
     @FXML private CheckMenuItem consoleMenu
     @FXML private CheckMenuItem typecheckMenu
-    @FXML private CheckMenuItem sandboxMenu
     @FXML private MenuItem runMenu
     @FXML private MenuItem stopMenu
 
     @FXML private ToggleButton treeButton
     @FXML private ToggleButton consoleButton
     @FXML private ToggleButton typecheckButton
-    @FXML private ToggleButton sandboxButton
 
     @FXML private MenuItem propertiesMenu
 
@@ -163,9 +161,6 @@ public class Editor implements FolderTreeViewListener {
     private SystemOutputInterceptor systemOutInterceptor
     private SystemOutputInterceptor systemErrorInterceptor
 
-    //private InterpreterSecurityManager interpreterSecurityManager = new InterpreterSecurityManager()
-    //private InterpreterPolicy interpreterPolicy = new InterpreterPolicy()
-
     private ObjectProperty<File> projectFolder = new SimpleObjectProperty<>()
 
     private Map<String,Path> config = [:]
@@ -182,7 +177,6 @@ public class Editor implements FolderTreeViewListener {
         treeMenu.selectedProperty().bindBidirectional(treeButton.selectedProperty())
         consoleMenu.selectedProperty().bindBidirectional(consoleButton.selectedProperty())
         typecheckMenu.selectedProperty().bindBidirectional(typecheckButton.selectedProperty())
-        sandboxMenu.selectedProperty().bindBidirectional(sandboxButton.selectedProperty())
         BooleanBinding fileExists = new BooleanBinding() {
             {
                 super.bind(projectFolder)
@@ -219,7 +213,6 @@ public class Editor implements FolderTreeViewListener {
         )
 
         initMidi()
-        setupSecurity()
         interpreter = new ProjectInterpreter(null, typecheckButton.selected, new Binding(["MidiPlayer":midiPlayer]))
     }
 
@@ -252,18 +245,6 @@ public class Editor implements FolderTreeViewListener {
     void showAlert(AlertType atype, String text) {
         Alert alert = new Alert(atype, text)
         Optional<ButtonType> result = alert.showAndWait()
-    }
-
-    void setupSecurity() {
-        // if (sandboxButton.selected) {
-        //     if (projectFolder.get() != null)
-        //         interpreterPolicy.setFilePath(projectFolder.get().getPath())
-        //     Policy.setPolicy(interpreterPolicy)
-        //     System.setSecurityManager(interpreterSecurityManager)
-        // } else {
-        //     if (System.getSecurityManager() != null)
-        //         System.setSecurityManager(null)
-        // }
     }
 
     void initMidi() {
@@ -692,8 +673,7 @@ public class Editor implements FolderTreeViewListener {
                     interpreter.addLib(lib)
                 }
             }
-            loadSoundbank()            
-            setupSecurity()            
+            loadSoundbank()
         }
     }
 
@@ -838,20 +818,6 @@ public class Editor implements FolderTreeViewListener {
             interpreter.createEngine()
         }
     }
-
-    void sandbox() {
-        if (!(sandboxButton.selected)) {
-            Alert alert = new Alert(AlertType.CONFIRMATION, 
-                                    "Without sandbox scripts run unrestricted over the system.\nAre you sure to leave the sandbox?")
-            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE)
-            Optional<ButtonType> result = alert.showAndWait()
-            if (!(result.isPresent() && result.get() == ButtonType.OK)) {
-                sandboxButton.setSelected(true)
-            }
-        }
-        setupSecurity()
-    }
-
 
     // adapted from groovyconsole
     void installInterceptor() {

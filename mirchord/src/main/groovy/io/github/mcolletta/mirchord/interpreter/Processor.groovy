@@ -176,7 +176,7 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	private Object getVarFromScopes(name) {
-		Stack env = getEnvironment()
+		Stack<Map> env = getEnvironment()
 		Object obj = null
 		for(Map sc : env[-1..0]) {
 			if (sc.containsKey(name)) {
@@ -188,7 +188,7 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	private void setVarFromScopes(String name, Object value) {
-		Stack env = getEnvironment()
+		Stack<Map> env = getEnvironment()
 		for(Map sc : env[-1..0]) {
 			if (sc.containsKey(name)) {
 				sc[name] = value

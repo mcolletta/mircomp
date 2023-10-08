@@ -1,7 +1,6 @@
 apply plugin: 'groovy'
-//sourceCompatibility = 9
-
 apply plugin: 'application'
+
 
 dependencies {
     implementation project(':mirchord')
@@ -26,7 +25,7 @@ jar {
 
 task runScript(type: JavaExec) {
     description 'Run Simple Demo'
-    main = 'io.github.mcolletta.mirmidi.Demo'
+    mainClass = 'io.github.mcolletta.mirmidi.Demo'
     classpath = sourceSets.main.runtimeClasspath
 
     if (project.hasProperty('custom_arg')) {

@@ -23,7 +23,7 @@ sourceSets {
 
 task runNotationViewer(type: JavaExec) {
     description 'Run Simple NotationViewer script'
-    main = 'io.github.mcolletta.mircomp.demos.SimpleGuiApp'
+    mainClass = 'io.github.mcolletta.mircomp.demos.SimpleGuiApp'
     classpath = sourceSets.main.runtimeClasspath
 
     if (project.hasProperty('custom_arg')) {
@@ -33,7 +33,7 @@ task runNotationViewer(type: JavaExec) {
 
 task runNotationEditor(type: JavaExec) {
     description 'Run Simple Notation Editor script'
-    main = 'io.github.mcolletta.mircomp.demos.SimpleNotationEditor'
+    mainClass = 'io.github.mcolletta.mircomp.demos.SimpleNotationEditor'
     classpath = sourceSets.main.runtimeClasspath
 
     if (project.hasProperty('custom_arg')) {
@@ -43,7 +43,7 @@ task runNotationEditor(type: JavaExec) {
 
 task runLeadSheetsReader(type: JavaExec) {
     description 'Run LeadSheets Reader'
-    main = 'io.github.mcolletta.mircomp.demos.LeadSheetReaderDemo'
+    mainClass = 'io.github.mcolletta.mircomp.demos.LeadSheetReaderDemo'
     classpath = sourceSets.main.runtimeClasspath
 
     if (project.hasProperty('mxml_folder') && project.hasProperty('midi_output')) {

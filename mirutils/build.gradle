@@ -1,7 +1,11 @@
-apply plugin: 'groovy'
-sourceCompatibility = 8
-apply plugin: 'application'
-ext.moduleName = 'io.github.mcolletta.mirutils'
+plugins {
+    id 'groovy'
+    id 'application'
+}
+
+application {
+    mainClass = 'io.github.mcolletta.mirutils'
+}
 
 
 dependencies {

@@ -1,8 +1,13 @@
-apply plugin: 'groovy'
-//sourceCompatibility = 8
+plugins {
+    id 'groovy'
+    id 'application'
+}
 
-apply plugin: 'application'
-mainClassName = 'io.github.mcolletta.miride.MirIDE'
+def klassName = 'io.github.mcolletta.miride.MirIDE'
+
+application {
+    mainClass = klassName
+}
 
 dependencies {
     implementation project(':mirchord')
@@ -26,33 +31,8 @@ sourceSets {
     }
 }
 
-// version = 1.0.0-alpha.3
 
-distZip {
-    into(project.name) {
-        from '..'
-        include 'licenses/*'
-        include 'LICENSE'
-        include 'LICENSE-ALLJARS'
-        include 'README.md'
-    }
-    doLast {
-        file("$destinationDir/$archiveName").renameTo("$destinationDir/mircomp-1.0.0-alpha.3.zip")
-    }
-}
-
-jar {
-    manifest.attributes 'Created-By': 'Mirco Colletta'
-}
-
-
-def javaPackageHome = System.getenv('JAVA_PACKAGE_HOME')
 def javaHome = System.getenv('JAVA_HOME')
-def javaFxHome = System.getenv('JAVAFX_HOME')
-def javaFxJmods = System.getenv('JAVAFX_JMODS_HOME')
-
-def sep = "/" // File.pathSeparatorChar
-def distPath = null
 
 def getDistPath() {
     if (project.hasProperty('distPath')) {
@@ -64,40 +44,24 @@ def getDistPath() {
     return null
 }
 
-// task distFolder {
-//     doFirst {
-//         if (project.hasProperty('distPath')) {
-//             File distFolder = new File(project.getProperty('distPath'))
-//             if (distFolder.isDirectory()) {
-//                 distPath = distFolder.getPath()
-//                 println "distPath=" + distPath
-//             }
-//         } else
-//             project.distPath = "build/dist"
-//     }
-// }
+task copyModules(type: Copy) {
+    from(configurations.runtimeClasspath).include("javafx-*.jar")
+    into("$buildDir/modules")
+}
 
-task inputPackage {
+task copyDependencies(type: Copy) {
+    from(configurations.runtimeClasspath).exclude("javafx-*.jar")
+    into("$buildDir/jars")
+}
+
+task copyMainJar {
     dependsOn build
     doLast {
-        def projects = rootProject.subprojects
-        def build_paths = ['../libs']
-        projects.each() { subproject ->
-            build_paths << "../${subproject.name}/build/libs/"
-        }
         ant.with {
-            echo("create jars folder")
-            def destDir = "build/jars"
-            if (!new File(destDir).exists())
-                mkdir(dir: destDir)
-            build_paths.each { path ->
-                if (new File(path).exists()) {
-                    echo("adding $path")
-                    copy(todir: destDir) {
-                        fileset(dir: path) {
-                            include(name: "**/*.jar")
-                        }
-                    }
+            echo("copy main jar")
+            copy(todir: "$buildDir/jars") {
+                fileset(dir: "$buildDir/libs") {
+                    include(name: "**/*.jar")
                 }
             }
             echo("done")
@@ -105,11 +69,12 @@ task inputPackage {
     }
 }
 
+
 task jlink(type: Exec) {
-    dependsOn build
+    dependsOn build, copyModules
     workingDir 'build'
     commandLine "${javaHome}/bin/jlink",
-                "--module-path", "${javaHome}/jmods${File.pathSeparatorChar}${javaFxJmods}",
+                "--module-path", "${javaHome}/jmods${File.pathSeparator}$buildDir/modules${File.pathSeparator}$buildDir/libs",
                 "--add-modules", "java.se,java.base,java.desktop,java.logging,java.scripting,jdk.jsobject,javafx.fxml,javafx.web,javafx.swing",
                 "--output", getDistPath() + "/runtimeimage",
                 "--strip-native-commands",
@@ -122,7 +87,7 @@ task jlink(type: Exec) {
 
 task jpackage(type: Exec) {
     dependsOn clean
-    dependsOn jlink, inputPackage
+    dependsOn jlink, copyDependencies, copyMainJar // inputPackage
     workingDir 'build'
     commandLine "${javaHome}/bin/jpackage", //"create-image", "--win-console"
                 "--name", "MirIDE",
@@ -131,7 +96,7 @@ task jpackage(type: Exec) {
                 //"--output", "application",
                 "--java-options", "--add-exports java.desktop/com.sun.media.sound=ALL-UNNAMED",
                 "--icon", "../../resources/icon.png",
-                "--main-class", mainClassName,
+                "--main-class", klassName,
                 "--input", "jars",
                 "--dest", getDistPath() + "/app",
                 "--main-jar", "miride.jar"
@@ -141,7 +106,7 @@ task jpackage(type: Exec) {
 task createApp(type: Copy) {
     dependsOn jpackage
     from (["../LICENSE", "../LICENSE-ALLJARS", "../licenses"])
-    into (getDistPath() + sep + 'app' + sep + 'legal')
+    into (getDistPath() + File.separator + 'app' + File.separator + 'legal')
     doLast {
         delete "${getDistPath()}/runtimeimage"
     }
@@ -151,13 +116,14 @@ task createApp(type: Copy) {
 // C:\Programs\mircomp\miride> gradle createApp -PdistPath="C:\Programs\dist\miride"
 
 task runMirIDE(type: JavaExec) {
+    dependsOn build, copyModules
     description 'Run MirIDE'
-    main = 'io.github.mcolletta.miride.MirIDE'
+    mainClass = klassName
     classpath = sourceSets.main.runtimeClasspath
 
     jvmArgs = [
-        "--module-path", "${javaFxHome}/lib",
-        "--add-modules=javafx.graphics,javafx.fxml,javafx.swing,javafx.web",
+        "--module-path", "$buildDir/modules${File.pathSeparator}$buildDir/libs",
+        "--add-modules=javafx.graphics,javafx.fxml,javafx.swing,javafx.media,javafx.web",
         "--add-exports", "java.desktop/com.sun.media.sound=ALL-UNNAMED",
         // "--add-exports", "java.desktop/com.sun.media.sound.AudioSynthesizer=ALL-UNNAMED",
     ]
