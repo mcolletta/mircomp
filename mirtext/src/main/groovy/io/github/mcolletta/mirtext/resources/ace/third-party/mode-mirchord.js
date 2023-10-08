@@ -104,7 +104,7 @@ var MirchordHighlightRules = function() {
             },
             {
                 token : "variable.parameter",
-                regex : /\b[a-grxo]{1}[\#|\&]*/
+                regex : /\b[a-grxo]{1}\b[\#|\&]*[1-9]?/
             },
             {
                 token : "constant.language",
