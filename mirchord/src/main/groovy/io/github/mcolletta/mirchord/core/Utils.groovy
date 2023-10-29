@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2023 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -315,6 +315,134 @@ class Utils {
 				[6, 1]: 3, //scale 1 sig 6 -> D# min
 				[7, 1]: 10, //scale 1 sig 7 -> A# min
 		]
+
+	static String getPitchLetterFromSymbol(String symbol, KeySignature keysig) {
+		int scaleDegree = getScaleDegreeFromSymbol(symbol)
+		int tonic = getTonicOrdinalFromKeySignature(keysig)
+		int mapped = (tonic + (scaleDegree - 1))
+		if (mapped > 7)
+			mapped %= 7
+		String letter = CmajorDegreeToLetter[mapped]
+		return letter
+	}
+
+	static Map<Integer,String> CmajorDegreeToLetter = [
+		1: 'C', 2: 'D', 3: 'E', 4: 'F', 5: 'G', 6: 'A', 7: 'B'
+	]
+
+	static int getScaleDegreeFromSymbol(String symbol) {
+		int result = 1;
+		switch(symbol) {
+			case "I":
+			case "do":
+				result = 1
+				break
+			case "II":
+			case "re":
+				result = 2
+				break
+			case "III":
+			case "mi":
+				result = 3
+				break
+			case "IV":
+			case "fa":
+				result = 4
+				break
+			case "V":
+			case "so":
+			case "sol":
+				result = 5
+				break
+			case "VI":
+			case "la":
+				result = 6
+				break
+			case "VII":
+			case "si":
+			case "ti":
+				result = 7
+				break
+			default:
+				break
+		}
+		return result
+	}
+
+	static int getTonicOrdinalFromKeySignature(KeySignature keysig) {
+		int result = 1;
+		if (keysig.mode == KeyMode.MAJOR) {
+			switch(keysig.fifths) {
+				case -7:
+				case 0:
+				case 7:
+					result = 1 // C
+					break
+				case -6:
+				case 1:
+					result = 5 // G
+					break
+				case -5:
+				case 2:
+					result = 2 // D
+					break
+				case -4:
+				case 3:
+					result = 6 // A	
+					break
+				case -3:
+				case 4:
+					result = 3 // E	
+					break
+				case -2:
+				case 5:
+					result = 7 // B	
+					break
+				case -1:
+				case 6:
+					result = 4 // F	
+					break
+				default:
+					break
+			}
+		}
+		else if (keysig.mode == KeyMode.MINOR) {
+			switch(keysig.fifths) {
+				case -7:
+				case 0:
+				case 7:
+					result = 6 // A	
+					break
+				case -6:
+				case 1:
+					result = 3 // E	
+					break
+				case -5:
+				case 2:
+					result = 7 // B	
+					break
+				case -4:
+				case 3:
+					result = 4 // F	
+					break
+				case -3:
+				case 4:
+					result = 1 // C	
+					break
+				case -2:
+				case 5:
+					result = 5 // G	
+					break
+				case -1:
+				case 6:
+					result = 2 // D	
+					break
+				default:
+					break
+			}
+		}
+		return result
+	}
 	
 	/*
 	static int P1 = 0

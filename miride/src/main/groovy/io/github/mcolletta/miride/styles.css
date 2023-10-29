@@ -72,11 +72,11 @@
 }
 
 .text-area {
-    -fx-text-fill: #1E1E1E;
+    -fx-text-fill: #E8E8E8;
 }
 
 .text-area .content {
-    -fx-background-color: #E9E9E9;
+    -fx-background-color: #1E1F1C;
 }
 
 .background-logo {

@@ -75,7 +75,7 @@ var MirchordHighlightRules = function() {
     );
 
     var keywords = ('throw try var ' +
-        'def do fn if let loop new quote recur set!'
+        'def fn if let loop new quote recur set!'
     );
 
     var buildinConstants = ("true false nil");
@@ -98,13 +98,36 @@ var MirchordHighlightRules = function() {
             //     regex : "\\/\\*",
             //     next : "comment"
             // }, 
-            {
-                token : "support.function", 
-                regex : /[A-G]{1}[\#\&]*(M|maj|m|min|mM|minMaj|\+|aug|°|dim|sus){0,1}[0-9]{0,2}[\(]{0,1}(add|sub){0,1}[\#\&]*[0-9]{0,2}[\)]{0,1}/
-            },
+            // {
+            //     token : "support.function", 
+            //     regex : /\b[A-G]{1}[\#|\&]*(M|maj|m|min|mM|minMaj|\+|aug|°|dim|sus){0,1}[0-9]{0,2}[\(]{0,1}(add|sub){0,1}[\#\&]*[0-9]{0,2}[\)]{0,1}/
+            // },
+
+            // {
+            //     token : "variable.parameter",
+            //     regex : /\b[A-G]{1}/
+            // },
+            // {
+            //     token : "variable.parameter", 
+            //     regex : /\b(I|II|III|IV|V|VI|VII){1}/
+            // },
+            // {
+            //     token : "support.function", 
+            //     regex : /(M|maj|m|min|mM|minMaj|\+|aug|°|dim|sus|add|sub){1}\b/
+            // },
+            // {
+            //     token : "variable.parameter",
+            //     regex : /\b(do|re|mi|fa|so|sol|la|si|ti){1}[^\W]/
+            // },
+            // {
+            //     token : "variable.parameter",
+            //     //regex : /\b[a-grxo]{1}\b[\#|\&]*[1-9]?/
+            //     regex : /\b[a-grxo]{1}\b/
+            // },
+
             {
                 token : "variable.parameter",
-                regex : /\b[a-grxo]{1}\b[\#|\&]*[1-9]?/
+                regex : '[\\#|\\&]'
             },
             {
                 token : "constant.language",

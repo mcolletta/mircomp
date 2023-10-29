@@ -94,6 +94,10 @@
     -fx-graphic: url('resources/icons/sc_selectobject.png');
 }
 
+.scroll-pane > .viewport {
+    -fx-background-color: #272822;
+}
+
 
 
 

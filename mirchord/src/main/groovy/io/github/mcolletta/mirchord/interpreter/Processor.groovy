@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2023 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -178,10 +178,12 @@ class MirChordProcessor extends AbstractProcessor {
 	private Object getVarFromScopes(name) {
 		Stack<Map> env = getEnvironment()
 		Object obj = null
-		for(Map sc : env[-1..0]) {
-			if (sc.containsKey(name)) {
-				obj = sc[name]
-				break
+		if (env != null && env.size() > 0) {
+			for(Map sc : env[-1..0]) {
+				if (sc.containsKey(name)) {
+					obj = sc[name]
+					break
+				}
 			}
 		}
 		return obj
@@ -512,6 +514,10 @@ class MirChordProcessor extends AbstractProcessor {
     void completePitchName(Match match) {
         putResult(match.getText())
     }
+
+    void completeSolfeggioName(Match match) {
+        putResult(match.getText())
+    }
 	
 	void processPitch(Pitch pitch, int octaveSteps, int alterations, boolean natural) {
 		Map scope = getScope()
@@ -551,6 +557,11 @@ class MirChordProcessor extends AbstractProcessor {
 
 			if (alterations != 0)
 				pitch.alteration = alterations
+				/* with:
+				   pitch.alteration += alterations   
+				   in this case an explicit alteration is added
+				   to the one added by the key
+				*/
 		} else {
 			// println "natural pitch " + pitch
 			pitch.alteration = 0
@@ -567,8 +578,16 @@ class MirChordProcessor extends AbstractProcessor {
 			accidentals << (ACCIDENTALS)getResult(acc)
 		}
 			
-		String pitchLetter = ((String)getResult(match.findMatchByType(grammar.pitchName))).toUpperCase()
-		Pitch pitch = new Pitch(pitchLetter)
+		String pitchLetter = ((String)getResult(match.findMatchByType(grammar.pitchName)))
+		if (pitchLetter == null) {
+			String syllable = ((String)getResult(match.findMatchByType(grammar.solfeggioName)))
+			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
+			if (currentKey == null) {
+				currentKey = new KeySignature()
+			}
+			pitchLetter = getPitchLetterFromSymbol(syllable, currentKey)
+		}
+		Pitch pitch = new Pitch(pitchLetter.toUpperCase())
 		Match octaves_match = match.findMatchByType(grammar.octaves)
 		List<Integer> octaveSteps = (List<Integer>)getResult(octaves_match)
 		if (octaveSteps == null || octaveSteps.size() == 0)
@@ -835,6 +854,10 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	// CHORD SYMBOLS------------------
+
+	void completeRomanLiteral(Match match) {
+		putResult(match.getText())
+	}
 	
 	void completeChordPitchName(Match match) {
 		putResult(match.getText())
@@ -842,7 +865,15 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	void completeChordRoot(Match match) {			
 		String pitchLetter = getResult(match.findMatchByType(grammar.chordPitchName))
-		Pitch pitch = new Pitch(pitchLetter)			
+		if (pitchLetter == null) {
+			String romanLiteral = ((String)getResult(match.findMatchByType(grammar.romanLiteral)))
+			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
+			if (currentKey == null) {
+				currentKey = new KeySignature()
+			}
+			pitchLetter = getPitchLetterFromSymbol(romanLiteral, currentKey)
+		}
+		Pitch pitch = new Pitch(pitchLetter.toUpperCase())			
 		List<ACCIDENTALS> accidentals = []
 		List<Match> accidentals_match = match.findAllMatchByType(grammar.accidental)
 		for(Match acc : accidentals_match) {
@@ -904,6 +935,14 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	void completeChordBass(Match match) {
 		String pitchLetter = getResult(match.findMatchByType(grammar.chordPitchName))
+		if (pitchLetter == null) {
+			String romanLiteral = ((String)getResult(match.findMatchByType(grammar.romanLiteral)))
+			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
+			if (currentKey == null) {
+				currentKey = new KeySignature()
+			}
+			pitchLetter = getPitchLetterFromSymbol(romanLiteral, currentKey)
+		}
 		putResult(new Pitch(pitchLetter))
 	}
 	

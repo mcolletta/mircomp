@@ -22,7 +22,7 @@
  */
  
 
-.folder-tree .tree-cell {
+/*.folder-tree .tree-cell {
     -fx-background-color: #E9E9E9;
     -fx-text-fill: #1E1E1E;
 }
@@ -30,10 +30,27 @@
 .folder-tree .tree-cell:selected {
 	-fx-background-color: #B9B9B9;
 	-fx-text-fill: #FFFFFF;
-}
+}*/
 
 /*.folder-tree .tree-cell {
     -fx-background-color: #272822;
     -fx-text-fill: #ffffff;
     -fx-border-color: #??????; 
 }*/
+
+.folder-tree .tree-cell {
+    -fx-background-color: #1E1F1C;
+    -fx-text-fill: #E8E8E8;
+}
+
+.folder-tree .tree-cell:selected {
+    -fx-background-color: #414339;
+    -fx-text-fill: #E8E8E8;
+}
+
+.folder-tree .tree-cell > .tree-disclosure-node > .arrow  {
+    -fx-background-color: #E8E8E8;
+}
+.folder-tree .tree-cell:expanded > .tree-disclosure-node > .arrow {
+    -fx-background-color: #E8E8E8;
+}
