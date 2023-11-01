@@ -10,6 +10,7 @@ include ":miride"
 include ":mircomposer"
 include ":mirsynth"
 include ":mirutils"
+include ":mircoracle"
 project(':mirchord').projectDir = new File('mirchord')
 project(':mirconverter').projectDir = new File('mirconverter')
 project(':demos').projectDir = new File('demos')
@@ -22,3 +23,4 @@ project(':miride').projectDir = new File('miride')
 project(':mircomposer').projectDir = new File('mircomposer')
 project(':mirsynth').projectDir = new File('mirsynth')
 project(':mirutils').projectDir = new File('mirutils')
+project(':mircoracle').projectDir = new File('mircoracle')

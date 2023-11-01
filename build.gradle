@@ -44,6 +44,7 @@ subprojects {
             implementation("org.apache.groovy:groovy-console:4.0.15")
             implementation("org.apache.groovy:groovy-nio:4.0.15")
             implementation("org.apache.groovy:groovy-xml:4.0.15")
+            implementation("org.apache.groovy:groovy-test:4.0.15")
 
             implementation("org.openjfx:javafx-base:${javaFXVersion}:${platform}")
             implementation("org.openjfx:javafx-controls:${javaFXVersion}:${platform}")
