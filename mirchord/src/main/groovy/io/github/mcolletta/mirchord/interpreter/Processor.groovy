@@ -855,7 +855,7 @@ class MirChordProcessor extends AbstractProcessor {
 
 	// CHORD SYMBOLS------------------
 
-	void completeRomanLiteral(Match match) {
+	void completeRomanNumeral(Match match) {
 		putResult(match.getText())
 	}
 	
@@ -866,12 +866,12 @@ class MirChordProcessor extends AbstractProcessor {
 	void completeChordRoot(Match match) {			
 		String pitchLetter = getResult(match.findMatchByType(grammar.chordPitchName))
 		if (pitchLetter == null) {
-			String romanLiteral = ((String)getResult(match.findMatchByType(grammar.romanLiteral)))
+			String romanNumeral = ((String)getResult(match.findMatchByType(grammar.romanNumeral)))
 			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
 			if (currentKey == null) {
 				currentKey = new KeySignature()
 			}
-			pitchLetter = getPitchLetterFromSymbol(romanLiteral, currentKey)
+			pitchLetter = getPitchLetterFromSymbol(romanNumeral, currentKey)
 		}
 		Pitch pitch = new Pitch(pitchLetter.toUpperCase())			
 		List<ACCIDENTALS> accidentals = []
@@ -936,12 +936,12 @@ class MirChordProcessor extends AbstractProcessor {
 	void completeChordBass(Match match) {
 		String pitchLetter = getResult(match.findMatchByType(grammar.chordPitchName))
 		if (pitchLetter == null) {
-			String romanLiteral = ((String)getResult(match.findMatchByType(grammar.romanLiteral)))
+			String romanNumeral = ((String)getResult(match.findMatchByType(grammar.romanNumeral)))
 			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
 			if (currentKey == null) {
 				currentKey = new KeySignature()
 			}
-			pitchLetter = getPitchLetterFromSymbol(romanLiteral, currentKey)
+			pitchLetter = getPitchLetterFromSymbol(romanNumeral, currentKey)
 		}
 		putResult(new Pitch(pitchLetter))
 	}

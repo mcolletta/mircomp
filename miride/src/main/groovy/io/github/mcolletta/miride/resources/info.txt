@@ -1,7 +1,7 @@
 MirIDE - MirComp Integrated Development Environment
-Version: 1.0.0-alpha.4
+Version: 1.0.0-alpha.5
 
-Copyright (C) 2016-2022 Mirco Colletta
+Copyright (C) 2016-2023 Mirco Colletta
 
 This program is distributed under the GNU General Public License version 3.
 

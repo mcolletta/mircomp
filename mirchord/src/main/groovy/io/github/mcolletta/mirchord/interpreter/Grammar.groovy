@@ -56,7 +56,7 @@ public class MirChordGrammar extends Grammar {
 		public final Parser pitchName = regex("[a-g]")
 		public final Parser solfeggioName = cho(str("do"), str("re"), str("mi"), str("fa"), str("so"), str("sol"), str("la"), str("si"), str("ti"))
 		public final Parser chordPitchName = regex("[A-G]")
-		public final Parser romanLiteral = cho(str("I"), str("II"), str("III"), str("IV"), str("V"), str("VI"), str("VII"))
+		public final Parser romanNumeral = cho(str("I"), str("II"), str("III"), str("IV"), str("V"), str("VI"), str("VII"))
 		public final Parser octaveUp = str("'")
 		public final Parser octaveDown = str(",")
 		public final Parser octave = cho(octaveUp, octaveDown)
@@ -88,7 +88,7 @@ public class MirChordGrammar extends Grammar {
 		public final Parser stickyDuration = seq(str("`"), duration)
 
 		// chord symbols	
-		public final Parser chordRoot = seq(cho(chordPitchName, romanLiteral), opt(accidentals))
+		public final Parser chordRoot = seq(cho(chordPitchName, romanNumeral), opt(accidentals))
 		public final Parser chordAltOp = cho(str("add"), str("sub"))
 		
 		public final Parser chordModifierMin = cho(str("m"), str("min"))
@@ -107,7 +107,7 @@ public class MirChordGrammar extends Grammar {
 		public final Parser chordAlteration = seq(str("("), opt(chordAltOp), opt(accidentals), chordAltDegree, str(")"))
 		
 		public final Parser chordBassSeparator = cho(str("/"),str("\\"))
-		public final Parser chordBass = seq(cho(chordPitchName, romanLiteral), opt(accidentals))
+		public final Parser chordBass = seq(cho(chordPitchName, romanNumeral), opt(accidentals))
 		
 		public final Parser sameChordSymbol = str("/")
 		
