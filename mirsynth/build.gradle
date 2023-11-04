@@ -7,19 +7,36 @@ application {
     mainClass = 'io.github.mcolletta.mirsynth'
 }
 
-
-dependencies {
-    implementation fileTree(dir: '../libs', include: ['*.jar'])
-}
-
 sourceSets {
     main {
         groovy {
             srcDirs = ['src/main/groovy']
         }
         resources {
-            srcDir 'resources'
+            srcDirs = ["src/main/groovy"]
         }
     }
 }
+
+jar {
+    manifest.attributes 'Created-By': 'Mirco Colletta'
+}
+
+
+task runScript(type: JavaExec) {
+    description 'Run Simple Demo'
+    mainClass = 'io.github.mcolletta.mirsynth.ExampleOscillators'
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+
+    jvmArgs = [
+        "--add-exports", "java.desktop/com.sun.media.sound=ALL-UNNAMED",
+    ]
+
+    if (project.hasProperty('custom_arg')) {
+        args project.getProperty('custom_arg')
+    }
+}
+
+defaultTasks 'runScript'
 
