@@ -1,0 +1,11 @@
+<closure> ::= { float distance -\gt \s
+	<expr> 
+}
+	
+<expr> ::= (<expr><op><expr>) | 
+           <func>(<var>)      | 
+           <var>
+<func> ::= sin | cos | log | sqrt
+<op>   ::= + | - | *
+<var>  ::= distance | pow(distance,<n>) | <n>
+<n>    ::= 1 | 2 | 3 | 4

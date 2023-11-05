@@ -1,0 +1,25 @@
+<program(n)> ::= <declarations(n)> <statements(n)>
+
+<declarations(1)> ::= <declaration>
+<declarations(n)> ::= <declaration> <declarations(n-1)>
+
+<declaration> ::= def <id> = <number>;
+				  <%+ <operand> ::= ${id}  !3 %>
+				  
+<id> ::= <%= pippo %>
+
+<number> ::= <digit><digit>
+
+<digit> ::= 0|1|2|3|4|5|6|7|8|9
+
+<statements(1)> ::= <statement>
+<statements(n)> ::= <statement> <statements(n-1)>
+
+<statement> ::= <operand> <operator> <operand>;
+
+<operand> ::= <number>
+
+<operator> ::= + !70	|
+		 	   - !30
+
+

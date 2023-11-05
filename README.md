@@ -34,9 +34,20 @@ MirMidi is a MIDI editor and sequencer. It is bundled up with a piano roll edito
 MirScore is a common practice notation viewer and midi player for graphical preview of scores. It allows to navigate a score just by dragging the mouse (panning mode) and supports pagination and zooming. Moreover, you can control the playback position by point and click on a staff and visualize the progression of the MIDI execution with the automatic update of a graphical control element (follow playback mode).
 
 
+### MirGene
+
+MirGene is a Grammatical Evolution (GE) library that uses powerful context sensitive grammars (MirGram) that are stochastic, weighted and adaptable (i.e. it can add new rules during the derivation using the results from previous NonTerminals).
+Moreover, it can control the length of the results through arithmetic attributes and guards.
+
+
 ### MircOracle
 
-A library that implements popular machine learning algorithms like dictionary based predictors and factor oracles.
+MircOracle is library that implements popular machine learning algorithms like dictionary based predictors and factor oracles.
+
+
+### MirSynth
+
+MirSynth is a library for sound synthesis that allows to build virtual MIDI instruments.
 
 
 

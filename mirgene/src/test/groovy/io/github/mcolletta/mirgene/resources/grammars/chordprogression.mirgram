@@ -1,0 +1,52 @@
+<progression> ::= <I*> \s <I(11)>
+
+<I(1)> 		::= <I*>
+<ii(1)> 	::= <ii*>
+<iii(1)> 	::= <iii*>
+<IV(1)> 	::= <IV*>
+<V(1)> 		::= <V*>
+<vi(1)> 	::= <vi*>
+<vii°(1)> 	::= <vii°*>
+
+<I(n)> ::= <V(n-1)> \s <I*>
+
+<V(n)> ::= <ii(n-1)> \s <V*>	|
+		   <IV(n-1)> \s <V*>	|
+		   <vi(n-1)> \s <V*>	|
+		   <I(n-1)> \s <V*>
+		
+<ii(n)> ::= <iii(n-1)> \s <ii*>	|
+		 	<vi(n-1)> \s <ii*>	|
+		 	<I(n-1)> \s <ii*>
+		 
+<IV(n)> ::= <ii(n-1)> \s <IV*>	|
+		 	<iii(n-1)> \s <IV*>	|
+		 	<vi(n-1)> \s <IV*>	|
+		 	<I(n-1)> \s <IV*>
+		 
+<iii(n)> ::= <IV(n-1)> \s <iii*>	|
+		  	 <vii°(n-1)> \s <iii*>	|
+		     <I(n-1)> \s <iii*>
+		  
+<vi(n)> ::= <iii(n-1)> \s <vi*>	|
+		 	<I(n-1)> \s <vi*>
+		 
+<vii°(n)> ::= <ii(n-1)> \s <vii°*>	|
+		   	  <IV(n-1)> \s <vii°*>	|
+		   	  <I(n-1)> \s <vii°*>
+		   
+<I*> ::= C
+
+<ii*> ::= Dmin
+
+<iii*> ::= Emin
+
+<IV*> ::= F
+
+<V*> ::= G
+
+<vi*> ::= Amin
+
+<vii°*> ::= Bdim
+
+	   
