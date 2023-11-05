@@ -67,3 +67,19 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+
+
+## Citation
+
+Suggested BibTex entry:
+
+```
+@misc{mcolletta2023,
+  author = {Colletta, Mirco},
+  title = {MirComp: a framework for assisted and algorithmic music composition},
+  year = {2016--2023},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/mcolletta/mircomp}}
+}
+```
