@@ -4,56 +4,70 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Computer Music Composition Software">
-    <meta name="keywords" content="Open Source Assisted Automatic Algorithmic Computer Music Composition Sofware Library Framework">
+    <meta name="keywords" content="Open Source Assisted Algorithmic Computer Music Composition Sofware Library Framework Machine Learning">
     <meta name="author" content="Mirco Colletta">
     <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
 
     <title>
-      MirComp: computer music composition framework - MirMidi
+      MirComp: computer music composition framework
+      
+      
+      
+      
+      
+      
+      
+      
+       - MirMidi
+      
     </title>
 
     <link rel="author license" href="about_site.html">
 
-    <!-- Bootstrap core CSS -->
-    <link href="./assets/css/bootstrap.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
-    <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
-    <!-- highlight -->
-    <!-- <link href="./assets/css/monokai.min.css" rel="stylesheet"> -->
-
+    <!-- Bootstrap CSS -->
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/bootstrap.min.css.map" rel="stylesheet">
+    <link href="./assets/css/monokai.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="./assets/css/mircomp.css" rel="stylesheet">
   </head>
 
   <body role="document">
 
-
     <a href="https://github.com/mcolletta/mircomp"><img style="position: absolute; top: 45px; right: 0; border: 0;" src="./assets/images/fork-github.png" alt="Fork me on GitHub" ></a>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-expand-md bg-dark sticky-top border-bottom" data-bs-theme="dark">
       <div class="container">
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <!-- <li class="active" ><a href="index.html">Home</a></li>
-            <li  ><a href="getting_started.html">Getting Started</a></li>
-            <li  ><a href="documentation.html">Documentation</a></li>
-            <li  ><a href="download.html">Download</a></li> -->
-            <li><a href="index.html">Home</a></li><li><a href="getting_started.html">Getting Started</a></li><li><a href="documentation.html">Documentation</a></li><li><a href="download.html">Download</a></li>
-          </ul>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="#offcanvas" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="#offcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav flex-grow-1">
+              <li nav-item ><a class="nav-link" href="index.html">Home</a></li>
+              <li nav-item ><a class="nav-link" href="getting_started.html">Getting Started</a></li>
+              <li nav-item ><a class="nav-link" href="documentation.html">Documentation</a></li>
+              <li nav-item ><a class="nav-link" href="download.html">Download</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </nav>
 
-    <div class="container theme-showcase" role="main">
+    <main>
+      <div class="container my-5">
 
-      <div>
-
-         <div class="jumbotron">
-    <h1>MirMidi</h1>
-    <p>An introduction to the MIDI sequencer.</p>
+<div class="p-5 text-left bg-body-tertiary rounded-3">
+	<h1 class="text-body-emphasis">MirMidi</h1>
+	<p class="lead">
+		An introduction to the MIDI sequencer.
+	</p>
 </div>
-
 
 <div class="page-header">
 	<h2>Component overview</h2>
@@ -159,34 +173,34 @@
     </figure>
 </div>
 
-      </div>
+</div>
+    </main>
+   
+    <hr/>
 
-      <hr/>
-
-      <!-- FOOTER -->
-      <footer>
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2022 Mirco Colletta - <a href="about_site.html">About the site</a></p>
-      </footer>
+        <p>© 2016-2023 Mirco Colletta - The content/documentation of the site is released under the <em>GNU General Public License version 3</em>.</p>
+      </div>
+    </footer>
 
-    </div> <!-- /container -->
-
-    
     <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <!-- <script src="./assets/js/jquery.min.js"></script>
+     <!-- Placed at the end of the document so the pages load faster -->
     <script src="./assets/js/bootstrap.min.js"></script>
-    <script src="./assets/js/docs.min.js"></script> -->
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
-    
-    <!-- <script src="./assets/js/mircomp.js"></script>    
-    <script src="./assets/js/mirchord.min.js"></script>
-    <script src="./assets/js/groovy.min.js"></script>
+    <script type="application/json" src="./assets/js/bootstrap.min.js.map"></script>
+    <script src="./assets/js/mircomp.js"></script>
     <script src="./assets/js/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script> -->
-  
+    <script src="./assets/js/clojure.min.js"></script>
+    <script src="./assets/js/java.min.js"></script>
+    
+    <script>
+        hljs.registerAliases("mirchord", { languageName: "clojure" })
+        hljs.registerAliases("groovy", { languageName: "java" })
+        hljs.highlightAll();
+    </script>
 
   </body>
 </html>

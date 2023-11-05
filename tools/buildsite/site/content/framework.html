@@ -1,0 +1,88 @@
+<div class="container my-5">
+
+<div class="p-5 text-left bg-body-tertiary rounded-3">
+	<h1 class="text-body-emphasis">Framework</h1>
+	<p class="lead">
+		An introduction to the MirChord framework and an API reference to common components useful for algorithmic music. Learn how to build your score algorithmically.
+	</p>
+</div>
+
+
+<p>In the <a href="mirchord.html">notation language</a> section we learned how to craft a score using a domain specific language (DSL) and how to extend it using groovy with custom transformations. However, behind the curtains, the mirchord interpreter uses a rich set of music software components to build the score.<br/>
+Now we are going to see how to create a score using these raw components.</p>
+
+<p class="bg-danger">This section requires a basic knowledge of the Groovy programming language (or Java since most Java code is also valid Groovy code)</p>
+
+<div class="page-header">
+	<h2>The pitch class</h2>
+</div>
+
+<p>Let's start with the most basic object type, a simple Pitch</p>
+
+<pre><code class="groovy">
+def pitch = new Pitch('C',4,0)  // symbol, octave, alteration
+int midiKey = pitch.getMidiValue()
+double hertz = 440f * Math.pow(2, (midiKey - 69) / 12f)
+
+println "Pitch " + pitch + " with midiKey " + midiKey + " hertz " + hertz
+</code></pre>
+
+<p>should print to the console</p>
+
+<samp>
+Pitch C4[60] with midiKey 60 hertz 261.62558
+</samp>
+
+<div class="page-header">
+	<h2>Score with builder</h2>
+</div>
+
+<p>
+	As you guess every kind of musical entity presented in the notation language has a counterpart in the object model so you can create an entire score in the stardard imperative paradigm. However, even if this is a viable option, a more straightforward manner to create a score with the object model is to use a special groovy <em>builder</em> named <code>ScoreBuilder</code>.
+</p>
+
+<pre><code class="groovy">
+// first measures of "Fra Martino"
+def f4 = fr(1,4)
+def f2 = fr(1,2)
+def f1 = fr(1,1)
+def fra_martino = new ScoreBuilder().score() {
+	part(id:"1") {
+		voice(id:"1") {
+			clef(type:ClefType.TREBLE)
+			key(fifths:0, mode:KeyMode.MAJOR)
+			time(time:fr(4,4))
+			tempo(baseBeat:fr(1,4), bpm:90)
+			(1..2).each {
+				chord(midiPitch:60, duration:f4)
+				chord(midiPitch:62, duration:f4)
+				chord(midiPitch:64, duration:f4)
+				chord(midiPitch:60, duration:f4)
+			}
+			instrument(id:"Violin 1", program:41)
+			(1..2).each {
+				chord(midiPitch:64, duration:f4)
+				chord(midiPitch:65, duration:f4)
+				chord(midiPitch:67, duration:f2)
+			}
+		}
+	}
+}
+
+def midiFile = projectPath.resolve('midi/FraMartino.mid').toFile()
+saveAs(fra_martino, midiFile)
+</code></pre>
+
+<p class="spaced">
+	In the example above after the score creation we saved it in a MIDI file.
+</p>
+
+<p class="bg-danger">Coming soon...</p>
+
+<div class="page-header">
+	<h2>Algorithmic music using AI techinques</h2>
+</div>
+
+<p class="bg-danger">Coming soon...</p>
+
+</div>

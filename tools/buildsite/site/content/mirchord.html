@@ -1,0 +1,520 @@
+    
+<div class="container my-5">
+
+<div class="p-5 text-left bg-body-tertiary rounded-3">
+    <h1 class="text-body-emphasis">MirChord</h1>
+    <p class="lead">
+        An overview of the MirChord notation language and a reference to the most common elements, symbols and commands. Learn how to write an entire multipart and multivoice score.
+    </p>
+</div>
+
+
+<div class="page-header">
+    <h2>Comments</h2>
+</div>
+
+<p>Everything that starts with <code>;</code> is ignored by the interpreter.</p>
+<pre><code class="mirchord">; This is a comment</code></pre>
+
+<div class="page-header">
+    <h2>Parts and Voices</h2>
+</div>
+
+<p>
+    A score is composed of one or more parts (up to 16 as in MIDI) and every part could have one or more voices.<br/>
+    A part graphically is rendered as a staff.<br/>
+    A part/staff is defined with the symbol <mark>=</mark> followed by an integer number.<br/>
+    Similarly a voice is defined  with the symbol <mark>~</mark> followed by an integer number. Simple polyphony is managed that way.<br/>
+    So usually most scores start as follow: <code>=1 ~1</code>. This means that we are in the first voice of the first part.
+</p>
+<p class="bg-warning">Warning: staff and voice definitions are required (not optional) in the score.</p>
+
+
+<div class="page-header">
+    <h2>Key Signatures</h2>
+</div>
+
+<p>
+    A key signature can be defined using the <mark>key</mark> command,<br/>
+    Examples: to define a <em>C major key</em> you can write <code>(key  "C" "maj")</code>
+</p>
+<p class="bg-info">Tip: start writing something like <kbd>key...</kbd> and the autocomplete will propose all the available key signatures together with useful information like the number of sharps/flats.</p>
+<p class="bg-info">Info: there are two different ways to define a key: specifing the fifths or mode.</p>
+
+
+<div class="page-header">
+    <h2>Clefs</h2>
+</div>
+
+<p>Clefs can be defined using the <mark>clef</mark> command.<br/>
+<p class="bg-info">Tip: the most convenient way to write down clef is by using the autocomplete feature of the editor.</p>
+
+<pre><code class="mirchord">
+=1 ~1 (clef "treble")
+=2 ~1 (clef "bass")
+=3 ~1 (clef "percussion")
+</code></pre>
+
+<div class="page-header">
+    <h2>Instruments</h2>
+</div>
+
+<p>
+    Instruments can be set for every part using the <mark>instr</mark> command.<br/>
+    Example to define a grand piano: <code>(instr "acoustic grand piano")</code>
+</p>
+<p class="bg-info">Tip: start writing something like <kbd>pi..</kbd> and the autocomplete will propose all the piano instruments.</p>
+
+<div class="page-header">
+    <h2>Pitches and rests</h2>
+</div>
+
+<p>
+    In Mirchord pitches are represented as single letters <mark>a-g</mark> while rests with the letter <mark>r</mark>
+    <br/>
+    To define a major scale you can simply write: <code>c d e f g a b</code> 
+</p>
+
+<img class="img-responsive" src="./assets/images/screenshots/major-scale.png" />
+
+<p>An example with rests:</p>
+
+<pre><code class="mirchord">
+=1 ~1
+c8 r8 r4 r2 r1
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/rests.png" />
+
+<div class="page-header">
+    <h2>Accidentals</h2>
+</div>
+
+<p>
+    Chromatic alterations are indicated by adding special symbols soon after the pitch letter (or pitch list in the chord case).<br/>
+    The <mark>#</mark> symbol is used for <em>sharp/diesis</em>.<br/>
+    The ampersand <mark>&</mark> symbol is used for <em>flat/bemolle</em>.<br/>
+    The <mark>§</mark> is the <em>natural</em> symbol (used for example to cancel the alteration in a particular key signature).
+</p>
+
+The following code <code>c# e&</code> produces:
+
+<img class="img-responsive" src="./assets/images/screenshots/accidentals.png" />
+
+<div class="page-header">
+    <h2>Octaves</h2>
+</div>
+
+<p>
+    The octave in MirChord is <em>relative</em> to the preceding pitch (a concept borrowed from the Lilypond relative mode).<br/>
+    During pitch entry the octave automatically calculated in the current scope can be raised or lowered using the  <mark>'</mark> and <mark>,</mark> marks respectively.<br/>
+    The current octave can however be forced with the special <mark>^</mark> command. The code <code>^5</code> states that the current octave in this scope is the fifth.
+</p>
+<p class="bg-info">When you get lost o messed up within the score use the octave command to change the current octave value.
+
+<p>For example what follows is a C major scale that spans over two octaves</p>
+<pre><code class="mirchord">
+=1 ~1
+(key "C" "maj")
+c d e f g a b c d e f g a b c
+</code></pre>
+<img class="img-responsive" src="./assets/images/screenshots/scale.png" />
+
+<p>Example of octave marks:</p>
+
+<pre><code class="mirchord">
+=1 ~1
+c c, c''
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/octave-marks.png" />
+
+<div class="page-header">
+    <h2>Durations</h2>
+</div>
+
+<p>
+    In the previous examples we have not specified the duration of notes so the default value of <var>1/4</var> is used.
+    As with octaves there are two ways to specify the duration of a music element, i.e. note, chord, rest, ...<br/>
+    One option is the duration command: the symbol <mark>`</mark> followed by a number that represents the reciprocal of the actual duration. For dotted notes a <kbd>.</kbd> char should be placed after the duration number.<br/>
+    For example the directive <code>`8</code> denotes a <var>1/8</var> duration (or <var>0.125</var> of a measure in decimal representation).<br/>
+</p>
+
+<p>
+    The other way to assign duration to a pitch or chord is to attach the number to the pitch (or pitch list in case of a chord).
+</p>
+
+<p class="bg-warning">It is important to note that durations are <em>sticky</em>, i.e. once defined in a <em>scope</em> (see below) they persist until the next change for all subsequent elements.</p>
+<p class="bg-info">For note longer than an <em>whole</em> ties are required.
+<p class="bg-info">If a note duration does not fit within a measure length it is divided in more notes and ties are applied automatically between measure boundaries</p>
+
+<pre><code class="mirchord">
+=1 ~1
+c2. e2 g2.
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/automatic-notes-split.png" />
+
+
+<div class="page-header">
+    <h2>Ties</h2>
+</div>
+
+<p>
+    The tie symbol is the <code>_</code><br/>
+    For example we can extend the normal duration of a whole note this way <code>c_ _c</code>
+</p>
+
+<img class="img-responsive" src="./assets/images/screenshots/tied-notes.png" />
+
+<h2>Tuplets</h2>
+
+<p>
+    Tuplets are defined with the <mark>tp</mark> command that takes as arguments a <var>fraction</var> and a variable number of notes.<br/>
+    The fraction indicates the number of actual notes over the number of notes usually filling the same space.
+</p>
+
+<p>What follows is an example of a triplet:</p>
+
+<pre><code class="mirchord">
+=1 ~1 
+(tp "3/2" g8 f e)
+</code></pre>
+<img class="img-responsive" src="./assets/images/screenshots/triplet.png" />
+
+
+<div class="page-header">
+    <h2>Phrases</h2>
+</div>
+
+<p>
+    A set of notes/chords enclosed in curly brackets <code>{ ... }</code> defines a phrase.<br/> 
+    With a phrase it is possible to group a list of notes in a short motif with a dedicated scope (see below).</p>
+</p>
+
+<pre><code class="mirchord">
+=1 ~1 
+{c e g}
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/phrase.png" />
+
+<div class="page-header">
+    <h2>Scopes</h2>
+</div>
+
+<p>
+    Scopes are "environments" that contain name bindings of contextual elements such as the current octave, duration, ecc... These elements are updated during code translation as explained above.<br/>
+    Scopes are created automatically for every voice of a staff and every phrase and pitch list of a chord.<br/>
+    There are however differences between the scope of a phrase and the one of a chord since for example the first pitch of a chord updates its parent scope while the phrase has its own copy.
+</p>
+
+<div class="page-header">
+    <h2>Chords</h2>
+</div>
+
+<p>
+    A chord (i.e. multiple pitches that sound at the same time) can be expressed by enclosing a list of pitches in squared brackets.<br/>
+    For example <code>[c e g]2</code> is a C major chord with half measure duration.<br/>
+    While this is a straighforward route to manage chords, a more convoluted and elegant option is presented below.
+</p>
+
+<img class="img-responsive" src="./assets/images/screenshots/simple-chord.png" />
+
+<div class="page-header">
+    <h2>Chord Symbols notation</h2>
+</div>
+
+<p>
+A remarkable property of MirChord lies in its ability to define chords using the same syntactical structure usually found in lead sheets.<br/>
+It is important to observe that in Mirchord notes are case sensitive for a reason: lowercase letters such as 'c' denote simple pitches while their uppercase countepart (ex. 'C') are reserved to chord symbols.<br/>
+So the 'C' character is a <em>C major chord</em>.<br/>
+The classic structure for a chord symbol construction is:<br/>
+<mark>Root-Modifier-Extensions-(alterations)/BassNote</mark> (bass note is optional)<br/>
+Some remarks on invertions:<br/>
+<p class="bg-info">If the pitch belongs to the chord than it denotes an invertion otherwise it is added as an additional note</p>
+<p class="bg-warning">the notation <mark>/BassNote</mark> indicates an inversion where the notes are moved an octave up while in the <mark>\BassNote</mark> case they are shifted an octave down.</p>
+
+
+<p>Major chord first and second inversion</p>
+<pre><code class="mirchord">
+=1 ~1 
+C C\E C\G
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/chords-inversions.png" />
+
+<p>
+    A useful feature when using chords symbols is the <code>/</code> char that allows to repeat the last typed chord.
+</p>
+
+<p>Example of a chords progression</p>
+<pre><code class="mirchord">
+=1 ~1 
+`4 C / / / | Dm / / / | F / / / | G / / /
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/chords-progression.png" />
+
+<p>
+Other examples:<br/>
+</p>
+
+<pre><code class="mirchord">
+=1 ~1 
+[c e g]4 ^4 `4 C7 Cmaj7 Cmaj13(#11) ^5 `2 C `4 C/E C\E /
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/chord-symbols.png" />
+
+<p>In the image above the (C root) chords depicted are respectively:</p>
+<ul>
+    <li>Major chord using pitch list</li>
+    <li>Dominant seventh chord</li>
+    <li>Major seventh chord</li>
+    <li>Major thirteenth chord (altered eleventh)</li>
+    <li>Major chord</li>
+    <li>Major chord with E bass octave up</li>
+    <li>Major chord with E bass octave down</li>
+    <li>Repeatition of the la last chord</li>
+</ul>
+
+<div class="page-header">
+    <h2>Unpitched instruments</h2>
+</div>
+
+<p>
+    All the percussions should be placed in the same part (as channel 10 in MIDI). Different instruments are defined in different voices with the <mark>unpitched</mark> command.<br/>
+    The command indicates the instrument type and where, graphically, the elements should be rendered (pitch and octave).<br/>
+    For example the following code <code>(unpitched "acousticbassdrum" "C" 4)</code> indicates that in the current voice all unpitched notes from now on are <em>Acoustic Bass Drum</em> rendered as <code>^4 c</code> 
+</p>
+
+<p>Unpitched notes are represented with the lower letter <code>x</code> or <code>o</code> indifferently</p>
+
+<p>Let's see an example with two different voices</p>
+
+<pre><code class="mirchord">
+=1
+
+~1 
+(clef "percussion")
+(unpitched "crashcymbala" "E" 5)
+x4 x x x x2 x2 x x8 x x x
+
+~2 
+(unpitched "acousticbassdrum" "C" 4)
+x8 x4 x x8 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8
+
+~1 (* 3 {o16 o o o})
+</code></pre> 
+<img class="img-responsive" src="./assets/images/screenshots/unpitched-rhythm.png" />
+
+
+<div class="page-header">
+    <h2>Universal Key/Scale</h2>
+</div>
+
+<p>
+    In MirChord notes and chord symbols can be expressed based on the current key signature.<br/>
+    For notes, <em>solfeggio syllables</em> can be used to represent the movable-do system.<br/>
+    For chords, <em>Roman numerals</em> can be used in place of capital letters.
+</p>
+
+<pre><code class="mirchord">
+=1 ~1
+(key "B&" "maj")
+
+I IV\I V\VII ^4 I
+
+=2 ~1
+(key "B&" "maj")
+
+do re mi fa sol la si
+</code></pre>
+<img class="img-responsive" src="./assets/images/screenshots/universal-key.png" />
+
+
+<div class="page-header">
+    <h2>Examples</h2>
+</div>
+
+<p class="lead">
+    <mark>Fra Martino</mark>, the Italian version of the well known French nursery rhyme <em>Frère Jacque</em>
+</p>
+
+<pre><code class="mirchord">
+=1 ~1
+(instr "flute")
+(key "D" "min")
+
+^4 f4 g a f | f4 g a f | a4 b c2 | a4 b c2
+            
+^5 c8 d c b a4 f | ^5 c8 d c b a4 f
+
+^4 f4 c f2 | f4 c f2
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/FraMartino.png" />
+
+<hr>
+
+<p class="lead">
+    First measures from <mark>Invention N. 1</mark> by <em>Johann Sebastian Bach</em>
+</p>
+
+<pre><code class="mirchord">
+=1  ~1
+(key "C" "maj")
+(clef "treble")
+(name "Voice 1")
+r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
+
+=2 ~2
+(clef "bass")
+(name "Voice 2")
+^3 r2 r16 c d e f d e c | g'8 g, r4 r16 g a b c a b g |
+
+=1
+^5 e16 a g f e g f a g f e d c e d f | e d c b a c b d c b a g f# a g b
+
+=2
+^4 c8 b c d e g, a b | c e, f# g a b c4
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/Bach-Invention1.png" />
+
+<hr>
+
+<p class="lead">
+    First measures from <mark>Marche</mark> by <em>Carl Philipp Emanuel Bach</em>
+</p>
+
+<p>A <em>Marche</em> by <em>Carl Philipp Emanuel Bach</em></p>
+
+<pre><code class="mirchord">
+=1 ~1
+(instr "acoustic grand piano")
+(key "E&" "maj")
+(clef "treble")
+    ^4 r r r e8 g | b4 c8 d e b g'4 | g8 f e d e4 [a, c] | [a c] [g b]2 [f a]4 | (tp "3/2" g8 f e) e2 a'4 |
+    
+=2 ~1
+(key -3 "maj")
+(clef "bass")
+    ^3 r r r e | g a8 f g4 e | b b' e, a | b2 b, | e4 g8 f g4 e | d b' b, b'
+    
+=1 
+(tp "3/2" f8 e d) d d d f e d
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/Marche.png" />
+
+<hr>
+
+<div class="page-header">
+    <h2>Symbols definition</h2>
+</div>
+
+<p>
+    The symbol definition is a language construct that specifies a name binding between an identifier and a phrase.<br/>
+    An identifier consists of a colon <kbd>:</kbd> followed by an alphanumeric string and after its definition (with the <mark>def</mark> command) can be <em>called</em> anywhere in the score.<br/>
+    For example valid symbols are <code>:intro :chorus :ending</code><br/>
+    Symbols are similar to constants definition in programming languages and are tipically employed to reuse a particular motif (possibly transformed) several times.
+</p>
+
+<pre><code class="mirchord">
+=1 ~1
+(def :mysymbol {c e g})
+:mysymbol :mysymbol :mysymbol
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/mysymbol.png" />
+
+<div class="page-header">
+    <h2>Standard transformations</h2>
+</div>
+
+<p>
+    The interpreter by default ships with some built-in transformations often useful in music contexts.
+</p>
+<p class="bg-info">
+    As always the user is invited to make large use of the autocompletion feature of the editor in specifying transformations.
+</p>
+
+<p>
+    With the repetition command it is possible to duplicate a particular phrase.<br/>
+    For example the following code <code>(* 3 {c e g2})</code> repeats the phrase 3 times.
+</p>
+
+<img class="img-responsive" src="./assets/images/screenshots/repeat-phrase.png" />
+
+<p>
+    An interesting tranformation is the <mark>zip</mark> function.<br/>
+    With this command it is possible to combine the pitches of the first phrase with the durations of the second phrase (a rhythmic pattern).
+</p>
+
+<pre><code class="mirchord">
+=1 ~1 
+; equivalent to { ^5 c8 d c b a4 f }
+(zip {^5 c d c b a f} {x8 x x x x4 x4})
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/zip-phrase-pattern.png" />
+
+<p>
+    Another common transformation allows to <mark>transpose</mark> every element  of the phrase by a fixed number of semitones (half-steps):
+</p>
+
+<pre><code class="mirchord">
+=1 ~1
+(def :fra  { ^4 f4 g a f })
+:fra (transpose 12 :fra)
+</code></pre>
+
+<img class="img-responsive" src="./assets/images/screenshots/transpose-phrase.png" />
+
+<p>The following list of other conventional musical transformations have auto-explicative meaning and are built-in inside the framework:</p>
+<div>
+    <ul>
+        <li>transpose</li>
+        <li>transposeDiatonic</li>
+        <li>invert</li>
+        <li>invertDiatonic</li>
+        <li>retrograde</li>
+        <li>augment</li>
+        <li>diminuition</li>
+    </ul>
+</div>
+
+
+<p>
+Thanks to symbols definitions and the special commands that we have presented above we are now able to write a "smarter" and more synthetic version of <em>Fra Martino</em>
+</p>
+
+<pre><code class="mirchord">
+=1 ~1
+(instr "flute")
+(key "D" "min")
+
+(def :fra  { ^4 f4 g a f })             ; Fra Martino campanaro
+
+(def :dormi  { ^4 a4 b c2 })            ; dormi tu?
+            
+(def :campane  { ^5 c8 d c b a4 f })    ; suona le campane
+
+(def :din { ^4 f4 c f2 })               ; din don dan       
+
+(* 2 :fra) (* 2 :dormi) (* 2 :campane) (* 2 :din)
+</code></pre>
+that is rendered as above.<br/>
+
+<hr>
+
+<p>
+    Where to go next: 
+    <a href="mirchord_ext.html">Extending Mirchord with scripts.</a>
+</p>
+
+
+</div>
+

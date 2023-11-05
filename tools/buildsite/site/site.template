@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Computer Music Composition Software">
+    <meta name="keywords" content="Open Source Assisted Algorithmic Computer Music Composition Sofware Library Framework Machine Learning">
+    <meta name="author" content="Mirco Colletta">
+    <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
+
+    <title>
+      MirComp: computer music composition framework
+      <% out << (path.getFileName().toString() == "index.html" ? " - Home" : "") %>
+      <% out << (path.getFileName().toString() == "download.html" ? " - Download" : "") %>
+      <% out << (path.getFileName().toString() == "getting_started.html" ? " - Getting Started" : "") %>
+      <% out << (path.getFileName().toString() == "documentation.html" ? " - Documentation" : "") %>
+      <% out << (path.getFileName().toString() == "mirchord.html" ? " - MirChord" : "") %>
+      <% out << (path.getFileName().toString() == "mirchord_ext.html" ? " - Extending MirChord" : "") %>
+      <% out << (path.getFileName().toString() == "framework.html" ? " - Framework" : "") %>
+      <% out << (path.getFileName().toString() == "soundfonts.html" ? " - Sampled sounds" : "") %>
+      <% out << (path.getFileName().toString() == "mirmidi.html" ? " - MirMidi" : "") %>
+      <% out << (path.getFileName().toString() == "mirscore.html" ? " - MirScore" : "") %>
+    </title>
+
+    <link rel="author license" href="about_site.html">
+
+    <!-- Bootstrap CSS -->
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/bootstrap.min.css.map" rel="stylesheet">
+    <link href="./assets/css/monokai.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="./assets/css/mircomp.css" rel="stylesheet">
+  </head>
+
+  <body role="document">
+
+    <a href="https://github.com/mcolletta/mircomp"><img style="position: absolute; top: 45px; right: 0; border: 0;" src="./assets/images/fork-github.png" alt="Fork me on GitHub" ></a>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md bg-dark sticky-top border-bottom" data-bs-theme="dark">
+      <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="#offcanvas" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="#offcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav flex-grow-1">
+              <li <% out << (path.getFileName().toString() == "index.html" ? "class=\"nav-item active\"" : "nav-item") %> ><a class="nav-link" href="index.html">Home</a></li>
+              <li <% out << (path.getFileName().toString() == "getting_started.html" ? "class=\"nav-item active\"" : "nav-item") %> ><a class="nav-link" href="getting_started.html">Getting Started</a></li>
+              <li <% out << (path.getFileName().toString() == "documentation.html" ? "class=\"nav-item active\"" : "nav-item") %> ><a class="nav-link" href="documentation.html">Documentation</a></li>
+              <li <% out << (path.getFileName().toString() == "download.html" ? "class=\"nav-item active\"" : "nav-item") %> ><a class="nav-link" href="download.html">Download</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      ${content}
+    </main>
+   
+    <hr/>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>© 2016-2023 Mirco Colletta - The content/documentation of the site is released under the <em>GNU General Public License version 3</em>.</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <script type="application/json" src="./assets/js/bootstrap.min.js.map"></script>
+    <script src="./assets/js/mircomp.js"></script>
+    <script src="./assets/js/highlight.min.js"></script>
+    <script src="./assets/js/clojure.min.js"></script>
+    <script src="./assets/js/java.min.js"></script>
+    
+    <script>
+        hljs.registerAliases("mirchord", { languageName: "clojure" })
+        hljs.registerAliases("groovy", { languageName: "java" })
+        hljs.highlightAll();
+    </script>
+
+  </body>
+</html>

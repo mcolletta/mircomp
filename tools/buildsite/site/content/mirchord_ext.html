@@ -1,0 +1,62 @@
+<div class="container my-5">
+
+<div class="p-5 text-left bg-body-tertiary rounded-3">
+	<h1 class="text-body-emphasis">Extending MirChord</h1>
+	<p class="lead">
+		A short guide to extend the notation functionality with music "logic".
+	</p>
+</div>
+
+<div>
+    <p class="spaced">
+        We have seen in the <a href="mirchord.html">notation language</a> page that the interpreter provides by default a lot of built-in useful tranformations but sometimes we could have the necessity to create our own functions.<br/>
+        In MirChord it is possible to extend the interpreter processing capabilities with custom transformations by means of groovy methods marked with the special annotation <code>@MirChord</code>.
+    </p>
+
+    <p class="bg-danger">This section requires a basic knowledge of the Groovy programming language (or Java since most Java code is also valid Groovy code)</p>
+
+    <h4>Example</h4>
+
+    <p class="spaced">
+        Transposition is available from the standard set of built-in functions but as a little exercise we now define it again as a custom transformation. First, you should create in the <em>src</em> folder a groovy file named <em>Transformations.groovy</em> and paste the following code.
+    </p>
+
+    <pre><code class="groovy">
+    @MirChord 
+    public Phrase myTranspose(int halfSteps, Phrase phrase) {
+        Phrase newPhrase = phrase.copy()
+        for(MusicElement el : newPhrase.elements) {
+            if (el.getMusicElementType() == "Chord") {
+                Chord chord = (Chord)el
+                for(Pitch pitch : chord.getPitches()) {
+                    pitch.setMidiValue(pitch.getMidiValue() + halfSteps)
+                }
+            }
+        }
+        return newPhrase
+    }
+    </code></pre>
+
+    <p class="spaced">
+        Now we can use the new defined transformation inside our MirChord scores using the <mark>include</mark> command.
+    </p>
+
+    <pre><code class="mirchord">
+    =1 ~1
+    (instr "flute")
+    (key "D" "min")
+
+    ^4 f4 g a f | f4 g a f | a4 b c2 | a4 b c2
+                
+    ^5 c8 d c b a4 f | ^5 c8 d c b a4 f
+
+    ^4 f4 c f2 | f4 c f2  
+
+    (include "src/Transformations.groovy")
+
+    (myTranspose 3 { ^4 f4 c f2 | f4 c f2 })
+    </code></pre>
+
+</div>
+
+</div>

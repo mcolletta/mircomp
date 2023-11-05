@@ -4,60 +4,75 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Computer Music Composition Software">
-    <meta name="keywords" content="Open Source Assisted Automatic Algorithmic Computer Music Composition Sofware Library Framework">
+    <meta name="keywords" content="Open Source Assisted Algorithmic Computer Music Composition Sofware Library Framework Machine Learning">
     <meta name="author" content="Mirco Colletta">
     <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
 
     <title>
-      MirComp: computer music composition framework - MirChord
+      MirComp: computer music composition framework
+      
+      
+      
+      
+       - MirChord
+      
+      
+      
+      
+      
     </title>
 
     <link rel="author license" href="about_site.html">
 
-    <!-- Bootstrap core CSS -->
-    <link href="./assets/css/bootstrap.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
-    <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
-    <!-- highlight -->
-    <!-- <link href="./assets/css/monokai.min.css" rel="stylesheet"> -->
-
+    <!-- Bootstrap CSS -->
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/bootstrap.min.css.map" rel="stylesheet">
+    <link href="./assets/css/monokai.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="./assets/css/mircomp.css" rel="stylesheet">
   </head>
 
   <body role="document">
 
-
     <a href="https://github.com/mcolletta/mircomp"><img style="position: absolute; top: 45px; right: 0; border: 0;" src="./assets/images/fork-github.png" alt="Fork me on GitHub" ></a>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-expand-md bg-dark sticky-top border-bottom" data-bs-theme="dark">
       <div class="container">
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <!-- <li class="active" ><a href="index.html">Home</a></li>
-            <li  ><a href="getting_started.html">Getting Started</a></li>
-            <li  ><a href="documentation.html">Documentation</a></li>
-            <li  ><a href="download.html">Download</a></li> -->
-            <li><a href="index.html">Home</a></li><li><a href="getting_started.html">Getting Started</a></li><li><a href="documentation.html">Documentation</a></li><li><a href="download.html">Download</a></li>
-          </ul>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="#offcanvas" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="#offcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav flex-grow-1">
+              <li nav-item ><a class="nav-link" href="index.html">Home</a></li>
+              <li nav-item ><a class="nav-link" href="getting_started.html">Getting Started</a></li>
+              <li nav-item ><a class="nav-link" href="documentation.html">Documentation</a></li>
+              <li nav-item ><a class="nav-link" href="download.html">Download</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </nav>
 
-    <div class="container theme-showcase" role="main">
+    <main>
+          
+<div class="container my-5">
 
-      <div>
-
-                
-<div class="jumbotron">
-    <h1>MirChord</h1>
-    <p>An overview of the MirChord notation language and a reference to the most common elements, symbols and commands. Learn how to write an entire multipart and multivoice score.</p>
+<div class="p-5 text-left bg-body-tertiary rounded-3">
+    <h1 class="text-body-emphasis">MirChord</h1>
+    <p class="lead">
+        An overview of the MirChord notation language and a reference to the most common elements, symbols and commands. Learn how to write an entire multipart and multivoice score.
+    </p>
 </div>
 
 
 <div class="page-header">
-    <h2>Comments</h1>
+    <h2>Comments</h2>
 </div>
 
 <p>Everything that starts with <code>;</code> is ignored by the interpreter.</p>
@@ -96,7 +111,8 @@
 <p>Clefs can be defined using the <mark>clef</mark> command.<br/>
 <p class="bg-info">Tip: the most convenient way to write down clef is by using the autocomplete feature of the editor.</p>
 
-<pre><code class="mirchord">=1 ~1 (clef "treble")
+<pre><code class="mirchord">
+=1 ~1 (clef "treble")
 =2 ~1 (clef "bass")
 =3 ~1 (clef "percussion")
 </code></pre>
@@ -125,7 +141,8 @@
 
 <p>An example with rests:</p>
 
-<pre><code class="mirchord">=1 ~1
+<pre><code class="mirchord">
+=1 ~1
 c8 r8 r4 r2 r1
 </code></pre>
 
@@ -158,7 +175,8 @@ The following code <code>c# e&</code> produces:
 <p class="bg-info">When you get lost o messed up within the score use the octave command to change the current octave value.
 
 <p>For example what follows is a C major scale that spans over two octaves</p>
-<pre><code class="mirchord">=1 ~1
+<pre><code class="mirchord">
+=1 ~1
 (key "C" "maj")
 c d e f g a b c d e f g a b c
 </code></pre>
@@ -166,7 +184,8 @@ c d e f g a b c d e f g a b c
 
 <p>Example of octave marks:</p>
 
-<pre><code class="mirchord">=1 ~1
+<pre><code class="mirchord">
+=1 ~1
 c c, c''
 </code></pre>
 
@@ -179,8 +198,8 @@ c c, c''
 <p>
     In the previous examples we have not specified the duration of notes so the default value of <var>1/4</var> is used.
     As with octaves there are two ways to specify the duration of a music element, i.e. note, chord, rest, ...<br/>
-    One option is the duration command: the symbol <mark>%</mark> followed by a number that represents the reciprocal of the actual duration. For dotted notes a <kbd>.</kbd> char should be placed after the duration number.<br/>
-    For example the directive <code>%8</code> denotes a <var>1/8</var> duration (or <var>0.125</var> of a measure in decimal representation).<br/>
+    One option is the duration command: the symbol <mark>`</mark> followed by a number that represents the reciprocal of the actual duration. For dotted notes a <kbd>.</kbd> char should be placed after the duration number.<br/>
+    For example the directive <code>`8</code> denotes a <var>1/8</var> duration (or <var>0.125</var> of a measure in decimal representation).<br/>
 </p>
 
 <p>
@@ -191,7 +210,8 @@ c c, c''
 <p class="bg-info">For note longer than an <em>whole</em> ties are required.
 <p class="bg-info">If a note duration does not fit within a measure length it is divided in more notes and ties are applied automatically between measure boundaries</p>
 
-<pre><code class="mirchord">=1 ~1
+<pre><code class="mirchord">
+=1 ~1
 c2. e2 g2.
 </code></pre>
 
@@ -218,7 +238,8 @@ c2. e2 g2.
 
 <p>What follows is an example of a triplet:</p>
 
-<pre><code class="mirchord">=1 ~1 
+<pre><code class="mirchord">
+=1 ~1 
 (tp "3/2" g8 f e)
 </code></pre>
 <img class="img-responsive" src="./assets/images/screenshots/triplet.png" />
@@ -233,7 +254,8 @@ c2. e2 g2.
     With a phrase it is possible to group a list of notes in a short motif with a dedicated scope (see below).</p>
 </p>
 
-<pre><code class="mirchord">=1 ~1 
+<pre><code class="mirchord">
+=1 ~1 
 {c e g}
 </code></pre>
 
@@ -277,7 +299,8 @@ Some remarks on invertions:<br/>
 
 
 <p>Major chord first and second inversion</p>
-<pre><code class="mirchord">=1 ~1 
+<pre><code class="mirchord">
+=1 ~1 
 C C\E C\G
 </code></pre>
 
@@ -288,8 +311,9 @@ C C\E C\G
 </p>
 
 <p>Example of a chords progression</p>
-<pre><code class="mirchord">=1 ~1 
-%4 C / / / | Dm / / / | F / / / | G / / /
+<pre><code class="mirchord">
+=1 ~1 
+`4 C / / / | Dm / / / | F / / / | G / / /
 </code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/chords-progression.png" />
@@ -298,8 +322,9 @@ C C\E C\G
 Other examples:<br/>
 </p>
 
-<pre><code class="mirchord">=1 ~1 
-[c e g]4 ^4 %4 C7 Cmaj7 Cmaj13(#11) ^5 %2 C %4 C/E C\E /
+<pre><code class="mirchord">
+=1 ~1 
+[c e g]4 ^4 `4 C7 Cmaj7 Cmaj13(#11) ^5 `2 C `4 C/E C\E /
 </code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/chord-symbols.png" />
@@ -330,7 +355,8 @@ Other examples:<br/>
 
 <p>Let's see an example with two different voices</p>
 
-<pre><code class="mirchord">=1
+<pre><code class="mirchord">
+=1
 
 ~1 
 (clef "percussion")
@@ -347,14 +373,39 @@ x8 x4 x x8 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8
 
 
 <div class="page-header">
-    <h2>Examples</h1>
+    <h2>Universal Key/Scale</h2>
+</div>
+
+<p>
+    In MirChord notes and chord symbols can be expressed based on the current key signature.<br/>
+    For notes, <em>solfeggio syllables</em> can be used to represent the movable-do system.<br/>
+    For chords, <em>Roman numerals</em> can be used in place of capital letters.
+</p>
+
+<pre><code class="mirchord">
+=1 ~1
+(key "B&" "maj")
+
+I IV\I V\VII ^4 I
+
+=2 ~1
+(key "B&" "maj")
+
+do re mi fa sol la si
+</code></pre>
+<img class="img-responsive" src="./assets/images/screenshots/universal-key.png" />
+
+
+<div class="page-header">
+    <h2>Examples</h2>
 </div>
 
 <p class="lead">
     <mark>Fra Martino</mark>, the Italian version of the well known French nursery rhyme <em>Frère Jacque</em>
 </p>
 
-<pre><code class="mirchord">=1 ~1
+<pre><code class="mirchord">
+=1 ~1
 (instr "flute")
 (key "D" "min")
 
@@ -373,7 +424,8 @@ x8 x4 x x8 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8
     First measures from <mark>Invention N. 1</mark> by <em>Johann Sebastian Bach</em>
 </p>
 
-<pre><code class="mirchord">=1  ~1
+<pre><code class="mirchord">
+=1  ~1
 (key "C" "maj")
 (clef "treble")
 (name "Voice 1")
@@ -401,7 +453,8 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 
 <p>A <em>Marche</em> by <em>Carl Philipp Emanuel Bach</em></p>
 
-<pre><code class="mirchord">=1 ~1
+<pre><code class="mirchord">
+=1 ~1
 (instr "acoustic grand piano")
 (key "E&" "maj")
 (clef "treble")
@@ -431,7 +484,8 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
     Symbols are similar to constants definition in programming languages and are tipically employed to reuse a particular motif (possibly transformed) several times.
 </p>
 
-<pre><code class="mirchord">=1 ~1
+<pre><code class="mirchord">
+=1 ~1
 (def :mysymbol {c e g})
 :mysymbol :mysymbol :mysymbol
 </code></pre>
@@ -461,7 +515,8 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
     With this command it is possible to combine the pitches of the first phrase with the durations of the second phrase (a rhythmic pattern).
 </p>
 
-<pre><code class="mirchord">=1 ~1 
+<pre><code class="mirchord">
+=1 ~1 
 ; equivalent to { ^5 c8 d c b a4 f }
 (zip {^5 c d c b a f} {x8 x x x x4 x4})
 </code></pre>
@@ -472,7 +527,8 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
     Another common transformation allows to <mark>transpose</mark> every element  of the phrase by a fixed number of semitones (half-steps):
 </p>
 
-<pre><code class="mirchord">=1 ~1
+<pre><code class="mirchord">
+=1 ~1
 (def :fra  { ^4 f4 g a f })
 :fra (transpose 12 :fra)
 </code></pre>
@@ -497,7 +553,8 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 Thanks to symbols definitions and the special commands that we have presented above we are now able to write a "smarter" and more synthetic version of <em>Fra Martino</em>
 </p>
 
-<pre><code class="mirchord">=1 ~1
+<pre><code class="mirchord">
+=1 ~1
 (instr "flute")
 (key "D" "min")
 
@@ -521,35 +578,36 @@ that is rendered as above.<br/>
 </p>
 
 
+</div>
 
-      </div>
 
-      <hr/>
+    </main>
+   
+    <hr/>
 
-      <!-- FOOTER -->
-      <footer>
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2022 Mirco Colletta - <a href="about_site.html">About the site</a></p>
-      </footer>
+        <p>© 2016-2023 Mirco Colletta - The content/documentation of the site is released under the <em>GNU General Public License version 3</em>.</p>
+      </div>
+    </footer>
 
-    </div> <!-- /container -->
-
-    
     <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <!-- <script src="./assets/js/jquery.min.js"></script>
+     <!-- Placed at the end of the document so the pages load faster -->
     <script src="./assets/js/bootstrap.min.js"></script>
-    <script src="./assets/js/docs.min.js"></script> -->
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
-    
-    <!-- <script src="./assets/js/mircomp.js"></script>    
-    <script src="./assets/js/mirchord.min.js"></script>
-    <script src="./assets/js/groovy.min.js"></script>
+    <script type="application/json" src="./assets/js/bootstrap.min.js.map"></script>
+    <script src="./assets/js/mircomp.js"></script>
     <script src="./assets/js/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script> -->
-  
+    <script src="./assets/js/clojure.min.js"></script>
+    <script src="./assets/js/java.min.js"></script>
+    
+    <script>
+        hljs.registerAliases("mirchord", { languageName: "clojure" })
+        hljs.registerAliases("groovy", { languageName: "java" })
+        hljs.highlightAll();
+    </script>
 
   </body>
 </html>

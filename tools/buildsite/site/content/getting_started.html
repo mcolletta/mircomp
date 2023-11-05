@@ -1,0 +1,158 @@
+<div class="container my-5">
+
+<div class="p-5 text-left bg-body-tertiary rounded-3">
+	<h1 class="text-body-emphasis">Getting Started</h1>
+	<p class="lead">
+		Learn how to setup MirComp with instruction on how to install the IDE and create your first music project.
+	</p>
+</div>
+
+<div class="page-header">
+ 	<h2>Prerequisites</h2>
+</div>
+
+<div class="spaced">
+	<h4>Download and build the application</h4> 
+	<p class="spaced">		
+		Follow the instructions on the <a target="_blank" href="download.html">Download</a> page.
+	</p>
+</div>
+
+<div class="spaced">
+	<h4>Launch the application</h4>
+	<p class="spaced">
+		When the program starts you will see, after the agreement dialog, the splash screen of the app with the official logo.
+	</p>
+
+	<figure>
+		<img class="img-responsive img-thumbnail" src="./assets/images/screenshots/MirIDE-start.png" />
+		<figcaption>Start of the application</figcaption>
+	</figure>
+</div>
+
+
+<div class="spaced">
+	<h4>Create a new score</h4>
+	<p class="spaced">
+		We are almost ready to write our first composition.<br/>
+		There are two ways to start composing. <br/>
+		<ul>
+			<li>
+				The simplest choice is to create a new mirchord file and edit the score using the MirChord notation. In this case there will be a special window divided in two panes with a syntax highlighted code editor and a score viewer and MIDI player.
+			</li>
+			<li>
+				On the other hand, it is possible to create a new MIDI file and in this case you can start composing by means of a full-blown MIDI sequencer and editor.
+			</li>
+		</ul>		
+	</p>
+</div>
+
+<div class="spaced">
+	<h4>Using the MirChord notation language</h4>
+	<p class="spaced">
+		Examples are a conventient way to explore the software capabilities and in this short tutorial you are invited to cut and paste the first four measures of <em>Invention n. 1</em> by the well known German composer and musician <em>Johann Sebastian Bach</em>
+	</p>
+	<p class="bg-info spaced">
+	    You can visit the <a href="mirchord.html">reference page</a> for details about MirChord.
+	</p>
+
+	<pre><code class="mirchord">
+	=1  ~1
+	(key "C" "maj")
+	(clef "treble")
+	(name "Voice 1")
+	r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
+
+	=2 ~2
+	(clef "bass")
+	(name "Voice 2")
+	^3 r2 r16 c d e f d e c | g'8 g, r4 r16 g a b c a b g |
+
+	=1
+	^5 e16 a g f e g f a g f e d c e d f | e d c b a c b d c b a g f# a g b
+
+	=2
+	^4 c8 b c d e g, a b | c e, f# g a b c4
+	</code></pre>
+
+	<p class="spaced">
+		To perform the score generation task you have to press the <mark>Run</mark> action (the button with the "gears" or the equivalent menu item).
+	</p>
+
+	<figure>
+		<img class="img-responsive" src="./assets/images/screenshots/Bach-Invention1.png" />
+		<figcaption>J.S. Bach - Invention N.1</figcaption>
+	</figure>
+
+	<p class="spaced">
+		On the bottom part of the application you should see a graphical representation of the score defined above.<br/>
+		You can now press the <mark>Play</mark> button in the middle toolbar to start the midi playback.
+	</p>
+
+	<figure>
+		<img class="img-responsive" src="./assets/images/screenshots/mirscore-playback.png" />
+		<figcaption>Midi Playback</figcaption>
+	</figure>
+</div>
+
+<div class="spaced">
+	<h4>Create a score using the MirMidi sequencer.</h4>
+	<p class="spaced">
+		As stated above the other option is to create a new MIDI file or open an exisisting one (there are tons of them over the Internet).<br/>
+		In this case the MIDI editor shows up.
+	</p>
+	<p class="bg-info spaced">
+	    For a MirComp project (see below) you can import an existing file into the <em>midi</em> folder of the project by means of the <mark>Import...</mark> command of the mouse menu over the specific tree folder.
+		<br/>
+	    You can visit the <a href="mirmidi.html">MirMidi</a> page for details about the sequencer.
+	</p>
+	<figure>
+		<img class="img-responsive" src="./assets/images/screenshots/mirmidi.png" />
+		<figcaption>MirMidi sequencer and editor</figcaption>
+	</figure>
+</div>
+
+
+<div class="page-header">
+ 	<h2>Set up a project</h2>
+</div>
+
+<div class="spaced">
+	<h4>Create a new project</h4>
+	<p class="spaced">
+		You can create a new project from scratch using the <em>New Project</em> button that opens the following dialog.
+	</p>
+	<figure>
+		<img class="img-responsive" src="./assets/images/screenshots/new-project-dialog.png" />
+		<figcaption>New project dialog</figcaption>
+	</figure>
+	<p class="spaced">
+		The dialog requires the name of the new project (you can rename it later from the tree view or from the file system) and the path of the workspace, i.e. a folder where the project is going to reside.
+	</p>
+</div>
+
+<div class="spaced">
+	<h4>Project tree</h4>
+	<p class="spaced">
+		After a new project is created (or opened) on the left side of the IDE you can find the project tree.<br/>
+		Projects created with the wizard share a common structure and have at least these common folders that serve a distinct purpose inside the project.<br/>
+		<ul>
+			<li>The <em>mirchords</em> folder will contain all the compositions of the project.</li>
+			<li>The <em>src</em> folder is the folder where you can put your groovy scripts.</li>
+			<li>The <em>midi</em> folder is for MIDI files.</li>
+			<li>The <em>lib</em> folder is reserved for external jars file (if any).</li>
+		</ul>
+		<br/>
+	</p>
+	<figure>
+		<img class="img-responsive" src="./assets/images/screenshots/miride-hp.png" />
+		<figcaption>Project tree</figcaption>
+	</figure>
+</div>
+
+
+<hr/>
+
+Back to the <a href="documentation.html">documentation</a> page.
+
+</div>

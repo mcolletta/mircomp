@@ -1,0 +1,114 @@
+<div class="container my-5">
+
+<div class="p-5 text-left bg-body-tertiary rounded-3">
+	<h1 class="text-body-emphasis">MirMidi</h1>
+	<p class="lead">
+		An introduction to the MIDI sequencer.
+	</p>
+</div>
+
+<div class="page-header">
+	<h2>Component overview</h2>
+</div>
+
+<div class="spaced">
+    <p class="spaced">
+        The window provides 5 main components that are listed below:<br/>
+        <ul>
+            <li>Piano roll editor</li>
+            <li>Controller editor</li>
+            <li>Instruments editor</li>
+            <li>Tempo editor</li>
+            <li>Midi events table</li>
+        <ul>
+        <br/>
+    </ul>
+
+     <img class="img-responsive" alt="MirMIDI" src="./assets/images/screenshots/mirmidi.png" data-holder-rendered="true">
+</ul>
+
+<div class="page-header">
+	<h2>The top menu bar</h2>
+</div>
+
+<div class="spaced">
+    <p class="spaced">
+    On the top menu you can find actions related to File/Sequence management (load, save, new sequence, undo/redo, zooming, ect.), MIDI playback and notes interations (MIDI <em>NOTE_ON/NOTE_OFF</em> events).
+    </p>
+
+    <img class="img-responsive" src="./assets/images/screenshots/midi-menubar-top.png" />
+</div>
+
+
+<div class="page-header">
+	<h2>The piano roll panel</h2>
+</div>
+
+<div class="spaced">
+    <p class="spaced">
+        In this portion of the layout every note is rendered as a rectangle with a different color for every  channel. In <em>Edit</em> mode you can insert, remove, move and manipulate notes. Other neat features are the quantization and humanization actions that operate on the duration of selected notes.
+    </p>
+
+    <img class="img-responsive" src="./assets/images/screenshots/mirmidi-pianoroll.png" />
+</div>
+
+<div class="page-header">
+	<h2>The middle menu bar</h2>
+</div>
+
+<div class="spaced">
+    <p class="spaced">
+    The menu in the middle of the screen is very important since contains actions related to all the components. For example here it is possible to select the current <em>Track</em> or <em>Channel</em>, mute some tracks during the playback, choose the current <em>Mode</em> (i.e. <mark>Select, Edit, Playback</mark>), <em>delete</em> the selected evetns and open the raw list (actually a table) of MIDI events currently selected.
+    </p>
+    <figure>
+        <img class="img-responsive" src="./assets/images/screenshots/midi-menubar-middle.png" />
+        <figcaption>Middle menu</figcaption>
+    </figure>
+</div>
+
+
+
+<div class="page-header">
+	<h2>The controller panel</h2>
+</div>
+
+<div class="spaced">
+    <p class="spaced">
+        The <em>Controllers</em> editor is probably the most important component of MirMidi. Within the panel you can insert/edit <em>Control Changes (CCs)</em> events. This kind of events are important in practice for the believability of the playback performance of the sequence. Some events are in the range <em>0-127</em> and so you can shape their progress drawing straight lines or polynomial curves (for example the <em>Volume</em> CC). For others you can switch them <em>ON/OFF</em> through time (for example the <em>Sustain Pedal</em> CC).
+    </p>
+    <figure>
+        <img class="img-responsive" src="./assets/images/screenshots/controller-tab.png" />
+        <figcaption>Controllers Pane</figcaption>
+    </figure>
+</div>
+
+<div class="page-header">
+	<h2>The instruments panel</h2>
+</div>
+
+
+<div class="spaced">
+    <p class="spaced">
+        In this panel you can select the current MIDI Instrument for every channel and so insert/edit <em>Program Change</em> events by just clicking inside every channel rectangular area.
+    </p>
+    <figure>
+        <img class="img-responsive" src="./assets/images/screenshots/instruments-tab.png" />
+    <figcaption>Instruments Pane</figcaption>
+    </figure>
+</div>
+
+<div class="page-header">
+	<h2>The tempo panel</h2>
+</div>
+
+<div class="spaced">
+    <p class="spaced">
+        This is the panel where you can control the current tempo (so the speed of execution) of the entire sequence. When in Edit mode every click set a new tempo event on the sequence.
+    </p>
+    <figure>
+        <img class="img-responsive" src="./assets/images/screenshots/tempo-tab.png" />
+    <figcaption>Tempo Pane</figcaption>
+    </figure>
+</div>
+
+</div>

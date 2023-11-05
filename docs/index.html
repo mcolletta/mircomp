@@ -4,195 +4,236 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Computer Music Composition Software">
-    <meta name="keywords" content="Open Source Assisted Automatic Algorithmic Computer Music Composition Sofware Library Framework">
+    <meta name="keywords" content="Open Source Assisted Algorithmic Computer Music Composition Sofware Library Framework Machine Learning">
     <meta name="author" content="Mirco Colletta">
     <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
 
     <title>
-      MirComp: computer music composition framework - Home
+      MirComp: computer music composition framework
+       - Home
+      
+      
+      
+      
+      
+      
+      
+      
+      
     </title>
 
     <link rel="author license" href="about_site.html">
 
-    <!-- Bootstrap core CSS -->
-    <link href="./assets/css/bootstrap.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
-    <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
-    <!-- highlight -->
-    <!-- <link href="./assets/css/monokai.min.css" rel="stylesheet"> -->
-
+    <!-- Bootstrap CSS -->
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/bootstrap.min.css.map" rel="stylesheet">
+    <link href="./assets/css/monokai.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="./assets/css/mircomp.css" rel="stylesheet">
   </head>
 
   <body role="document">
 
-
     <a href="https://github.com/mcolletta/mircomp"><img style="position: absolute; top: 45px; right: 0; border: 0;" src="./assets/images/fork-github.png" alt="Fork me on GitHub" ></a>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-expand-md bg-dark sticky-top border-bottom" data-bs-theme="dark">
       <div class="container">
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <!-- <li class="active" ><a href="index.html">Home</a></li>
-            <li  ><a href="getting_started.html">Getting Started</a></li>
-            <li  ><a href="documentation.html">Documentation</a></li>
-            <li  ><a href="download.html">Download</a></li> -->
-            <li class="active"><a href="index.html">Home</a></li><li><a href="getting_started.html">Getting Started</a></li><li><a href="documentation.html">Documentation</a></li><li><a href="download.html">Download</a></li>
-          </ul>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="#offcanvas" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="#offcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav flex-grow-1">
+              <li class="nav-item active" ><a class="nav-link" href="index.html">Home</a></li>
+              <li nav-item ><a class="nav-link" href="getting_started.html">Getting Started</a></li>
+              <li nav-item ><a class="nav-link" href="documentation.html">Documentation</a></li>
+              <li nav-item ><a class="nav-link" href="download.html">Download</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </nav>
 
-    <div class="container theme-showcase" role="main">
-
-      <div>
-
-        <div class="row text-center">
-  <br/><br/>
-  <img class="img-responsive mircomp-logo" src="./assets/images/logo.png" alt="MirComp Logo" />
-</div>
-
-
-<div class="page-header">
-  <div class="well text-center">
-    <p>
-      Computer Music Software for assisted and algorithmic music composition.<br/>
-      MirComp is free software and is distributed under the <a alt="GPLv3" href="https://github.com/mcolletta/mircomp/blob/master/LICENSE" target="_blank">GNU General Public License version 3</a>.<br/>
-      WARNING: Work in progress.
-    </p>
+    <main>
+      
+<div class="px-4 my-5 text-center">
+  <img class="d-block mx-auto mb-4 img-fluid" src="./assets/images/sitelogo.png" alt="MirComp Logo" />
+  <div class="col-lg-6 mx-auto">
+    <p class="lead mb-4"><strong>MirComp</strong> - Music Framework for assisted and algorithmic music composition.</p>
   </div>
 </div>
 
-
-<div class="row">
-  <div class="col-lg-4 text-center">
-    <img class="img-circle" src="./assets/images/piano.png" alt="Features" style="width: 140px; height: 140px;">
-    <h2>Features</h2>
-    <p>Watch the list of features.</p>
-    <p><a class="btn btn-default" href="#features" role="button">View details »</a></p>
-  </div>
-  <div class="col-lg-4 text-center">
-    <img class="img-circle" src="./assets/images/documentation.png" alt="Getting Started" style="width: 140px; height: 140px;">
-    <h2>Getting Started</h2>
-    <p>Look out at the documentation.</p>
-    <p><a class="btn btn-default" href="getting_started.html" role="button">View details »</a></p>
-  </div>
-  <div class="col-lg-4 text-center">
-    <img class="img-circle" src="./assets/images/download.png" alt="Download" style="width: 140px; height: 140px;">
-    <h2>Download</h2>
-    <p>Get and try out the first alpha version.</p>
-    <p><a class="btn btn-default" href="download.html" role="button">View details »</a></p>
+<div class="bg-dark px-4 py-5 my-5 text-center text-white">
+  <div class="row">
+    <div class="col-lg-4 text-center">
+      <img class="rounded-circle" src="./assets/images/piano.png" alt="Features" style="width: 140px; height: 140px;">
+      <h2 class="fw-normal">Features</h2>
+      <p>Watch the list of features.</p>
+      <p><a class="bg-light btn btn-outline-secondary btn-lg px-4" href="#features" role="button">View details »</a></p>
+    </div>
+    <div class="col-lg-4 text-center">
+      <img class="rounded-circle" src="./assets/images/documentation.png" alt="Getting Started" style="width: 140px; height: 140px;">
+      <h2 class="fw-normal">Getting Started</h2>
+      <p>Look out at the documentation.</p>
+      <p><a class="bg-light btn btn-outline-secondary btn-lg px-4" href="getting_started.html" role="button">View details »</a></p>
+    </div>
+    <div class="col-lg-4 text-center">
+      <img class="rounded-circle" src="./assets/images/download.png" alt="Download" style="width: 140px; height: 140px;">
+      <h2 class="fw-normal">Download</h2>
+      <p>Get and try out the software.</p>
+      <p><a class="bg-light btn btn-outline-secondary btn-lg px-4" href="download.html" role="button">View details »</a></p>
+    </div>
   </div>
 </div>
   
-
 <!-- START THE FEATURETTES -->
 
-<hr id="features" class="featurette-divider">
-
-<div class="row featurette">
-  <div class="col-md-7">
-    <h2 class="featurette-heading">MirIDE. <span class="text-muted">An Integrated Development Environment for music projects.</span></h2>
-    <p class="lead">
-      The MirComp Integrated Development Environment (MirIDE) is a software application that provides a comprehensive set of tools to manage a music project the same way developers organize their products.
-      It consists of several components: syntax highlighted code editor with autocomplete, graphical score viewer, MIDI editor, folder viewer, scripting capabilities, soundfonts selector.
-    </p>
-  </div>
-  <div class="col-md-5">
-    <img class="featurette-image img-responsive" alt="MirChord" src="./assets/images/screenshots/MirIDE-example.png" data-holder-rendered="true">
-  </div>
-</div>
-
-<hr id="features" class="featurette-divider">
-
-<div class="row featurette">
-	<div class="col-md-5">
-    <img class="featurette-image img-responsive" alt="MirScore" src="./assets/images/screenshots/mirtext.png" data-holder-rendered="true">
-  </div>
-  <div class="col-md-7">
-    <h2 class="featurette-heading">MirChord. <span class="text-muted">A poweful notation language.</span></h2>
-    <p class="lead">
-      MirChord is a powerful but easy-to-learn textual notation language tailored for assisted/algorithmic music composition.
-      Crafting a score with MirChord is very simple thanks to its peculiar traits like: relative octave entry, sticky duration, leadsheet-style chord symbols, unpitched notes and percussion instruments, automatic note splitting for measures and automatic beaming, etc...
-    </p>
+<div id="features" class="container col-xxl-8 px-4 py-5">
+  <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+    <div class="col-10 col-sm-8 col-lg-6">
+      <img src="./assets/images/screenshots/miride-hp.png" class="d-block mx-lg-auto img-fluid" alt="MirIDE" width="700" height="500" loading="lazy">
+    </div>
+    <div class="col-lg-6">
+      <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">MirIDE. <span class="text-body-secondary"">An Integrated Development Environment for music projects.</span></h1>
+      <p class="lead">
+        The MirComp Integrated Development Environment (MirIDE) is a software application that provides a comprehensive set of tools to manage a music project the same way developers organize their products.
+        It consists of several components: syntax highlighted code editor with autocomplete, graphical score viewer, MIDI editor, folder viewer, scripting capabilities, soundfonts selector.
+      </p>
+    </div>
   </div>
 </div>
 
-<hr class="featurette-divider">
+<div class="b-heroes-divider"></div>
 
-<div class="row featurette">
-	<div class="col-md-7">
-    <h2 class="featurette-heading">MirMidi. <span class="text-muted">The versatile MIDI sequencer.</span></h2>
-    <p class="lead">
-      MirMidi is a MIDI editor and sequencer. It is bundled up with a piano roll editor that supports midi notes entry and manipulation together with a control changes (CCs) curves automation editor, instruments and tempo changes components.</p>
-  </div>
-  <div class="col-md-5">
-    <img class="featurette-image img-responsive" alt="MirMIDI" src="./assets/images/screenshots/mirmidi.png" data-holder-rendered="true">
-  </div>
-</div>
-
-<hr class="featurette-divider">
-
-<div class="row featurette">
-	<div class="col-md-5">
-    <img class="featurette-image img-responsive" alt="500x500" src="./assets/images/screenshots/mirscore.png" data-holder-rendered="true">
-  </div>
-  <div class="col-md-7">
-    <h2 class="featurette-heading">MirScore. <span class="text-muted">Score viewer for Common Practice Notation.</span></h2>
-    <p class="lead">
-      MirScore is a common practice notation viewer and midi player for graphical preview of scores. It allows to navigate a score just by dragging the mouse (panning mode) and supports pagination and zooming. Moreover, you can control the playback position by point and click on a staff and visualize the progression of the MIDI execution with the automatic update of a graphical control element (follow playback mode).
-    </p>
+<div class="container col-xxl-8 px-4 py-5">
+  <div class="row flex-lg-row align-items-center g-5 py-5">
+    <div class="col-10 col-sm-8 col-lg-6">
+      <img src="./assets/images/screenshots/mirtext-hp.png" class="d-block mx-lg-auto img-fluid" alt="MirChord" width="700" height="500" loading="lazy">
+    </div>
+    <div class="col-lg-6">
+      <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">MirChord. <span class="text-body-secondary"">A poweful notation language.</span></h1>
+      <p class="lead">
+        MirChord is a powerful but easy-to-learn textual notation language tailored for assisted/algorithmic music composition.
+       Crafting a score with MirChord is very simple thanks to its peculiar traits like: relative octave entry, sticky duration, leadsheet-style chord symbols, unpitched notes and percussion instruments, automatic note splitting for measures and automatic beaming, universal key with solfeggio syllables and Roman numerals, etc...
+      </p>
+    </div>
   </div>
 </div>
 
-<hr class="featurette-divider">
+<div class="b-heroes-divider"></div>
 
-<div class="row featurette">
-  <div class="col-md-7">
-    <h2 class="featurette-heading">The Framework. <span class="text-muted">A rich API for automatic music.</span></h2>
-    <p class="lead">
-      One of the primary goal of MirComp is algoritmic music so the composer/developer within the framework has at his/her disposal a complete set of music and AI libraries. For example the <a href="https://github.com/mcolletta/mirnn">MiRNN</a> recurrent neural network library (Generalized Long Short Term Memory LSTM-g) is bundled with MirIDE to start experiments of intelligent music.
-    </p>
-  </div>
-  <div class="col-md-5">
-    <img class="featurette-image img-responsive" alt="MirMIDI" src="./assets/images/screenshots/api.png" data-holder-rendered="true">
+<div class="container col-xxl-8 px-4 py-5">
+  <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+    <div class="col-10 col-sm-8 col-lg-6">
+      <img src="./assets/images/screenshots/mirmidi-hp.png" class="d-block mx-lg-auto img-fluid" alt="MirMidi" width="700" height="500" loading="lazy">
+    </div>
+    <div class="col-lg-6">
+      <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">MirMidi. <span class="text-body-secondary"">The versatile MIDI sequencer.</span></h1>
+      <p class="lead">
+        MirMidi is a MIDI editor and sequencer. It is bundled up with a piano roll editor that supports midi notes entry and manipulation together with a control changes (CCs) curves automation editor, instruments and tempo changes components.
+      </p>
+    </div>
   </div>
 </div>
 
-<hr class="featurette-divider">
+<div class="b-heroes-divider"></div>
 
-<!-- /END THE FEATURETTES -->
+<div class="container col-xxl-8 px-4 py-5">
+  <div class="row flex-lg-row align-items-center g-5 py-5">
+    <div class="col-10 col-sm-8 col-lg-6">
+      <img src="./assets/images/screenshots/mirscore.png" class="d-block mx-lg-auto img-fluid" alt="MirScore" width="700" height="500" loading="lazy">
+    </div>
+    <div class="col-lg-6">
+      <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">MirScore. <span class="text-body-secondary"">Score viewer for Common Practice Notation.</span></h1>
+      <p class="lead">
+        MirScore is a common practice notation viewer and midi player for graphical preview of scores. It allows to navigate a score just by dragging the mouse (panning mode) and supports pagination and zooming. Moreover, you can control the playback position by point and click on a staff and visualize the progression of the MIDI execution with the automatic update of a graphical control element (follow playback mode).
+      </p>
+    </div>
+  </div>
+</div>
 
-      </div>
+<div class="b-heroes-divider"></div>
 
-      <hr/>
+<div class="container col-xxl-8 px-4 py-5">
+  <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+    <div class="col-10 col-sm-8 col-lg-6">
+      <img src="./assets/images/screenshots/genetic.png" class="d-block mx-lg-auto img-fluid" alt="MirGene" width="700" height="500" loading="lazy">
+    </div>
+    <div class="col-lg-6">
+      <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">MirGene. <span class="text-body-secondary"">A genetic programming library.</span></h1>
+      <p class="lead">
+        MirGene is a Grammatical Evolution (GE) library that uses powerful context sensitive grammars (MirGram) that are stochastic, weighted and adaptable (i.e. it can add new rules during the derivation using the results from previous NonTerminals).
+        Moreover, it can control the length of the results through arithmetic attributes and guards.
+      </p>
+    </div>
+  </div>
+</div>
 
-      <!-- FOOTER -->
-      <footer>
+<div class="b-heroes-divider"></div>
+
+<div class="container col-xxl-8 px-4 py-5">
+  <div class="row flex-lg-row align-items-center g-5 py-5">
+    <div class="col-10 col-sm-8 col-lg-6">
+      <img src="./assets/images/screenshots/automaton.png" class="d-block mx-lg-auto img-fluid" alt="MircOracle" width="700" height="500" loading="lazy">
+    </div>
+    <div class="col-lg-6">
+      <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">MircOracle. <span class="text-body-secondary"">A machine learning library that can learn music <em>style</em>.</span></h1>
+      <p class="lead">
+        MircOracle is a library that implements dictionary based predictors and factor oracles.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="b-heroes-divider"></div>
+
+<div class="container col-xxl-8 px-4 py-5">
+  <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+    <div class="col-10 col-sm-8 col-lg-6">
+      <img src="./assets/images/screenshots/synth.png" class="d-block mx-lg-auto img-fluid" alt="MirSynth" width="700" height="500" loading="lazy">
+    </div>
+    <div class="col-lg-6">
+      <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">MirSynth. <span class="text-body-secondary"">A sound synthesis library.</span></h1>
+      <p class="lead">
+        Using MirSynth it is possible with few lines of code to create "virtual" MIDI instruments like <em>Double Frequency Modulation (DFM)</em>, <em>Additive</em> or <em>Subtractive Synthesis</em>.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+    </main>
+   
+    <hr/>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2022 Mirco Colletta - <a href="about_site.html">About the site</a></p>
-      </footer>
+        <p>© 2016-2023 Mirco Colletta - The content/documentation of the site is released under the <em>GNU General Public License version 3</em>.</p>
+      </div>
+    </footer>
 
-    </div> <!-- /container -->
-
-    
     <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <!-- <script src="./assets/js/jquery.min.js"></script>
+     <!-- Placed at the end of the document so the pages load faster -->
     <script src="./assets/js/bootstrap.min.js"></script>
-    <script src="./assets/js/docs.min.js"></script> -->
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
-    
-    <!-- <script src="./assets/js/mircomp.js"></script>    
-    <script src="./assets/js/mirchord.min.js"></script>
-    <script src="./assets/js/groovy.min.js"></script>
+    <script type="application/json" src="./assets/js/bootstrap.min.js.map"></script>
+    <script src="./assets/js/mircomp.js"></script>
     <script src="./assets/js/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script> -->
-  
+    <script src="./assets/js/clojure.min.js"></script>
+    <script src="./assets/js/java.min.js"></script>
+    
+    <script>
+        hljs.registerAliases("mirchord", { languageName: "clojure" })
+        hljs.registerAliases("groovy", { languageName: "java" })
+        hljs.highlightAll();
+    </script>
 
   </body>
 </html>

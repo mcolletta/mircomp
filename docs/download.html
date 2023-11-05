@@ -4,61 +4,70 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Computer Music Composition Software">
-    <meta name="keywords" content="Open Source Assisted Automatic Algorithmic Computer Music Composition Sofware Library Framework">
+    <meta name="keywords" content="Open Source Assisted Algorithmic Computer Music Composition Sofware Library Framework Machine Learning">
     <meta name="author" content="Mirco Colletta">
     <!-- <link rel="icon" href="./assets/images/favicon.ico"> -->
 
     <title>
-      MirComp: computer music composition framework - Download
+      MirComp: computer music composition framework
+      
+       - Download
+      
+      
+      
+      
+      
+      
+      
+      
     </title>
 
     <link rel="author license" href="about_site.html">
 
-    <!-- Bootstrap core CSS -->
-    <link href="./assets/css/bootstrap.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
-    <link href="./assets/css/bootstrap-theme.css" rel="stylesheet">
-    <!-- highlight -->
-    <!-- <link href="./assets/css/monokai.min.css" rel="stylesheet"> -->
-
+    <!-- Bootstrap CSS -->
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/bootstrap.min.css.map" rel="stylesheet">
+    <link href="./assets/css/monokai.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="./assets/css/mircomp.css" rel="stylesheet">
   </head>
 
   <body role="document">
 
-
     <a href="https://github.com/mcolletta/mircomp"><img style="position: absolute; top: 45px; right: 0; border: 0;" src="./assets/images/fork-github.png" alt="Fork me on GitHub" ></a>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-expand-md bg-dark sticky-top border-bottom" data-bs-theme="dark">
       <div class="container">
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <!-- <li class="active" ><a href="index.html">Home</a></li>
-            <li  ><a href="getting_started.html">Getting Started</a></li>
-            <li  ><a href="documentation.html">Documentation</a></li>
-            <li  ><a href="download.html">Download</a></li> -->
-            <li><a href="index.html">Home</a></li><li><a href="getting_started.html">Getting Started</a></li><li><a href="documentation.html">Documentation</a></li><li class="active"><a href="download.html">Download</a></li>
-          </ul>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="#offcanvas" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas" aria-labelledby="#offcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav flex-grow-1">
+              <li nav-item ><a class="nav-link" href="index.html">Home</a></li>
+              <li nav-item ><a class="nav-link" href="getting_started.html">Getting Started</a></li>
+              <li nav-item ><a class="nav-link" href="documentation.html">Documentation</a></li>
+              <li class="nav-item active" ><a class="nav-link" href="download.html">Download</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </nav>
 
-    <div class="container theme-showcase" role="main">
+    <main>
+      <div class="container my-5">
 
-      <div>
-
-        <div class="jumbotron">
-    <h1>Download e build the code</h1>
-    <p>Get the latest release of MirComp.</p>
+<div class="p-5 text-left bg-body-tertiary rounded-3">
+	<h1 class="text-body-emphasis">Download e build the code</h1>
+	<p class="lead">
+		Get the latest release of MirComp.
+	</p>
 </div>
-
-
-<div class="page-header">
- 	<h2>Download</h2>
-</div>
-
 
 <p>
 	<h3>Build the code</h3>
@@ -67,43 +76,20 @@
 
 <p>
 	Download the latest code release from: <a href="https://github.com/mcolletta/mircomp/releases">GitHub releases page</a>
-	<!-- <br/>
-	or clone the git repository
-	<br/>
-	<pre>git clone https://github.com/mcolletta/mircomp.git</pre> -->
 </p>
 
 <p class="bg-warning">	
-	At the moment there are not pre-built binaries available for MirIDE and MirComposer.
+	At the moment there are not pre-built binaries available for MirIDE.
 </p>
 
 <div class="spaced">
-	<h4>Java 17</h4> 
+	<h4>Java 21</h4> 
 	<p class="spaced">
-		You need Java 17 to build and run MirComp.<br/>
+		You need Java 21 to build and run MirComp.<br/>
 		Java is available for all the major operating systems (Windows, Linux and OSX).<br/>
 		There are several excellent open source options out there.<br/>
-		For example you can get OpenJdk 17 from  <a target="_blank" href="https://jdk.java.net/17/">jdk.java.net</a>.<br/>	
+		For example you can get OpenJdk 21 from  <a target="_blank" href="https://jdk.java.net/21/">jdk.java.net</a>.<br/>	
 		Untar the downloaded file and move the content to a folder of your choice (e.g. <em>programs</em>).
-	</p>
-</div>
-
-<div class="spaced">
-	<h4>JavaFX 17.0.0.2</h4> 
-	<p class="spaced">
-		Download JavaFx 17.0.0.2 SDK and JMODS from the <a target="_blank" href="https://gluonhq.com/products/javafx/">official website</a>.<br/>
-		Unzip both files and move their content to a folder of your choice.
-	</p>
-</div>
-
-
-<div class="spaced">
-	<h4>Gradle 7.3</h4> 
-	<p class="spaced">
-		Finally you need Gradle to build MirComp.<br/>
-		While there are several ways to install gradle we describe the manual one.<br/>
-		Download the Gradle 7.3 binary-only zip from the <a target="_blank" href="https://gradle.org/releases/">official web site</a>.<br/>
-		As always unzip the folder and move its content to a folder of your choice.
 	</p>
 </div>
 
@@ -111,91 +97,78 @@
 <div class="spaced">
 	<h4>Set up your environment variables</h4>
 	<p class="spaced">
-		Supposing the folder is named "Programs"<br/>
-		On Windows 10 you can open a powershell and enter:<br/>
+		Supposing the folder is named "programs"<br/>
+		On Ubuntu 22.04:<br/>
 		<pre>
-[Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\Programs\jdk-17.0.1", [System.EnvironmentVariableTarget]::Process)
-[Environment]::SetEnvironmentVariable("JRE_HOME", $env:JAVA_HOME, [System.EnvironmentVariableTarget]::Process)
-[Environment]::SetEnvironmentVariable("JAVAFX_HOME", "C:\Programs\javafx-sdk-17.0.2", [System.EnvironmentVariableTarget]::Process)
-[Environment]::SetEnvironmentVariable("JAVAFX_JMODS_HOME", "C:\Programs\javafx-jmods-17.0.2", [System.EnvironmentVariableTarget]::Process)
-[Environment]::SetEnvironmentVariable("GRADLE_HOME", "C:\Programs\gradle-7.3.3", [System.EnvironmentVariableTarget]::Process)
-[Environment]::SetEnvironmentVariable("Path", $env:Path + ";" + $env:JAVA_HOME + "\bin;" + $env:GRADLE_HOME + "\bin", [System.EnvironmentVariableTarget]::Process)
+export JAVA_HOME=/home/user/programs/jdk-21.0.1/
+export JRE_HOME=$JAVA_HOME
+export PATH=$PATH:$JAVA_HOME/bin
 		</pre>
 	</p>
 	<p class="spaced">
-		On Ubuntu 20.04:<br/>
+		On Windows 10 you can open a powershell and enter:<br/>
 		<pre>
-export JAVA_HOME=/home/programs/jdk-17
-export JRE_HOME=$JAVA_HOME
-export JAVAFX_HOME=/home/programs/javafx-sdk-17.0.2
-export JAVAFX_JMODS_HOME=/home/programs/javafx-jmods-17.0.2
-export GRADLE_HOME=/home/programs/gradle-7.3
-export PATH=$PATH:$JAVA_HOME/bin:$GRADLE_HOME/bin
+[Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\programs\jdk-21.0.1", [System.EnvironmentVariableTarget]::Process)
+[Environment]::SetEnvironmentVariable("JRE_HOME", $env:JAVA_HOME, [System.EnvironmentVariableTarget]::Process)
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";" + $env:JAVA_HOME + "\bin;", [System.EnvironmentVariableTarget]::Process)
 		</pre>
 	</p>
-
 </div>
 
 
 <div class="spaced">
-	<h4>Create a self-contained private MirIDE (or MirComposer) application</h4>
-	<p class="spaced">
-		NOTE: MirComposer is a Lite version of MirIDE that does not support Groovy scripting and uses an experimental text editor without the javafx.web component.
-		Moreover, it does not support projects but only single files.
-	</p>
+	<h4>Create a self-contained private MirIDE application</h4>
 	<p class="spaced">
 		We are almost ready to finally create our own desktop application.<br/>
-		First, create a dist/miride (or dist/mircomposer) folder and then launch the gradle createApp task<br/>
-		On Ubuntu 20.04:<br/>
+		First, create a <em>dist</em> folder (e.g. inside the <em>programs</em> folder) and then launch the <em>createApp</em> task inside <em>miride</em> with the gradle wrapper (<em>gradlew</em>) from the parent folder<br/>
+		On Ubuntu 22.04:<br/>
 		<pre>
+cd /home/user/programs/
 mkdir dist
-cd dist
-mkdir miride
-cd /home/programs/mircomp/miride
-gradle createApp -PdistPath="/home/programs/dist/miride"
+cd /home/user/programs/mircomp/miride
+../gradlew createApp -PdistPath="/home/user/programs/dist"
 		</pre>
 		You can finally run the main executable inside the created self-contained application:<br/>
 		<pre>
-cd /home/programs/dist/miride/app/MirIDE/bin
+cd /home/user/programs/dist/app/MirIDE/bin
 ./MirIDE
 		</pre>
 		Similar on Windows 10:
 		<pre>
-C:\Programs\mircomp\miride> gradle createApp -PdistPath="C:\Programs\dist\miride"
+C:\programs\mircomp\miride> ..\gradlew createApp -PdistPath="C:\programs\dist"
 		</pre>
 where inside the just created dist folder is sufficient a double click on the exec file.
 	</p>
 </div>
 
+</div>
+    </main>
+   
+    <hr/>
 
-      </div>
-
-      <hr/>
-
-      <!-- FOOTER -->
-      <footer>
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2022 Mirco Colletta - <a href="about_site.html">About the site</a></p>
-      </footer>
+        <p>© 2016-2023 Mirco Colletta - The content/documentation of the site is released under the <em>GNU General Public License version 3</em>.</p>
+      </div>
+    </footer>
 
-    </div> <!-- /container -->
-
-    
     <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <!-- <script src="./assets/js/jquery.min.js"></script>
+     <!-- Placed at the end of the document so the pages load faster -->
     <script src="./assets/js/bootstrap.min.js"></script>
-    <script src="./assets/js/docs.min.js"></script> -->
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!-- <script src="./assets/js/ie10-viewport-bug-workaround.js"></script> -->
-    
-    <!-- <script src="./assets/js/mircomp.js"></script>    
-    <script src="./assets/js/mirchord.min.js"></script>
-    <script src="./assets/js/groovy.min.js"></script>
+    <script type="application/json" src="./assets/js/bootstrap.min.js.map"></script>
+    <script src="./assets/js/mircomp.js"></script>
     <script src="./assets/js/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script> -->
-  
+    <script src="./assets/js/clojure.min.js"></script>
+    <script src="./assets/js/java.min.js"></script>
+    
+    <script>
+        hljs.registerAliases("mirchord", { languageName: "clojure" })
+        hljs.registerAliases("groovy", { languageName: "java" })
+        hljs.highlightAll();
+    </script>
 
   </body>
 </html>
