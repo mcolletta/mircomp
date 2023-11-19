@@ -53,7 +53,7 @@ import com.xenoage.zong.core.Score
 
 protected class ProjectInterpreter {
 
-    boolean PRINT_STACKTRACE = true
+    boolean PRINT_STACKTRACE = false
 
     boolean staticCompile = false
     CompilerConfiguration configuration
@@ -137,7 +137,8 @@ protected class ProjectInterpreter {
                 setAllowedImports(Arrays.asList("java.lang.Math","classWithinScript",
                                                 "java.lang.Object",
                                                 "io.github.mcolletta.mirchord.interpreter.MirChord", "com.xenoage.utils.math.Fraction"));
-                setAllowedStarImports(Arrays.asList("io.github.mcolletta.mirchord.core", "io.github.mcolletta.mirchord.core.ScoreBuilder",
+                setAllowedStarImports(Arrays.asList("io.github.mcolletta.mirchord.core", "io.github.mcolletta.mirchord.io",
+                                                    "io.github.mcolletta.mirchord.core.ScoreBuilder",
                                                     "io.github.mcolletta.mirsynth", "io.github.mcolletta.mirconverter"))
                 setAllowedStaticStarImports(Arrays.asList("io.github.mcolletta.mirchord.core.Utils", "io.github.mcolletta.mirconverter.Helper",
                                                           "io.github.mcolletta.mirchord.core.ScoreBuilder",
@@ -180,9 +181,9 @@ protected class ProjectInterpreter {
 
     void setDefaultImports(ImportCustomizer importCustomizer) {
     	importCustomizer.addImports 'io.github.mcolletta.mirchord.interpreter.MirChord'
+        importCustomizer.addImports 'io.github.mcolletta.mirchord.core.ScoreBuilder'
         importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core'
-        importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core.io'
-        importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core.ScoreBuilder'
+        importCustomizer.addStarImports 'io.github.mcolletta.mirchord.io'
         importCustomizer.addStaticStars 'io.github.mcolletta.mirchord.core.Utils'
         importCustomizer.addStaticStars 'io.github.mcolletta.mirconverter.Helper'
         importCustomizer.addImports 'com.xenoage.utils.math.Fraction'

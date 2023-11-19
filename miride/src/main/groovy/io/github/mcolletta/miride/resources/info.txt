@@ -1,5 +1,5 @@
 MirIDE - MirComp Integrated Development Environment
-Version: 1.0.0-beta.1
+Version: 1.0.0-beta.2
 
 Copyright (C) 2016-2023 Mirco Colletta
 
