@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2023 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -62,15 +62,6 @@ import javafx.scene.control.Dialog
 import javafx.scene.control.DialogPane
 import javafx.scene.control.ButtonType
 
-import groovy.transform.CompileDynamic
-
-/*With CompileStatic got this error:
-[Static type checking] - Reference to method is ambiguous. 
-Cannot choose between [void javafx.scene.control.Cell <T extends java.lang.Object>#startEdit(), 
-void io.github.mcolletta.mirfoldertreeview.PathTreeCell#startEdit(), 
-void javafx.scene.control.TreeCell <T extends java.lang.Object>#startEdit()]*/
-
-//@CompileDynamic
 public class PathTreeCell extends TreeCell<Path> {
 
     FolderTreeView owner

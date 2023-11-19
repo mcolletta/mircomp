@@ -46,11 +46,22 @@ import static com.xenoage.utils.jse.xml.XMLReader.*
 import com.xenoage.utils.jse.xml.XMLReader
 import com.xenoage.utils.jse.xml.XMLWriter
 
-import groovy.transform.CompileDynamic
 
+interface LeadSheetReader {
 
-@CompileDynamic
-trait LeadSheetReader {
+	void addLeadSheetListener(LeadSheetListener subscriber);
+
+    void fireNewSong();
+
+    void fireChord(Chord event);
+
+    void fireRest(Rest event);
+
+}
+
+trait LeadSheetReaderTrait implements LeadSheetReader {
+
+	List<LeadSheetListener> leadSheetListeners = []
 
 	void addLeadSheetListener(LeadSheetListener subscriber) {
 		leadSheetListeners << subscriber
@@ -74,9 +85,9 @@ trait LeadSheetReader {
 }
 
 
-class MusicXmlLeadSheetReader implements LeadSheetReader {
+class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 
-	List<LeadSheetListener> leadSheetListeners = []
+	
 	Map<String, Map<Integer, Integer>> chordStats = [:].withDefault{[:].withDefault{0}}
 
 	private static XPath xpath = XPathFactory.newInstance().newXPath()
@@ -238,7 +249,7 @@ class MusicXmlLeadSheetReader implements LeadSheetReader {
 									duration = duration.add(duration.mult(fr(1,2)))
 								}
 							}
-							println "$duration"
+							//println "$duration"
 							if (element(item, "rest") != null) {
 								def rest = new Rest()
 								rest.duration = duration

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2023 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -47,6 +47,7 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.control.TextArea
 import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
+import javafx.scene.control.Label
 
 import javafx.scene.control.ButtonType
 import javafx.scene.control.Alert
@@ -117,6 +118,7 @@ class TextEditor extends VBox implements FolderTreeListenerList, TabContent  {
     Map<String, String> pendingUndoManagerCalls = [:]
 
 	@FXML private ComboBox selectFontSize
+    @FXML private Label themeIcon
 	@FXML private ComboBox selectTheme
 	@FXML private ComboBox selectMode
 
@@ -229,7 +231,12 @@ class TextEditor extends VBox implements FolderTreeListenerList, TabContent  {
                                                                    fileType: ""]))
                 }
             }
-        })    
+        })
+
+        themeIcon.setVisible(false)
+        themeIcon.managedProperty().bind(themeIcon.visibleProperty())
+        selectTheme.setVisible(false)
+        selectTheme.managedProperty().bind(selectTheme.visibleProperty())
     }
 
     public ensureLoadedDOM() {        
@@ -383,7 +390,8 @@ class TextEditor extends VBox implements FolderTreeListenerList, TabContent  {
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 if (newValue != null && oldValue != newValue) {
                     Theme theme = selectTheme.getSelectionModel().getSelectedItem() as Theme
-                    engine.executeScript("setTheme('" + theme.path + "')")
+                    //engine.executeScript("setTheme('" + theme.path + "')")
+                    setThemeSafe(theme)
                 }
             }
         })
@@ -416,6 +424,19 @@ class TextEditor extends VBox implements FolderTreeListenerList, TabContent  {
         } else {
             if (!pendingEditorSessionCalls.containsKey("setMode"))
                 pendingEditorSessionCalls.put("setMode", mode.path)
+        }
+    }
+
+    void setTheme(Theme theme) {
+        selectTheme.setValue(theme)
+    }
+
+    void setThemeSafe(Theme theme) {
+        if (jsEditor != null) {
+            jsEditor.call("setTheme", theme.path)
+        } else {
+            if (!pendingEditorCalls.containsKey("setTheme"))
+                pendingEditorCalls.put("setTheme", theme.path)
         }
     }
 

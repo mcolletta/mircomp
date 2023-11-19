@@ -282,38 +282,38 @@ class Utils {
 	}
 	
 	static Map<List<Integer>, Integer> TonicFromKeySignature = [
-				[-7, 0]: 11, //scale 0 sig -7 -> Cb maj
-				[-6, 0]: 6, //scale 0 sig -6 -> Gb maj
-				[-5, 0]: 1, //scale 0 sig -5 -> Db maj
-				[-4, 0]: 8, //scale 0 sig -4 -> Ab maj
-				[-3, 0]: 3, //scale 0 sig -3 -> Eb maj
-				[-2, 0]: 10, //scale 0 sig -2 -> Bb maj
-				[-1, 0]: 5, //scale 0 sig -1 -> F maj
+				[0, -7]: 11, //scale 0 sig -7 -> Cb maj
+				[0, -6]: 6, //scale 0 sig -6 -> Gb maj
+				[0, -5]: 1, //scale 0 sig -5 -> Db maj
+				[0, -4]: 8, //scale 0 sig -4 -> Ab maj
+				[0, -3]: 3, //scale 0 sig -3 -> Eb maj
+				[0, -2]: 10, //scale 0 sig -2 -> Bb maj
+				[0, -1]: 5, //scale 0 sig -1 -> F maj
 				[0, 0]: 0, //scale 0 sig 0 -> C maj
-				[1, 0]: 7, //scale 0 sig 1 -> G maj
-				[2, 0]: 2, //scale 0 sig 2 -> D maj
-				[3, 0]: 9, //scale 0 sig 3 -> A maj
-				[4, 0]: 4, //scale 0 sig 4 -> E maj
-				[5, 0]: 11, //scale 0 sig 5 -> B maj
-				[6, 0]: 6, //scale 0 sig 6 -> F# maj
-				[7, 0]: 1, //scale 0 sig 7 -> C# maj
+				[0, 1]: 7, //scale 0 sig 1 -> G maj
+				[0, 2]: 2, //scale 0 sig 2 -> D maj
+				[0, 3]: 9, //scale 0 sig 3 -> A maj
+				[0, 4]: 4, //scale 0 sig 4 -> E maj
+				[0, 5]: 11, //scale 0 sig 5 -> B maj
+				[0, 6]: 6, //scale 0 sig 6 -> F# maj
+				[0, 7]: 1, //scale 0 sig 7 -> C# maj
 				
 				
-				[-7, 1]: 8, //scale 1 sig -7 -> Ab min
-				[-6, 1]: 3, //scale 1 sig -6 -> Eb min
-				[-5, 1]: 10, //scale 1 sig -5 -> Bb min
-				[-4, 1]: 5, //scale 1 sig -4 -> F min
-				[-3, 1]: 0, //scale 1 sig -3 -> C min
-				[-2, 1]: 7, //scale 1 sig -2 -> G min
-				[-1, 1]: 2, //scale 1 sig -1 -> D min
-				[0, 1]: 9, //scale 1 sig 0 -> A min
+				[1, -7]: 8, //scale 1 sig -7 -> Ab min
+				[1, -6]: 3, //scale 1 sig -6 -> Eb min
+				[1, -5]: 10, //scale 1 sig -5 -> Bb min
+				[1, -4]: 5, //scale 1 sig -4 -> F min
+				[1, -3]: 0, //scale 1 sig -3 -> C min
+				[1, -2]: 7, //scale 1 sig -2 -> G min
+				[1, -1]: 2, //scale 1 sig -1 -> D min
+				[1, 0]: 9, //scale 1 sig 0 -> A min
 				[1, 1]: 4, //scale 1 sig 1 -> E min
-				[2, 1]: 11, //scale 1 sig 2 -> B min
-				[3, 1]: 6, //scale 1 sig 3 -> F# min
-				[4, 1]: 1, //scale 1 sig 4 -> C# min
-				[5, 1]: 8, //scale 1 sig 5 -> G# min
-				[6, 1]: 3, //scale 1 sig 6 -> D# min
-				[7, 1]: 10, //scale 1 sig 7 -> A# min
+				[1, 2]: 11, //scale 1 sig 2 -> B min
+				[1, 3]: 6, //scale 1 sig 3 -> F# min
+				[1, 4]: 1, //scale 1 sig 4 -> C# min
+				[1, 5]: 8, //scale 1 sig 5 -> G# min
+				[1, 6]: 3, //scale 1 sig 6 -> D# min
+				[1, 7]: 10, //scale 1 sig 7 -> A# min
 		]
 
 	static String getPitchLetterFromSymbol(String symbol, KeySignature keysig) {

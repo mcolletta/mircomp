@@ -53,7 +53,7 @@ import com.xenoage.zong.core.Score
 
 protected class ProjectInterpreter {
 
-    boolean PRINT_STACKTRACE = false
+    boolean PRINT_STACKTRACE = true
 
     boolean staticCompile = false
     CompilerConfiguration configuration
@@ -125,6 +125,9 @@ protected class ProjectInterpreter {
                                                     "io.github.mcolletta.mirchord.core.ChordAlteration",
                                                     "io.github.mcolletta.mirchord.core.ChordKind",
                                                     "io.github.mcolletta.mirchord.core.Utils",
+                                                    "io.github.mcolletta.mirchord.io.MusicXmlLeadSheetReader",
+                                                    "io.github.mcolletta.mirchord.io.LeadSheetSubscriber",
+                                                    "io.github.mcolletta.mirchord.io.MelodicIntervalsSubscriber",
                                                     "io.github.mcolletta.mirconverter.Helper",
                                                     "io.github.mcolletta.mirchord.core.ScoreBuilder",
                                                     "io.github.mcolletta.mirchord.interpreter.MirChord",
@@ -178,6 +181,7 @@ protected class ProjectInterpreter {
     void setDefaultImports(ImportCustomizer importCustomizer) {
     	importCustomizer.addImports 'io.github.mcolletta.mirchord.interpreter.MirChord'
         importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core'
+        importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core.io'
         importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core.ScoreBuilder'
         importCustomizer.addStaticStars 'io.github.mcolletta.mirchord.core.Utils'
         importCustomizer.addStaticStars 'io.github.mcolletta.mirconverter.Helper'

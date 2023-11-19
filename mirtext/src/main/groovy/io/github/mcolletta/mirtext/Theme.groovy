@@ -42,6 +42,8 @@ class Theme {
     static final Theme Dreamweaver = new Theme("Dreamweaver", "ace/theme/dreamweaver")
     static final Theme Eclipse = new Theme("Eclipse", "ace/theme/eclipse")
     static final Theme GitHub = new Theme("GitHub", "ace/theme/github")
+    static final Theme Green_on_Black = new Theme("Green on Black", "ace/theme/gob")
+    static final Theme Gruvbox = new Theme("Gruvbox", "ace/theme/gruvbox")
     static final Theme IPlastic = new Theme("IPlastic", "ace/theme/iplastic")
     static final Theme Solarized_Light = new Theme("Solarized Light", "ace/theme/solarized_light")
     static final Theme TextMate = new Theme("TextMate", "ace/theme/textmate")
@@ -60,6 +62,8 @@ class Theme {
     static final Theme Merbivore_Soft = new Theme("Merbivore Soft", "ace/theme/merbivore_soft")
     static final Theme Mono_Industrial = new Theme("Mono Industrial", "ace/theme/mono_industrial")
     static final Theme Monokai = new Theme("Monokai", "ace/theme/monokai")
+    static final Theme Nord_Dark = new Theme("Nord Dark", "ace/theme/nord_dark")
+    static final Theme One_Dark = new Theme("One Dark", "ace/theme/one_dark")
     static final Theme Pastel_on_dark = new Theme("Pastel on dark", "ace/theme/pastel_on_dark")
     static final Theme Solarized_Dark = new Theme("Solarized Dark", "ace/theme/solarized_dark")
     static final Theme Terminal = new Theme("Terminal", "ace/theme/terminal")
@@ -72,8 +76,8 @@ class Theme {
 
     static final Theme[] AVAILABLE_THEMES = [
         Ambiance, Chaos, Chrome, Clouds, Clouds_Midnight, Cobalt, Crimson_Editor, Dawn,
-        Dreamweaver, Eclipse, GitHub, IPlastic, KatzenMilch, Kuroir, Merbivore, Merbivore_Soft,
-        Mono_Industrial, Monokai, Pastel_on_dark, SQL_Server, Solarized_Dark, Solarized_Light, Terminal, TextMate,
+        Dreamweaver, Eclipse, GitHub, Green_on_Black, Gruvbox, IPlastic, KatzenMilch, Kuroir, Merbivore, Merbivore_Soft,
+        Mono_Industrial, Monokai, Nord_Dark, One_Dark, Pastel_on_dark, SQL_Server, Solarized_Dark, Solarized_Light, Terminal, TextMate,
         Tomorrow, Tomorrow_Night, Tomorrow_Night_80s, Tomorrow_Night_Blue, Tomorrow_Night_Bright, Twilight, Vibrant_Ink, XCode,
         idle_Fingers, krTheme
 	]

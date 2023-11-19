@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2023 Mirco Colletta
  *
  * This file is part of MirComp.
  *
