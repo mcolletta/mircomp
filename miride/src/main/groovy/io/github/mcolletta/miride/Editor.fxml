@@ -60,6 +60,28 @@
             <MenuItem fx:id="propertiesMenu" mnemonicParsing="false" onAction="#editproperties" text="Edit properties..." />
           </items>
         </Menu>
+        <Menu mnemonicParsing="false" text="Preferences">
+          <items>
+            <Menu mnemonicParsing="false" text="Theme">
+              <items>
+                <Menu mnemonicParsing="false" text="Light">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#setCupertinoLight" text="Cupertino" />
+                    <MenuItem mnemonicParsing="false" onAction="#setNordLight" text="Nord" />
+                    <MenuItem mnemonicParsing="false" onAction="#setPrimerLight" text="Primer" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Dark">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#setCupertinoDark" text="Cupertino" />
+                    <MenuItem mnemonicParsing="false" onAction="#setNordDark" text="Nord" />
+                    <MenuItem mnemonicParsing="false" onAction="#setPrimerDark" text="Primer" />
+                  </items>
+                </Menu>
+              </items>
+            </Menu>
+          </items>
+        </Menu>
         <Menu mnemonicParsing="false" text="Help">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#showInfoDialog" text="About" />
@@ -117,7 +139,7 @@
                     </Tab>
                     <Tab text="Error">
                       <content>
-                        <TextArea fx:id="errorConsole" styleClass="textarea-colors"
+                        <TextArea fx:id="errorConsole"
                                   editable="false" focusTraversable="false"
                                   prefHeight="200.0" prefWidth="200.0"
                                   style="-fx-text-fill: red"

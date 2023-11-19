@@ -71,13 +71,13 @@
     -fx-graphic: url('resources/icons/edit.png');
 }
 
-.text-area {
+/*.text-area {
     -fx-text-fill: #E8E8E8;
 }
 
 .text-area .content {
     -fx-background-color: #1E1F1C;
-}
+}*/
 
 .background-logo {
     -fx-background-image: url('resources/images/logo.png');

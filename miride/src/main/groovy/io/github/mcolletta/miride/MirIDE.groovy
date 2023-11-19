@@ -54,8 +54,8 @@ public class MirIDE extends Application {
         //stage.setFullScreen(true)
         stage.show()
 
-        //theme
-        //scene.getStylesheets().add(getClass().getResource("resources/themes/primer-dark.css").toExternalForm());
+        //default theme
+        editor.setNordDark()
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override

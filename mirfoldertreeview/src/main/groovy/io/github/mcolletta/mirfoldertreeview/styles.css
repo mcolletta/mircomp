@@ -38,7 +38,7 @@
     -fx-border-color: #??????; 
 }*/
 
-.folder-tree .tree-cell {
+/*.folder-tree .tree-cell {
     -fx-background-color: #1E1F1C;
     -fx-text-fill: #E8E8E8;
 }
@@ -53,4 +53,4 @@
 }
 .folder-tree .tree-cell:expanded > .tree-disclosure-node > .arrow {
     -fx-background-color: #E8E8E8;
-}
+}*/

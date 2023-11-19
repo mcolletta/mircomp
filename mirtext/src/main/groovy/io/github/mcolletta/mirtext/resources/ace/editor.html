@@ -38,7 +38,7 @@
             fontFamily: "Monospace", // Linux
             //fontFamily: "Consolas", // Windows
             //fontFamily: "Menlo-regular", // Mac
-            fontSize: "10pt"
+            fontSize: "12pt"
         });        
         editor.setShowPrintMargin(false);
         editor.setScrollSpeed(0.05);
@@ -61,6 +61,8 @@
 
     function setTheme(newTheme) {
         editor.setTheme(newTheme);
+        editor.getSession().getSelection().clearSelection();
+        editor.focus();
     }
 
     function cut() {
