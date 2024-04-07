@@ -3,8 +3,8 @@ def f4 = fr(1,4)
 def f2 = fr(1,2)
 def f1 = fr(1,1)
 def fra_martino = new ScoreBuilder().score() {
-	part(id:"1") {
-		voice(id:"1") {
+	part(name:"P1") {
+		voice() {
 			clef(type:ClefType.TREBLE)
 			key(fifths:0, mode:KeyMode.MAJOR)
 			time(time:fr(4,4))

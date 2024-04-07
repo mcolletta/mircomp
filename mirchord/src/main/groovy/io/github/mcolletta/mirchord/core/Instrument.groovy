@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -63,6 +63,10 @@ class Instrument implements MusicElement {
 		this.unpitched = unpitched
 		this.program = program
 		this.bank = bank
+	}
+
+	String getMusicElementType() {
+		return "Instrument"
 	}
 
 	void setProgram(int midiProgram) {

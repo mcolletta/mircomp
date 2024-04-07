@@ -1,6 +1,6 @@
-builder.score() {
-	part(id:"1") {
-		voice(id:"1") {
+new ScoreBuilder().score() {
+	part(name:"P1") {
+		voice() {
 			clef(type:ClefType.TREBLE)
 			key(fifths:0, mode:KeyMode.MAJOR)
 			time(time:fr(4,4))

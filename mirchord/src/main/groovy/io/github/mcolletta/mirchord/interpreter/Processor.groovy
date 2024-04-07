@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -64,9 +64,9 @@ class MirChordProcessor extends AbstractProcessor {
 	Fraction DEFAULT_DURATION = fr(1,4)
 
 	Score score
-	String currentPart
-	Map<String, String> currentVoice = [:]
-    Map<String, Map<String, Stack>> environments = [:]
+	int currentPart
+	Map<Integer, Integer> currentVoice = [:]
+    Map<Integer, Map<Integer, Stack>> environments = [:]
     Map<String, Object> symbolsTable = [:]
 
 	Map<String, String> commands_abbr = [
@@ -151,9 +151,8 @@ class MirChordProcessor extends AbstractProcessor {
 		}
 	}
 
-	private String getVoice() {
-		String voiceId = currentVoice[currentPart]
-		return voiceId
+	private int getVoice() {
+		return currentVoice[currentPart]
 	}
 
 	private Stack getEnvironment() {
@@ -234,25 +233,30 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	@MirChord 
-	void setCurrentVoice(String id) {
+	void setCurrentVoice(int i) {
 		if (DEBUG)
-			println "SETTING VOICE " + id
-		if (!score.parts[currentPart].voices.containsKey(id)) {
-			score.parts[currentPart].voices.put(id, new Voice(id))
-			score.parts[currentPart].voices[id].elements = []
-			currentVoice.put(currentPart, id)
+			println "SETTING VOICE " + i
+		Part curPart = score.parts[currentPart]
+		if (curPart.voices.size() <= i) {
+			if (i - curPart.voices.size() > 1)
+				throw new Exception("Voice expected <= ${curPart.voices.size()+1}, found ${i+1}")
+			curPart.voices.add(new Voice())
+			curPart.voices[i].elements = []
+			currentVoice.put(currentPart, i)
 		}
-		currentVoice[currentPart] = id
+		currentVoice[currentPart] = i
 	}
 	
 	@MirChord
-	void setCurrentPart(String id) {
+	void setCurrentPart(int i) {
 		if (DEBUG)
-			println "SETTING PART " + id
-		if (!score.parts.containsKey(id)) {
-			score.parts.put(id, new Part(id))
+			println "SETTING PART " + i
+		if (score.parts.size() <= i) {
+			if (i - score.parts.size() > 1)
+				throw new Exception("Part expected <= ${score.parts.size()+1}, found ${i+1}")
+			score.parts.add(new Part("Part ${i+1}"))
 		}
-		currentPart = id 
+		currentPart = i
 	}
 	
 	@MirChord
@@ -792,10 +796,14 @@ class MirChordProcessor extends AbstractProcessor {
 
 	void completeScorePosition(Match match) {
 		Match m = match.getFirstChild()
-		if (m.parser == grammar.part)
-			setCurrentPart(m.getText()[1..-1])
-		if (m.parser == grammar.voice)
-			setCurrentVoice(m.getText()[1..-1])
+		if (m.parser == grammar.part) {
+			int cp = Integer.parseInt(m.getText()[1..-1]) - 1
+			setCurrentPart(cp)
+		}
+		if (m.parser == grammar.voice) {
+			int cv = Integer.parseInt(m.getText()[1..-1]) - 1
+			setCurrentVoice(cv)
+		}
 
 		putResult(m)
 	}
@@ -828,10 +836,14 @@ class MirChordProcessor extends AbstractProcessor {
 			if (obj != null) {
 				if (obj instanceof Match) {
 					Match m = (Match)obj
-					if (m.parser == grammar.part)
-						setCurrentPart(m.getText()[1..-1])
-					if (m.parser == grammar.voice)
-						setCurrentVoice(m.getText()[1..-1])
+					if (m.parser == grammar.part) {
+						int cp = Integer.parseInt(m.getText()[1..-1]) - 1
+						setCurrentPart(cp)
+					}
+					if (m.parser == grammar.voice) {
+						int cv = Integer.parseInt(m.getText()[1..-1]) - 1
+						setCurrentVoice(cv)
+					}
 				} else {
 					if (obj instanceof CompositionInfo) {
 						score.setInfo((CompositionInfo)obj)

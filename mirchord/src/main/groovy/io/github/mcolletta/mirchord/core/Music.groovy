@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -84,25 +84,40 @@ trait MusicElement {
 
 @Canonical
 class Score {
-	Map<String, Part> parts = [:]
+	List<Part> parts = []
 	CompositionInfo info = null
-}
 
-@Canonical
-class Part {
-	String id
-	String name
-	Map<String, Voice> voices = [:]
-
-	public boolean equals(Part part) {
-		return (id == part.id)
+	static List<MusicElement> getElementsByTypes(List<MusicElement> elements, List<String> types) {
+		List<MusicElement> items = []
+		for(MusicElement el : elements) {
+			if (el.getMusicElementType() == "Phrase") {
+				var ph = (Phrase)el
+				items.addAll( getElementsByTypes(ph.elements, types) )
+			} else if (el.getMusicElementType() in types) {
+				items.add(el)
+			}
+		}
+		return items
 	}
 }
 
 @Canonical
+class Part {
+	String name
+	List<Voice> voices = []
+}
+
+@Canonical
 class Voice {
-	String id
 	List<MusicElement> elements
+
+	List<Chord> getChords() {
+		return Score.getElementsByTypes(elements, ["Chord"]).collect { (Chord)it }
+	}
+
+	List<ChordSymbol> getChordSymbols() {
+		return Score.getElementsByTypes(elements, ["ChordSymbol"]).collect { (ChordSymbol)it }
+	}
 }
 
 @Canonical
@@ -169,11 +184,19 @@ class Tuplet implements MusicElement {
 @Canonical
 class Anchor implements MusicElement {
 	String id
+
+	String getMusicElementType() {
+		return "Anchor"
+	}
 }
 
 @Canonical
 class Clef implements MusicElement {
 	ClefType type
+
+	String getMusicElementType() {
+		return "Clef"
+	}
 }
 
 @Canonical
@@ -196,11 +219,19 @@ class KeySignature implements MusicElement {
 		fifths = Utils.FifthsFromName(keyText, modeText)
 		mode = Utils.ModeFromName(modeText)
 	}
+
+	String getMusicElementType() {
+		return "KeySignature"
+	}
 }
 
 @Canonical
 class TimeSignature implements MusicElement {
 	Fraction time
+
+	String getMusicElementType() {
+		return "TimeSignature"
+	}
 }
 
 @Canonical
@@ -216,6 +247,10 @@ class Tempo implements MusicElement {
 		else
 			bpm = 120
 		baseBeat = bbeat
+	}
+
+	String getMusicElementType() {
+		return "Tempo"
 	}
 
 	static Map<String,Integer> TEMPI = [
@@ -251,6 +286,10 @@ class Lyrics implements MusicElement {
 	public Lyrics(String txt) {
 		text = txt
 	}
+
+	String getMusicElementType() {
+		return "Lyrics"
+	}
 }
 
 @Canonical
@@ -264,4 +303,49 @@ class Repeat implements MusicElement {
 	boolean start = true
 	int times
 	boolean getStop() { !start }
+
+	String getMusicElementType() {
+		return "Repeat"
+	}
+}
+
+@Canonical
+class ScoreTime implements Comparable<ScoreTime> {
+	int measure
+	Fraction beat
+
+	static final ScoreTime _t0 = new ScoreTime(0, _0);
+
+	ScoreTime plus(Fraction other) {
+		int m = measure
+		Fraction b = beat.add(other)
+		if (b >= Fraction._1) {
+			b = b.sub(Fraction._1)
+			m += 1
+		}
+	    new ScoreTime(m, b)
+	}
+
+	ScoreTime minus(Fraction other) {
+		int m = measure
+		Fraction b = other.sub(beat)
+		if (b <= Fraction._0) {
+			b = Fraction._1.add(b)
+			m -= 1
+		}
+	    new ScoreTime(m, b)
+	}
+
+	@Override public int compareTo(ScoreTime time) {
+		if (measure < time.measure)
+			return -1
+		else if (measure > time.measure)
+			return 1
+		else
+			return beat.compareTo(time.beat)
+	}
+
+	@Override public String toString() {
+		return "<Measure:${measure}, Beat:${beat}>"
+	}
 }

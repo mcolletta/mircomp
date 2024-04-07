@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -49,7 +49,7 @@ class ScoreBuilder {
 
         ScoreNode() {
             score = new Score()
-            score.parts = [:]
+            score.parts = []
         }
 
         def part(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=PartNode) Closure cl) {
@@ -65,11 +65,11 @@ class ScoreBuilder {
         Part part
         PartNode(Map attributes) {
             part = attributes as Part
-            part.voices = [:]
+            part.voices = []
         }
 
-        def voice(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=VoiceNode) Closure cl) {
-            def node = new VoiceNode(attributes)
+        def voice(@DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=VoiceNode) Closure cl) {
+            def node = new VoiceNode()
             node.setParent(part)
             def code = cl.rehydrate(node, this, this)
             code.resolveStrategy = Closure.DELEGATE_ONLY
@@ -77,15 +77,15 @@ class ScoreBuilder {
         }
 
         void setParent(Score score) {
-            score.parts[part.id] = part
+            score.parts.add(part)
         }
     }
 
     class VoiceNode {
         Voice voice
 
-        VoiceNode(Map attributes) {
-            voice = attributes as Voice
+        VoiceNode() {
+            voice = new Voice()
             voice.elements = []
         }
 
@@ -100,6 +100,11 @@ class ScoreBuilder {
             def code = cl.rehydrate(node, this, this)
             code.resolveStrategy = Closure.DELEGATE_ONLY
             code()
+        }
+
+        def tuplet(Map attributes) {
+            def node = new TupletNode(attributes)
+            node.setParent(voice)
         }
 
         def instrument(Map attributes) {
@@ -138,7 +143,7 @@ class ScoreBuilder {
         }
 
         void setParent(Part part) {
-            part.voices[voice.id] = voice
+            part.voices.add(voice)
         }
     }
 

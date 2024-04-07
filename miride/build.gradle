@@ -41,7 +41,7 @@ def getDistPath() {
             return distFolder.getPath()
         }
     }
-    return null
+    return "$buildDir"
 }
 
 task copyModules(type: Copy) {

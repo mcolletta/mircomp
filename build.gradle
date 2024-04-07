@@ -15,6 +15,8 @@ if (currentOS.macOsX) {
 }
 def javaFXVersion = "21"
 
+def groovyVersion = "4.0.20"
+
 
 subprojects {
     afterEvaluate {
@@ -39,12 +41,12 @@ subprojects {
             implementation name: "zong-all"
             implementation name: "lingwah"
 
-            implementation("org.apache.groovy:groovy:4.0.15")
-            implementation("org.apache.groovy:groovy-ant:4.0.15")
-            implementation("org.apache.groovy:groovy-console:4.0.15")
-            implementation("org.apache.groovy:groovy-nio:4.0.15")
-            implementation("org.apache.groovy:groovy-xml:4.0.15")
-            implementation("org.apache.groovy:groovy-test:4.0.15")
+            implementation("org.apache.groovy:groovy:${groovyVersion}")
+            implementation("org.apache.groovy:groovy-ant:${groovyVersion}")
+            implementation("org.apache.groovy:groovy-console:${groovyVersion}")
+            implementation("org.apache.groovy:groovy-nio:${groovyVersion}")
+            implementation("org.apache.groovy:groovy-xml:${groovyVersion}")
+            implementation("org.apache.groovy:groovy-test:${groovyVersion}")
 
             implementation("org.openjfx:javafx-base:${javaFXVersion}:${platform}")
             implementation("org.openjfx:javafx-controls:${javaFXVersion}:${platform}")

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -88,7 +88,7 @@ trait LeadSheetReaderTrait implements LeadSheetReader {
 class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 
 	
-	Map<String, Map<Integer, Integer>> chordStats = [:].withDefault{[:].withDefault{0}}
+	Map<String, Map<Integer, Float>> chordStats = [:].withDefault{[:].withDefault{0.0f}}
 
 	private static XPath xpath = XPathFactory.newInstance().newXPath()
 
@@ -134,12 +134,12 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 	}
 	
 	void normalizeChordStats() {
-		chordStats.each { String chord, Map<Integer, Integer> pitch_histogram ->
-			int sum = (int) pitch_histogram.values().sum()
+		chordStats.each { String chord, Map<Integer, Float> pitch_histogram ->
+			float sum = (float) pitch_histogram.values().sum()
 			if (sum > 0) {
-				pitch_histogram.each { int k, int v ->
+				pitch_histogram.each { int k, double v ->
 					//println "$k $v $sum"
-					pitch_histogram[k] = (int) (v/sum)
+					pitch_histogram[k] = (float) (v/sum)
 				}
 			}
 		}
@@ -191,7 +191,7 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 								if (scaleName) 
 									keysig.mode = Utils.ModeFromName(scaleName)
 								//possibly fire keysig
-								println "KeySig $keysig"
+								// println "KeySig $keysig"
 								int mode = (keysig.mode == KeyMode.MAJOR) ? 1 : 0
 								sig = [mode, keysig.fifths]
 								tonic = Utils.TonicFromKeySignature[sig]
@@ -289,7 +289,7 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 
 								if (currentChord != null) {
 									int curChordPitchClass = currentChord.root.midiValue % 12
-									chordStats[curChordPitchClass.toString() + "(" + currentChord.kind + ")"][note.pitch.midiValue % 12] += 1
+									chordStats[curChordPitchClass.toString() + "(" + currentChord.kind + ")"][note.pitch.midiValue % 12] += 1.0f
 								}
 								fireChord(note)
 							}

@@ -15,7 +15,7 @@
 
 :intro1 :A1 :intro1 :B1
 
-=2 ~2
+=2 ~1
 
 (key "G" "maj")
 (instr "acoustic grand piano")

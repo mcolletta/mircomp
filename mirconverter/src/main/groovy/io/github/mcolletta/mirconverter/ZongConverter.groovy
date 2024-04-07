@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -176,10 +176,10 @@ class ZongConverter {
 			score.getInfo().getCreators().add(composer)
 		}
 
-		mirscore.parts.each { idp, part ->
+		mirscore.parts.each { part ->
 			currentStaff = score.getStavesCount()
 			addPart(part)
-			part.voices.each { idv, voice ->
+			part.voices.eachWithIndex { voice, idv ->
 				openBeamWaypoints == null
 				currentMeasure = 0
 				currentVoice = idv
@@ -196,50 +196,48 @@ class ZongConverter {
 	}
 
 	void addPart(MirPart mirpart) {
-		String partId = mirpart.getId()
-		String partName = (mirpart.getName() != null) ? mirpart.getName() : partId
+		String partName = mirpart.getName()
 		Instrument defaultInstr = Instrument.defaultInstrument
-		Part zpart = new Part(partName, partId, 1, alist(defaultInstr))
+		Part zpart = new Part(partName, null, 1, alist(defaultInstr))
 		new PartAdd(score, zpart, currentStaff, null).execute()
 	}
 
 	void addElement(MusicElement el) {
 		switch (el) {
-			// TODO: use getMusicElementType() for performance
-			case { it instanceof MirRest}:
+			case { it.getMusicElementType() == "Rest" }:
 				addRest((MirRest)el)
 				break
-			case { it instanceof MirChord}:
+			case { it.getMusicElementType() == "Chord" }:
 				addChord((MirChord)el)
 				break
-			case { it instanceof ChordSymbol}:
+			case { it.getMusicElementType() == "ChordSymbol" }:
 				addChord(((ChordSymbol)el).getChord())
 				break
-			case { it instanceof MirClef }:
+			case { it.getMusicElementType() == "Clef" }:
 				addClef((MirClef)el)
 				break
-			case { it instanceof MirKey }:
+			case { it.getMusicElementType() == "KeySignature" }:
 				addKey((MirKey)el)
 				break
-			case { it instanceof MirTime }:
+			case { it.getMusicElementType() == "TimeSignature" }:
 				addTime((MirTime)el)
 				break
-			case { it instanceof MirTempo }:
+			case { it.getMusicElementType() == "Tempo" }:
 				addTempo((MirTempo)el)
 				break
-			case { it instanceof Phrase }:
+			case { it.getMusicElementType() == "Phrase" }:
 				addPhrase((Phrase)el)
 				break
-			case { it instanceof Repeat }:
+			case { it.getMusicElementType() == "Repeat" }:
 				addRepeat((Repeat)el)
 				break
-			case { it instanceof Anchor }:
+			case { it.getMusicElementType() == "Anchor" }:
 				addAnchor((Anchor)el)
 				break
-			case { it instanceof MirTuplet }:
+			case { it.getMusicElementType() == "Tuplet" }:
 				addTuplet((MirTuplet)el)
 				break
-			case { it instanceof MirInstrument }:
+			case { it.getMusicElementType() == "Instrument" }:
 				addInstrument((MirInstrument)el)
 				break
 			default:

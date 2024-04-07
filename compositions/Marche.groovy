@@ -6,8 +6,8 @@ def f3 = fr(3,4)
 def f2 = fr(1,2)
 def f1 = fr(1,1)
 def marche = new ScoreBuilder().score() {
-	part(id:"1") {
-		voice(id:"1") {
+	part(name: "P1") {
+		voice() {
 		    key(fifths:1, mode:KeyMode.MAJOR)
 			clef(type:ClefType.TREBLE)
 			time(time:fr(4,4))
@@ -37,7 +37,7 @@ def marche = new ScoreBuilder().score() {
 			chord(midiPitch:81, duration:f16, stem:StemDirection.DOWN)
 			chord(midiPitch:83, duration:f16, stem:StemDirection.DOWN)
 		}
-		voice(id:"2") {
+		voice() {
 			// 1
 			anchor(id:"1")
 			rest(duration:f8)
@@ -60,8 +60,8 @@ def marche = new ScoreBuilder().score() {
 		}
 	}
 
-	part(id:"2") {
-		voice(id:"1") {
+	part(name: "P2") {
+		voice() {
 		    key(fifths:1, mode:KeyMode.MAJOR)
 			clef(type:ClefType.BASS)
 			time(time:fr(4,4))		
@@ -80,8 +80,8 @@ def marche = new ScoreBuilder().score() {
 		}
 	}
 
-	part(id:"3") {
-		voice(id:"1") {
+	part(name: "P3") {
+		voice() {
 		    key(fifths:1, mode:KeyMode.MAJOR)
 			clef(type:ClefType.PERCUSSION)
 			time(time:fr(4,4))
@@ -92,7 +92,7 @@ def marche = new ScoreBuilder().score() {
 				}
 			}
 		}
-		voice(id:"2") {
+		voice() {
 			key(fifths:1, mode:KeyMode.MAJOR)
 			instrument(id:"Drums 2", program:51, unpitched:true)
 			(1..3).each {

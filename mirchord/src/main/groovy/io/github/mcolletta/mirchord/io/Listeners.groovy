@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -71,6 +71,40 @@ class LeadSheetSubscriber implements LeadSheetListener {
 		melody << event
 	}
 	
+}
+
+class MetricMelodicIntervals implements LeadSheetListener {
+	
+	int lastValue = -1
+	Map<Integer, Float> intervals
+	
+	MetricMelodicIntervals() {
+		intervals = [:].withDefault{0.0f}
+	}
+
+	@Override
+	public void newSong() {
+		lastValue = -1
+	}
+
+	@Override
+	public void chordSymbol(ChordSymbol event) {
+		//println "Event ChordSymbol " + event
+	}
+
+	@Override
+	public void chord(Chord event) {
+		int midiValue = event.pitch.getMidiValue()
+		if (lastValue > 0) {
+			intervals[(midiValue - lastValue)] += 1.0f
+		}
+		lastValue = midiValue
+	}
+
+	@Override
+	public void rest(Rest event) {
+		lastValue = -1
+	}
 }
 
 
