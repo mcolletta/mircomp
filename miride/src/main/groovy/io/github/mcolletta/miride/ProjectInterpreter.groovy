@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -53,7 +53,7 @@ import com.xenoage.zong.core.Score
 
 protected class ProjectInterpreter {
 
-    boolean PRINT_STACKTRACE = false
+    boolean PRINT_STACKTRACE = true
 
     boolean staticCompile = false
     CompilerConfiguration configuration
@@ -103,6 +103,14 @@ protected class ProjectInterpreter {
                 //setIndirectImportCheckEnabled(true);
                 setAllowedReceivers(Arrays.asList("java.lang.Object","java.lang.Math", // "org.codehaus.groovy.runtime.InvokerHelper",
                                                     "groovy.lang.Range",
+                                                    "java.util.HashMap",
+                                                    "java.util.LinkedHashMap",
+                                                    "java.util.concurrent.ConcurrentSkipListMap",
+                                                    "java.util.List",
+                                                    "java.util.ArrayList",
+                                                    "java.util.LinkedList",
+                                                    "java.util.Stack",
+                                                    "java.util.Vector",
                                                     "io.github.mcolletta.mirchord.core.Pitch",
                                                     "io.github.mcolletta.mirchord.core.Chord",
                                                     "io.github.mcolletta.mirchord.core.Score",
@@ -131,15 +139,39 @@ protected class ProjectInterpreter {
                                                     "io.github.mcolletta.mirconverter.Helper",
                                                     "io.github.mcolletta.mirchord.core.ScoreBuilder",
                                                     "io.github.mcolletta.mirchord.interpreter.MirChord",
-                                                    "com.xenoage.utils.math.Fraction"
+                                                    "io.github.mcolletta.mirchord.interpreter.MirChordInterpreter",
+                                                    "com.xenoage.utils.math.Fraction",
+                                                    "io.github.mcolletta.mirgene.MirGram",
+                                                    "io.github.mcolletta.mirgene.FitnessFunction",
+                                                    "io.github.mcolletta.mirgene.MirGene",
+                                                    "io.github.mcolletta.mirgene.Individual",
+                                                    "io.github.mcolletta.mircoracle.FactorOracle",
+                                                    "io.github.mcolletta.mirgene.OracleNavigator",
+                                                    "io.github.mcolletta.mircoracle.IncrementalParser",
+                                                    "io.github.mcolletta.mircoracle.Continuation"
                                                     ));
 
-                setAllowedImports(Arrays.asList("java.lang.Math","classWithinScript",
+                setAllowedImports(Arrays.asList("classWithinScript",
+                                                "java.lang.Math",
                                                 "java.lang.Object",
-                                                "io.github.mcolletta.mirchord.interpreter.MirChord", "com.xenoage.utils.math.Fraction"));
-                setAllowedStarImports(Arrays.asList("io.github.mcolletta.mirchord.core", "io.github.mcolletta.mirchord.io",
+                                                "java.util.HashMap",
+                                                "java.util.LinkedHashMap",
+                                                "java.util.concurrent.ConcurrentSkipListMap",
+                                                "java.util.List",
+                                                "java.util.ArrayList",
+                                                "java.util.LinkedList",
+                                                "java.util.Stack",
+                                                "java.util.Vector",
+                                                "io.github.mcolletta.mirchord.interpreter.MirChord",
+                                                "io.github.mcolletta.mirchord.interpreter.MirChordInterpreter",
+                                                "com.xenoage.utils.math.Fraction"));
+                setAllowedStarImports(Arrays.asList("io.github.mcolletta.mirchord.core",
+                                                    "io.github.mcolletta.mirchord.io",
                                                     "io.github.mcolletta.mirchord.core.ScoreBuilder",
-                                                    "io.github.mcolletta.mirsynth", "io.github.mcolletta.mirconverter"))
+                                                    "io.github.mcolletta.mirgene",
+                                                    "io.github.mcolletta.mircoracle",
+                                                    "io.github.mcolletta.mirsynth",
+                                                    "io.github.mcolletta.mirconverter"))
                 setAllowedStaticStarImports(Arrays.asList("io.github.mcolletta.mirchord.core.Utils", "io.github.mcolletta.mirconverter.Helper",
                                                           "io.github.mcolletta.mirchord.core.ScoreBuilder",
                                                           "com.xenoage.utils.math.Fraction", "io.github.mcolletta.miride.UtilsFx"))
@@ -181,6 +213,7 @@ protected class ProjectInterpreter {
 
     void setDefaultImports(ImportCustomizer importCustomizer) {
     	importCustomizer.addImports 'io.github.mcolletta.mirchord.interpreter.MirChord'
+        importCustomizer.addImports 'io.github.mcolletta.mirchord.interpreter.MirChordInterpreter'
         importCustomizer.addImports 'io.github.mcolletta.mirchord.core.ScoreBuilder'
         importCustomizer.addStarImports 'io.github.mcolletta.mirchord.core'
         importCustomizer.addStarImports 'io.github.mcolletta.mirchord.io'
@@ -190,6 +223,8 @@ protected class ProjectInterpreter {
     	importCustomizer.addStaticStars 'com.xenoage.utils.math.Fraction'
         importCustomizer.addStaticStars 'io.github.mcolletta.miride.UtilsFx'
         importCustomizer.addStarImports 'io.github.mcolletta.mirsynth'
+        importCustomizer.addStarImports 'io.github.mcolletta.mirgene'
+        importCustomizer.addStarImports 'io.github.mcolletta.mircoracle'
     }
 
     void addImports(ImportCustomizer importCustomizer) {

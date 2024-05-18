@@ -173,6 +173,12 @@ class ChordSymbol implements MusicElement {
 	String getKindText() {
 		return kind.toString().replace('_', '-')
 	}
+
+	String toSymbolString() {
+		String str = root.toSymbolString()
+		str += getKindText().toLowerCase()
+		return str
+	}
 	
 	String toString() {
 		String str = root.toString()

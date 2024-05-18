@@ -53,9 +53,13 @@ interface LeadSheetReader {
 
     void fireNewSong();
 
+    void fireKeySignature(KeySignature event);
+
     void fireChord(Chord event);
 
     void fireRest(Rest event);
+
+    void fireEndReading()
 
 }
 
@@ -71,6 +75,10 @@ trait LeadSheetReaderTrait implements LeadSheetReader {
 		leadSheetListeners.each { it.newSong() }
 	}
 
+	void fireKeySignature(KeySignature event) {
+		leadSheetListeners.each { it.keySignature(event) }
+	}
+
 	void fireChordSymbol(ChordSymbol event) {
 		leadSheetListeners.each { it.chordSymbol(event) }
 	}
@@ -81,6 +89,10 @@ trait LeadSheetReaderTrait implements LeadSheetReader {
 
 	void fireRest(Rest event) {
 		leadSheetListeners.each { it.rest(event) }
+	}
+
+	void fireEndReading() {
+		leadSheetListeners.each { it.endReading() }
 	}
 }
 
@@ -123,26 +135,13 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 				}
 			}
 			processXml(mxml)
-			normalizeChordStats()
 		}
 
 		folder.eachFileMatch(~/.*\.xml/) { File f ->
 			processXml(f.text)
 		}
 		
-		normalizeChordStats()
-	}
-	
-	void normalizeChordStats() {
-		chordStats.each { String chord, Map<Integer, Float> pitch_histogram ->
-			float sum = (float) pitch_histogram.values().sum()
-			if (sum > 0) {
-				pitch_histogram.each { int k, double v ->
-					//println "$k $v $sum"
-					pitch_histogram[k] = (float) (v/sum)
-				}
-			}
-		}
+		fireEndReading()
 	}
 	
 	void processXml(String xml) {
@@ -151,12 +150,6 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 		Document doc = XMLReader.read(xml)
         Element root = XMLReader.root(doc)
 
-		def keysig = new KeySignature()
-		List<Integer> sig = [0,0]
-		ChordSymbol currentChord
-		Fraction currentChordDuration = _0
-		int tonic
-		int transposition = 0
 		int measureLength = 4
 		boolean tieStart = false
 
@@ -186,26 +179,16 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 							// find key in measure
 							Element keyElement = element(item,"key")
 							if (keyElement != null) {
+								def keysig = new KeySignature()
 								keysig.fifths = Integer.parseInt(elementText(keyElement, "fifths"))
 								String scaleName = elementText(keyElement, "mode")
 								if (scaleName) 
 									keysig.mode = Utils.ModeFromName(scaleName)
-								//possibly fire keysig
-								// println "KeySig $keysig"
-								int mode = (keysig.mode == KeyMode.MAJOR) ? 1 : 0
-								sig = [mode, keysig.fifths]
-								tonic = Utils.TonicFromKeySignature[sig]
-								transposition = (keysig.fifths * 7) % 12
+								fireKeySignature(keysig)
 							}
 						}
 
 						if (item.getNodeName() == 'harmony') {
-							if (currentChord != null && currentChordDuration != _0) {
-								currentChord.duration = currentChordDuration
-								currentChordDuration = _0
-								fireChordSymbol(currentChord)
-							}
-
 							Element harmonyRoot = element(item, "root")
 							String _step = elementText(harmonyRoot, 'root-step')
 							int _alteration = 0
@@ -215,13 +198,11 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 							int _octave = 3
 							//println "$_step $_octave $_alteration"
 							def pitch = new Pitch(_step, _octave, _alteration)
-							if (transposition > 0)
-								pitch.midiValue += transposition
 
 							Element harmonyKind = element(item, "kind")							
 							if (harmonyKind != null) {
 								String kindText = harmonyKind.getTextContent()
-								ChordKind kind = Utils.getChordSymboKind(kindText)
+								ChordKind kind = Utils.getChordSymboKind(kindText.trim())
 								if (kind != null) {
 									def chordSymbol = new ChordSymbol(pitch, kind)
 									Element harmonyBass = element(item, "bass")
@@ -234,7 +215,7 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 										int _bass_octave = 3
 										chordSymbol.bass = new Pitch(_bass_step, _bass_octave, _bass_alteration)
 									}
-									currentChord = chordSymbol
+									fireChordSymbol(chordSymbol)
 								} else 
 									println "Chord kind of type $kindText not recognized"
 							}
@@ -249,11 +230,9 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 									duration = duration.add(duration.mult(fr(1,2)))
 								}
 							}
-							//println "$duration"
 							if (element(item, "rest") != null) {
 								def rest = new Rest()
 								rest.duration = duration
-								currentChordDuration = currentChordDuration.add(rest.duration)
 								fireRest(rest)
 								continue
 							}
@@ -268,11 +247,6 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 								int _octave = Integer.parseInt(elementText(notePitch, "octave"))
 								note.pitch = new Pitch(_step, _octave, _alteration)
 								note.duration = duration
-								
-								currentChordDuration = currentChordDuration.add(note.duration)
-
-								if (transposition > 0)
-									note.pitch.midiValue += transposition
 
 								if (tieStart) {
 									note.tieEnd = true
@@ -286,21 +260,11 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 										tieStart = true
 									}
 								}
-
-								if (currentChord != null) {
-									int curChordPitchClass = currentChord.root.midiValue % 12
-									chordStats[curChordPitchClass.toString() + "(" + currentChord.kind + ")"][note.pitch.midiValue % 12] += 1.0f
-								}
 								fireChord(note)
 							}
 						}
 					}
 				}
-			}
-
-			if (currentChord != null && currentChordDuration != _0) {
-				currentChord.duration = currentChordDuration
-				fireChordSymbol(currentChord)
 			}
 		}
 	}

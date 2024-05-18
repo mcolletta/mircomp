@@ -32,6 +32,9 @@ import static com.xenoage.utils.math.Fraction._0
 
 import static ChordKind.*
 
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+
 
 class Utils {
 
@@ -43,6 +46,69 @@ class Utils {
 	     def bin = new ByteArrayInputStream(bos.toByteArray())
 	     def ois = new ObjectInputStream(bin)
 	     return ois.readObject()
+	}
+
+	// it works only for object that implements Serializable
+	static void saveObjectToBinaryFile(Object obj, String path) {
+		try(
+		    FileOutputStream fos = new FileOutputStream(new File(path), true)
+		    ObjectOutputStream oos = new ObjectOutputStream(fos)
+		) {
+		    oos.writeObject(obj)
+		} catch (Exception ex) {
+		    ex.printStackTrace()
+		}
+	}
+
+	// it works only for object that implements Serializable
+	static <T> loadObjectFromBinaryFile(String path) {
+		ObjectInputStream  ois = null
+		try {
+		    def fis = new FileInputStream(path)
+		    ois = new ObjectInputStream(fis)
+		    return (T) ois.readObject()
+		} catch (Exception e) {
+		    e.printStackTrace()
+		} finally {
+		    if(ois != null){
+		        ois.close()
+		    } 
+		}
+	}
+
+	static void saveObjectToJsonFile(Object obj, String path) {
+		def json = new JsonBuilder(obj).toPrettyString()
+		def f = new File(path)
+		f.createNewFile()
+		f.text = json
+	}
+
+	static <T> loadObjectFromJsonFile(String path) {
+		return new JsonSlurper().parseText(new File(path).text)
+	}
+
+	static List<List<Pitch>> GetTimeGrid(Score score, Fraction step) {
+		List<List<Pitch>> grid = [].withDefault{[]}
+		ScoreTime time = ScoreTime._t0
+		// fr(1,2).divideBy(fr(1,8)) // 4/1
+		List<Chord> chords = score.parts[0].voices[0].getChords()
+		for (Chord chord: chords) {
+			def pitches = chord.pitches
+			//println pitches
+			def duration = chord.duration
+			int start = 0
+			if (time.measure > 0) {
+			    start = (int)Math.ceil(fr(time.measure,1).divideBy(step).toFloat())
+			}
+			start += (int)Math.ceil(time.beat.divideBy(step).toFloat())
+			int span = (int)Math.ceil(duration.divideBy(step).toFloat())
+			//println "start: $start - span $span"
+			for (int i=start; i < start + span; i++) {
+				grid[i].addAll(pitches)
+			}
+			time += duration
+		}
+		return grid
 	}
 
 	static Map<Class<?>, Class<?>> PRIMITIVE_WRAPPERS = [
@@ -315,6 +381,22 @@ class Utils {
 				[1, 6]: 3, //scale 1 sig 6 -> D# min
 				[1, 7]: 10, //scale 1 sig 7 -> A# min
 		]
+
+	static int getTonicTransposition(KeySignature keysig) {
+		// normalize to Cmaj or Amin
+		// moving on circle of fifths
+		// a fifth = 7 semitones
+		// minor scales 3 semitones below major scales
+		int tr = 0
+		if (keysig.fifths >= 0)
+			tr = (keysig.fifths * 7) % 12
+		else
+			tr = ((12 + keysig.fifths) * 7) % 12
+		int adjust_minor = (keysig.mode == KeyMode.MINOR) ? -3 : 0
+		tr += adjust_minor
+		tr = tr >= 0 ? tr : 12 + tr
+		return tr
+	}
 
 	static String getPitchLetterFromSymbol(String symbol, KeySignature keysig) {
 		int scaleDegree = getScaleDegreeFromSymbol(symbol)

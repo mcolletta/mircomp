@@ -218,7 +218,7 @@ class PianoRollEditor {
             double y = midi.toY(pitch)
             double endY =  y+note_height
             //if (y < down && endY > up) {
-                Boolean isBlack = ((int)(pitch % 12)) in [1, 3, 5, 7, 9]
+                Boolean isBlack = ((int)(pitch % 12)) in [1, 3, 6, 8, 10]
                 if (isBlack)
                     g.setFill(Color.LIGHTGRAY)
                 else

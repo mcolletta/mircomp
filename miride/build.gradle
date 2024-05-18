@@ -18,6 +18,8 @@ dependencies {
     implementation project(':mirsynth')
     implementation project(':mirfoldertreeview')
     implementation project(':mirutils')
+    implementation project(':mircoracle')
+    implementation project(':mirgene')
 }
 
 sourceSets {

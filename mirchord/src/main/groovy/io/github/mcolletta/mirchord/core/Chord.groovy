@@ -187,8 +187,8 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 	int getMidiValue() {
 		return (symbolSemitones + ((octave+1) * 12)) + alteration
 	}
-	
-	public String toString() {
+
+	public String toSymbolString() {
 		String strAlter = ""
 		String alterSym = ""
 		if (alteration != 0) {
@@ -197,7 +197,11 @@ class Pitch implements MusicElement, Comparable<Pitch> {
 				strAlter += alterSym
 			}
 		}
-		return  "$symbol$strAlter$octave[${getMidiValue()}]"
+		return "$symbol$strAlter"
+	}
+	
+	public String toString() {
+		return  "${toSymbolString()}$octave[${getMidiValue()}]"
 	}
 
 	boolean isCopyable() {
