@@ -87,26 +87,38 @@ class Utils {
 		return new JsonSlurper().parseText(new File(path).text)
 	}
 
+	static float Dot(float[] a, float[] b) {
+        float sum = 0
+        int n = a.length
+        for (int i = 0; i < n; i++) {
+            sum += (float)(a[i] * b[i])    
+        }
+        return sum
+	}
+
 	static List<List<Pitch>> GetTimeGrid(Score score, Fraction step) {
 		List<List<Pitch>> grid = [].withDefault{[]}
-		ScoreTime time = ScoreTime._t0
-		// fr(1,2).divideBy(fr(1,8)) // 4/1
-		List<Chord> chords = score.parts[0].voices[0].getChords()
-		for (Chord chord: chords) {
-			def pitches = chord.pitches
-			//println pitches
-			def duration = chord.duration
-			int start = 0
-			if (time.measure > 0) {
-			    start = (int)Math.ceil(fr(time.measure,1).divideBy(step).toFloat())
+		// fr(1,2).divideBy(fr(1,8)) = 4/1
+		for (Part part: score.parts) {
+			for (Voice voice: part.voices) {
+				ScoreTime time = ScoreTime._t0
+				List<Chord> chords = voice.getChords()
+				for (Chord chord: chords) {
+					def pitches = chord.pitches
+					def duration = chord.duration
+					int start = 0
+					if (time.measure > 0) {
+					    start = (int)Math.ceil(fr(time.measure,1).divideBy(step).toFloat())
+					}
+					start += (int)Math.ceil(time.beat.divideBy(step).toFloat())
+					int span = (int)Math.ceil(duration.divideBy(step).toFloat())
+					//println "start: $start - span $span"
+					for (int i=start; i < start + span; i++) {
+						grid[i].addAll(pitches)
+					}
+					time += duration
+				}
 			}
-			start += (int)Math.ceil(time.beat.divideBy(step).toFloat())
-			int span = (int)Math.ceil(duration.divideBy(step).toFloat())
-			//println "start: $start - span $span"
-			for (int i=start; i < start + span; i++) {
-				grid[i].addAll(pitches)
-			}
-			time += duration
 		}
 		return grid
 	}

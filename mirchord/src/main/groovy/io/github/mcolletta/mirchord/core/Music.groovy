@@ -93,6 +93,9 @@ class Score {
 			if (el.getMusicElementType() == "Phrase") {
 				var ph = (Phrase)el
 				items.addAll( getElementsByTypes(ph.elements, types) )
+			} else if (el.getMusicElementType() == "Tuplet") {
+				var tp = (Tuplet)el
+				items.addAll( tp.chords )
 			} else if (el.getMusicElementType() in types) {
 				items.add(el)
 			}

@@ -57,10 +57,14 @@ class ChordStatistics implements LeadSheetListener {
 
 	boolean transpose
 	int transposition = 0
+
+	Map<Integer, String> pitch_names = [0: 'C', 1: 'C#/Db', 2: 'D', 3: 'D#/Eb', 4: 'E', 5: 'F',
+		                                6: 'F#/Gb', 7: 'G', 8: 'G#/Ab', 9: 'A', 10: 'A#/Bb', 11: 'B']
 	
 	ChordStatistics(transpose=false) {
 		this.transpose = transpose
-		chordStats = [:].withDefault{[:].withDefault{0.0f}}
+		chordStats = [:].withDefault{['C': 0.0f, 'C#/Db': 0.0f, 'D': 0.0f, 'D#/Eb': 0.0f, 'E': 0.0f, 'F': 0.0f,
+		                              'F#/Gb': 0.0f, 'G': 0.0f, 'G#/Ab': 0.0f, 'A': 0.0f, 'A#/Bb': 0.0f, 'B': 0.0f]}
 	}
 
 	void normalizeChordStats() {
@@ -102,7 +106,10 @@ class ChordStatistics implements LeadSheetListener {
 		if (currentChord != null) {
 			if (transposition > 0)
 				note.pitch.midiValue -= transposition
-			chordStats[currentChord.toSymbolString()][note.pitch.toSymbolString()] += 1.0f
+			def note_name = pitch_names[note.pitch.midiValue % 12]
+			def root_name = pitch_names[currentChord.root.midiValue % 12]
+			def chordsym_name = root_name + "_" + currentChord.getKindText().toLowerCase()
+			chordStats[chordsym_name][note_name] += 1.0f
 		}
 	}
 

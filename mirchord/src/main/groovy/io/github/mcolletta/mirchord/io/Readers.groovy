@@ -99,9 +99,6 @@ trait LeadSheetReaderTrait implements LeadSheetReader {
 
 class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 
-	
-	Map<String, Map<Integer, Float>> chordStats = [:].withDefault{[:].withDefault{0.0f}}
-
 	private static XPath xpath = XPathFactory.newInstance().newXPath()
 
     static Element getElementFromXPath(Element element, String path) {
@@ -116,7 +113,7 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
         element.setTextContent(text)
     }
 	
-	void read(File folder) {		
+	void read(File folder) {
 		folder.eachFileMatch(~/.*\.mxl/) { File f ->
 			def zipFile = new ZipFile(f)
 			Map<String,String> files = [:]
@@ -268,5 +265,37 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 			}
 		}
 	}
+}
+
+
+class MirScoreLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
+
+	void read(Score score) {
+		fireNewSong()
+		for (Part part: score.parts) {
+			for (Voice voice: part.voices) {
+				def elements = Score.getElementsByTypes(voice.elements, ["KeySignature", "ChordSymbol", "Chord", "Rest"])
+				for (MusicElement el: elements) {
+					switch (el) {
+						case { it.getMusicElementType() == "KeySignature" }:
+							fireKeySignature((KeySignature)el)
+							break
+						case { it.getMusicElementType() == "ChordSymbol" }:
+							fireChordSymbol((ChordSymbol)el)
+							break
+						case { it.getMusicElementType() == "Chord" }:
+							fireChord((Chord)el)
+							break
+						case { it.getMusicElementType() == "Rest" }:
+							fireRest((Rest)el)
+							break
+						default:
+							break
+					}
+				}
+			}
+		}
+	}
+
 }
 

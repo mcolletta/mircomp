@@ -108,7 +108,7 @@ class ChordSymbol implements MusicElement {
 	
 	ChordSymbol(Pitch root, ChordKind kind) {
 		this.root = root
-		this.kind = kind
+		this.kind = kind != null ? kind : ChordKind.MAJOR
 	}
 	
 	boolean isChordSymbol() {
