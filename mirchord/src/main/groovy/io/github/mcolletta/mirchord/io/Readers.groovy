@@ -268,7 +268,7 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 }
 
 
-class MirScoreLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
+class MirScoreReader implements LeadSheetReader, LeadSheetReaderTrait {
 
 	void read(Score score) {
 		fireNewSong()
@@ -295,6 +295,7 @@ class MirScoreLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 				}
 			}
 		}
+		fireEndReading()
 	}
 
 }

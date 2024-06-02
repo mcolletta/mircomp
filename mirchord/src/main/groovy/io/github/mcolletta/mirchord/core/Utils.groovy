@@ -123,6 +123,120 @@ class Utils {
 		return grid
 	}
 
+	static Map<Integer, String> pitch_names = [0: 'C', 1: 'C#/Db', 2: 'D', 3: 'D#/Eb', 4: 'E', 5: 'F',
+		                                       6: 'F#/Gb', 7: 'G', 8: 'G#/Ab', 9: 'A', 10: 'A#/Bb', 11: 'B']
+
+	static Map<String, Map<String, Float>> GetLeadSheetChordStatistics(Voice melody, Voice harmony, boolean transpose=true) {
+
+		Map<String, Map<String, Float>> chordStats
+		chordStats = [:].withDefault{['C': 0.0f, 'C#/Db': 0.0f, 'D': 0.0f, 'D#/Eb': 0.0f, 'E': 0.0f, 'F': 0.0f,
+		                              'F#/Gb': 0.0f, 'G': 0.0f, 'G#/Ab': 0.0f, 'A': 0.0f, 'A#/Bb': 0.0f, 'B': 0.0f]}
+
+		List<MusicElement> mel = []
+		int transposition = 0
+		def elements = Score.getElementsByTypes(melody.elements, ["KeySignature", "ChordSymbol", "Chord", "Rest"])
+		for (MusicElement el: elements) {
+			switch (el) {
+				case { it.getMusicElementType() == "KeySignature" }:
+					if (transpose)
+						transposition = Utils.getTonicTransposition((KeySignature)el)
+					break
+				case { it.getMusicElementType() == "Chord" }:
+					Chord note = (Chord)el.copy()
+					if (transposition > 0)
+						note.pitch.midiValue -= transposition
+					mel.add(note)
+					break
+				case { it.getMusicElementType() == "Rest" }:
+					mel.add((Rest)el.copy())
+					break
+				case { it.getMusicElementType() == "ChordSymbol" }:
+					throw new Exception("Not a Lead Sheet")
+					break
+				default:
+					break
+			}
+		}
+
+		List<MusicElement> har = []
+		transposition = 0
+		elements = Score.getElementsByTypes(harmony.elements, ["KeySignature", "ChordSymbol", "Chord", "Rest"])
+		for (MusicElement el: elements) {
+			switch (el) {
+				case { it.getMusicElementType() == "KeySignature" }:
+					if (transpose)
+						transposition = Utils.getTonicTransposition((KeySignature)el)
+					break
+				case { it.getMusicElementType() == "ChordSymbol" }:
+					ChordSymbol chordSymbol = (ChordSymbol)el.copy()
+					if (transposition > 0) {
+						chordSymbol.root.midiValue -= transposition
+						if (chordSymbol.bass != null)
+							chordSymbol.bass.midiValue -= transposition
+					}
+					har.add(chordSymbol)
+					break
+				case { it.getMusicElementType() == "Chord" }:
+					throw new Exception("Not a Lead Sheet")
+					break
+				case { it.getMusicElementType() == "Rest" }:
+					har.add((Rest)el.copy())
+					break
+				default:
+					break
+			}
+		}
+
+		def htime = [ScoreTime._t0, ScoreTime._t0] // chord sym window
+		ScoreTime mtime = ScoreTime._t0
+		int j = 0
+		for (int i = 0; i < har.size(); i++) {
+			MusicElement el = har[i]
+			if (el.getMusicElementType() == "Rest") {
+				htime[0] = htime[1]
+				htime[1] = htime[1] + ((Rest)el).duration
+				continue
+			} else if (el.getMusicElementType() == "ChordSymbol") {
+				ChordSymbol curChordSym = (ChordSymbol)el
+				def root_name = pitch_names[curChordSym.root.midiValue % 12]
+				def chordsym_name = root_name + "_" + curChordSym.getKindText().toLowerCase()
+				if (mtime > htime[1] && mel[j-1].getMusicElementType() == "Chord") {
+					def note = ((Chord)mel[j-1])
+					def note_name = pitch_names[note.pitch.midiValue % 12]
+					chordStats[chordsym_name][note_name] += 1.0f
+				}
+				htime[0] = htime[1]
+				htime[1] = htime[1] + curChordSym.duration
+				while(mtime <= htime[1] && j < mel.size()) {
+					if (mel[j].getMusicElementType() == "Rest") {
+						mtime += ((Rest)mel[j]).duration
+					} else if (mel[j].getMusicElementType() == "Chord") {
+						def note = ((Chord)mel[j])
+						def onset = mtime
+						mtime += note.duration
+						if (onset >= htime[0] || mtime > htime[0]) {
+							def note_name = pitch_names[note.pitch.midiValue % 12]
+							chordStats[chordsym_name][note_name] += 1.0f
+						}
+					} 
+					j += 1
+				}
+			}
+		}
+
+		// normalize
+		chordStats.each { String chord, Map<String, Float> pitch_histogram ->
+			float sum = (float) pitch_histogram.values().sum()
+			if (sum > 0) {
+				pitch_histogram.each { String k, double v ->
+					pitch_histogram[k] = (float) (v/sum)
+				}
+			}
+		}
+
+		return chordStats
+	}
+
 	static Map<Class<?>, Class<?>> PRIMITIVE_WRAPPERS = [
 											(Void.class): void.class,
 											(Boolean.class): boolean.class,

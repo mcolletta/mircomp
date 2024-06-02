@@ -172,8 +172,10 @@ class MetricsMelodicIntervals implements LeadSheetListener {
 			append(fifo2, interval)
 			append(fifo3, interval)
 			unigrams[interval.toString()] += 1.0f
-			bigrams[interval.toString()] += 1.0f
-			trigrams[interval.toString()] += 1.0f
+			if (fifo2.size() == 2)
+				bigrams[fifo2.toString()] += 1.0f
+			if (fifo3.size() == 3)
+				trigrams[fifo3.toString()] += 1.0f
 		}
 		lastValue = midiValue
 	}
@@ -189,6 +191,8 @@ class MetricsMelodicIntervals implements LeadSheetListener {
 
 	@Override
 	public void endReading() {
+		normalizeStats(unigrams)
+		normalizeStats(bigrams)
 		normalizeStats(trigrams)
 	}
 }
@@ -241,8 +245,10 @@ class MetricsDuration implements LeadSheetListener {
 			append(fifo2, ratio)
 			append(fifo3, ratio)
 			unigrams[ratio.toString()] += 1.0f
-			bigrams[fifo2.toString()] += 1.0f
-			trigrams[fifo3.toString()] += 1.0f
+			if (fifo2.size() == 2)
+				bigrams[fifo2.toString()] += 1.0f
+			if (fifo3.size() == 3)
+				trigrams[fifo3.toString()] += 1.0f
 		}
 		currDuration = duration
 	}
@@ -258,6 +264,8 @@ class MetricsDuration implements LeadSheetListener {
 
 	@Override
 	public void endReading() {
+		normalizeStats(unigrams)
+		normalizeStats(bigrams)
 		normalizeStats(trigrams)
 	}
 }
