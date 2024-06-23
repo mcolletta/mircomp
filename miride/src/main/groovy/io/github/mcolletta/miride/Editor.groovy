@@ -473,6 +473,10 @@ public class Editor implements FolderTreeViewListener {
                 mode = Mode.XML
                 tab = newTabTextFile(path, mode, open)
                 break
+            case "mirgram":
+                mode = Mode.JSP
+                tab = newTabTextFile(path, mode, open)
+                break
             case "json":
                 mode = Mode.JSON
                 tab = newTabTextFile(path, mode, open)
@@ -630,6 +634,13 @@ public class Editor implements FolderTreeViewListener {
         if (suggestedDir == null)
             suggestedDir = new File(System.getProperty("user.home"))
         openNewTab(suggestedDir.toPath(), "mid", false)
+    }
+
+    void newmirgramfile() {
+        File suggestedDir = projectFolder.get()
+        if (suggestedDir == null)
+            suggestedDir = new File(System.getProperty("user.home"))
+        openNewTab(suggestedDir.toPath(), "mirgram", false)
     }
 
     void openfile() {

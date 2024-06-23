@@ -42,6 +42,7 @@ class Mode {
     static final Mode Dot = new Mode("Dot", "ace/mode/dot", ["dot"])
     static final Mode Groovy = new Mode("Groovy", "ace/mode/groovy", ["groovy"])
     static final Mode Java = new Mode("Java", "ace/mode/java", ["java"])
+    static final Mode JSP = new Mode("JSP", "ace/mode/jsp", ["jsp"])
     static final Mode JSON = new Mode("JSON", "ace/mode/json", ["json"])
     static final Mode LaTeX = new Mode("LaTeX", "ace/mode/latex", ["latex"])
     static final Mode MirChord = new Mode("MirChord", "ace/mode/mirchord", ["mirchord"])
@@ -50,6 +51,6 @@ class Mode {
     static final Mode XML = new Mode("XML", "ace/mode/xml", ["xml", "mxml"])
 
 	
-    static final Mode[] AVAILABLE_MODES = [ Groovy, MirChord, Text, XML ]
+    static final Mode[] AVAILABLE_MODES = [ Groovy, MirChord, Text, XML, JSP ]
 
 }

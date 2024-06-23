@@ -1,0 +1,21 @@
+<progression> ::= (clef "bass") \n <measures(10)>
+
+<measures> ::= empty
+
+<measures(n)> ::= <measure> \s <measures(n-1)>
+
+<measure> ::= <chords(1)>
+
+<chords(1)> ::= `1 \s <chord>                        !20 |
+                `2 \s <chord> \s <chords(2)>         !15 |
+                `4 \s <chord> \s <chords(3)>         !5
+                
+<chords(2)> ::= `2 \s <chord>                        !20 |
+                `4 \s <chord> \s <chord>             !10
+                
+<chords(3)> ::= `2 \s <chord> \s `4 \s <chord>       !20 |
+                `4 \s <chord> \s <chords(2)>         !10
+                
+<chord> ::= ^3 \s <sym>
+
+<sym> ::= I | IImin | IV | IV | VImin | VIIdim

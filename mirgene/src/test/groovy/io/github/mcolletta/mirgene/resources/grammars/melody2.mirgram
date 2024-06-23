@@ -1,0 +1,59 @@
+
+<score> ::= 
+            =1 ~1 \n
+            <intro(16)> <%/%> \n
+            ; CHORUS \n
+            <chorus(32)> <%/%> \n
+            ; ENDING \n
+            <ending(16)>
+
+<intro(n)> ::= <notes(n)>
+
+<chorus(n)> ::= <declaration(4)> \n <declaration(8)> \n <notes(n)>
+
+<ending(n)> ::= <notes(n)>
+
+
+<declaration(n)> ::= (def :<id>  \s { <octave> \s <notes(n)> })
+          <%+ <notes(n [gte ${n}])> ::= :${id} \s <notes(n - ${n})>  !25 %>
+
+<id> ::= <%= phrase %>
+
+<transform> ::= transpose \s <number> | invert | retrograde
+
+<number> ::= 1 | 2 | 3
+
+<note> ::= <pitch><accidental>
+
+<notes> ::= empty
+
+<notes(1)> ::= <note>4                             !30 |
+               <note>8 \s <note>8                  !15 |
+               <note>8 \s <note>16 \s <note>16     !5  |
+               <note>16 \s <note>8 \s <note>16     !5  |
+               <note>16 \s <note>16 \s <note>8     !5
+
+<notes(2)> ::= <note>4 \s <note>8 \s <note>8                !15 |
+               <note>4 \s <note>8_ \s _<% ${note} %>8       !5  |
+               <note>8 \s <note>8 \s <note>4                !15 |
+               <note>8 \s <note>4 \s <note>8                !5 |
+               <note>2                                      !20 |
+               <notes(1)> \s <notes(1)>                     !25 |
+
+<notes(n)> ::=  <octave> \s <notes(1)> \s <notes(n-1)>      !10 |
+                <octave> \s <notes(2)> \s <notes(n-2)>      !20 |
+                (<transform> \s {<notes(n)>})   !10
+
+
+<pitch> ::= do | re | mi | fa | sol | la | si
+
+<accidental> ::= empty !90 |
+             # !1 | 
+             & !1
+
+<octave> ::= ^4  !30 |
+             ^5  !5
+
+<poctave> ::= empty !90 |
+             '     !5 | 
+             ,     !5
