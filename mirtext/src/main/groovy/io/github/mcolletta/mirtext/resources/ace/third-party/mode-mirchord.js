@@ -113,7 +113,7 @@ var MirchordHighlightRules = function() {
             },
             {
                 token : "variable.parameter",
-                regex : /\b(do|re|mi|fa|so|sol|la|si|ti|a|b|c|d|e|f|g|r|x|o){1}[\#|\&]*[,|']*[1-9]{0,2}(?![\dA-Za-z\#\&,'])/
+                regex : /\b(do|re|mi|fa|so|sol|la|si|ti|a|b|c|d|e|f|g|_|x|o){1}[\#|\&]*[,|']*[1-9]{0,2}(?![\dA-Za-z\#\&,'])/
             },
 
             {

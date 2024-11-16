@@ -116,7 +116,6 @@ protected class ProjectInterpreter {
                                                     "io.github.mcolletta.mirchord.core.Score",
                                                     "io.github.mcolletta.mirchord.core.Part",
                                                     "io.github.mcolletta.mirchord.core.Voice",
-                                                    "io.github.mcolletta.mirchord.core.Phrase",
                                                     "io.github.mcolletta.mirchord.core.MusicElement",
                                                     "io.github.mcolletta.mirchord.core.ClefType",
                                                     "io.github.mcolletta.mirchord.core.KeyMode",

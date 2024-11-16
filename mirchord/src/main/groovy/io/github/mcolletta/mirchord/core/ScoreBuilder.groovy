@@ -188,10 +188,6 @@ class ScoreBuilder {
             voice.elements.add(chord)
         }
 
-        void setPhrase(Phrase phrase) {
-            phrase.elements.add(chord)
-        }
-
         void setTuplet(Tuplet tuplet) {
             tuplet.chords.add(chord)
         }
@@ -222,27 +218,6 @@ class ScoreBuilder {
 
         void setParent(Voice voice) {
             voice.elements.add(instrument)
-        }
-    }
-
-    class PhraseNode {
-        Phrase phrase
-
-        PhraseNode(Map attributes) {
-            phrase = attributes as Phrase
-            phrase.elements = []
-        }
-
-        def chord(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=ChordNode) Closure cl={}) {
-            def node = new ChordNode(attributes)
-            node.setPhrase(phrase)
-            def code = cl.rehydrate(node, this, this)
-            code.resolveStrategy = Closure.DELEGATE_ONLY
-            code()
-        }
-
-        void setParent(Voice voice) {
-            voice.elements.add(phrase)
         }
     }
 

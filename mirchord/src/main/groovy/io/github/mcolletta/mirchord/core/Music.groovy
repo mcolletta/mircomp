@@ -90,10 +90,7 @@ class Score {
 	static List<MusicElement> getElementsByTypes(List<MusicElement> elements, List<String> types) {
 		List<MusicElement> items = []
 		for(MusicElement el : elements) {
-			if (el.getMusicElementType() == "Phrase") {
-				var ph = (Phrase)el
-				items.addAll( getElementsByTypes(ph.elements, types) )
-			} else if (el.getMusicElementType() == "Tuplet") {
+			if (el.getMusicElementType() == "Tuplet") {
 				var tp = (Tuplet)el
 				items.addAll( tp.chords )
 			} else if (el.getMusicElementType() in types) {
@@ -120,32 +117,6 @@ class Voice {
 
 	List<ChordSymbol> getChordSymbols() {
 		return Score.getElementsByTypes(elements, ["ChordSymbol"]).collect { (ChordSymbol)it }
-	}
-}
-
-@Canonical
-class Phrase implements MusicElement {
-	List<MusicElement> elements = []
-
-	Phrase() {}
-
-	Phrase(Phrase phrase) {
-		for(MusicElement element : phrase.elements) {
-			if (element.isCopyable())
-				this.elements.add(element.copy())
-		}
-	}
-
-	String getMusicElementType() {
-		return "Phrase"
-	}
-
-	boolean isCopyable() {
-		return true
-	}
-
-	Phrase copy() {
-		Phrase clone = new Phrase(this)
 	}
 }
 

@@ -30,7 +30,6 @@ import static io.github.mcolletta.mirconverter.Utils.*
 import static io.github.mcolletta.mirchord.core.Utils.*
 
 import io.github.mcolletta.mirchord.core.MusicElement
-import io.github.mcolletta.mirchord.core.Phrase
 import io.github.mcolletta.mirchord.core.Anchor
 import io.github.mcolletta.mirchord.core.Repeat
 import io.github.mcolletta.mirchord.core.CompositionInfo
@@ -225,9 +224,6 @@ class ZongConverter {
 			case { it.getMusicElementType() == "Tempo" }:
 				addTempo((MirTempo)el)
 				break
-			case { it.getMusicElementType() == "Phrase" }:
-				addPhrase((Phrase)el)
-				break
 			case { it.getMusicElementType() == "Repeat" }:
 				addRepeat((Repeat)el)
 				break
@@ -339,7 +335,7 @@ class ZongConverter {
 			instrument = new PitchedInstrument(mirinstrument.id)
 		instrument.setMidiProgram(mirinstrument.getProgram())
 		StavesList stavesList = score.getStavesList() //stavesList.getParts()
-		Part part = stavesList.getPartByStaffIndex(currentStaff)		
+		Part part = stavesList.getPartByStaffIndex(currentStaff)
 		if (instrumentsDefault[currentStaff] && mpos.measure < 1) {
 			part.instruments = [instrument]
 			instrumentsDefault[currentStaff] = false
@@ -372,24 +368,18 @@ class ZongConverter {
 	}
 
 	void addTuplet(MirTuplet mirtuplet) {
-		Fraction fraction = mirtuplet.fraction		
+		Fraction fraction = mirtuplet.fraction
 		List<Chord> tuplet_chords = []
 		mirtuplet.chords.each { el -> 
 			Fraction ratio = fr(mirtuplet.fraction.denominator, mirtuplet.fraction.numerator)
 			Fraction actualDuration = el.duration.mult(ratio)
 			el.duration = actualDuration
-			addChord(el, mirtuplet, tuplet_chords) 
+			addChord(el, mirtuplet, tuplet_chords)
 		}
 		Fraction base_duration = mirtuplet.getBaseDuration()
 		Tuplet tuplet = new Tuplet(fraction.numerator, fraction.denominator, base_duration, true, tuplet_chords)
 		tuplet_chords.each { Chord c ->
 			c.tuplet = tuplet
-		}
-	}
-
-	void addPhrase(Phrase phrase) {
-		for(MusicElement el : phrase.elements) {
-			addElement(el)
 		}
 	}
 
@@ -408,9 +398,9 @@ class ZongConverter {
 				if (mirrest.hidden)
 					zrest.setHidden(true)
 				write(zrest)
-			}		
+			}
 		}
-		else {		
+		else {
 			Fraction new_remain = actualDuration.sub(remain)
 			MirRest new_mirrest1 = [duration: remain] as MirRest
 			MirRest new_mirrestd2 = [duration: new_remain] as MirRest
@@ -427,7 +417,7 @@ class ZongConverter {
 		Fraction ratio = null
 		Fraction actualDuration = mirchord.duration
 
-		if ((remain == _0 && actualDuration <= msize) || remain >= actualDuration) {			
+		if ((remain == _0 && actualDuration <= msize) || remain >= actualDuration) {
 			List<Pitch> zpitches = []
 			mirchord.pitches.each { MirPitch pitch ->
 				// int midiVal = pitch.getMidiValue()
@@ -448,7 +438,7 @@ class ZongConverter {
 				if (mirtuplet != null && tuplet_chords != null) {
 					tuplet_chords << zchord
 				}
-				// manage ties				
+				// manage ties
 				// two measures ties
 				if(i == last && mirchord.tieStart) {  // last element
 					slurMap['start'] = slurwp(zchord)
@@ -703,7 +693,7 @@ class ZongConverter {
 		options.checkTimeSignature = true
 		options.fillWithHiddenRests = false
 
-		Voice voice = score.getVoice(mpos)		
+		Voice voice = score.getVoice(mpos)
 		new VoiceElementWrite(voice, mpos, element, options).execute()
 
 		Fraction newBeat = mpos.beat.add(duration)
@@ -720,14 +710,14 @@ class ZongConverter {
 			int pulse = getChordPulse(mpos.beat, newBeat, ctx.pulses)
 			// println "ctx.lastPulse=${ctx.lastPulse}        ChordPulse for $chord = $pulse"
 			if (pulse != ctx.lastPulse) 
-				closeBeam()				
+				closeBeam()
 			if (duration <= f8) // beam candidate
 				openBeam(chord)
 			else 
 				closeBeam()
 			ctx.lastPulse = pulse
 		} else
-			closeBeam()  // a rest		
+			closeBeam()  // a rest
 		//------------------
 	}
 
@@ -781,7 +771,7 @@ class ZongConverter {
 	// -------------------------------------------------------------------------------
 
 	private class VoiceContext {
-		Fraction measureSize		
+		Fraction measureSize
 		MP mp
 		Map pulses
 		int lastPulse = 1

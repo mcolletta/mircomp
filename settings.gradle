@@ -1,6 +1,5 @@
 include ":mirchord"
 include ":mirconverter"
-include ":demos"
 include ":mirtext"
 include ":mirtextfx"
 include ":mirscore"
@@ -14,7 +13,6 @@ include ":mircoracle"
 include ":mirgene"
 project(':mirchord').projectDir = new File('mirchord')
 project(':mirconverter').projectDir = new File('mirconverter')
-project(':demos').projectDir = new File('demos')
 project(':mirtext').projectDir = new File('mirtext')
 project(':mirtextfx').projectDir = new File('mirtextfx')
 project(':mirscore').projectDir = new File('mirscore')
