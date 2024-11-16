@@ -35,7 +35,9 @@ import static com.xenoage.utils.math.Fraction._0
 
 interface LeadSheetListener {
 
-	void newSong()
+	void newSong(String filename)
+
+	void endSong(String filename)
 
 	void keySignature(KeySignature event)
 	
@@ -79,10 +81,13 @@ class ChordStatistics implements LeadSheetListener {
 	}
 
 	@Override
-	public void newSong() {
+	public void newSong(String filename) {
 		currentChord = null
 		currentChordDuration = _0
 	}
+
+	@Override
+	public void endSong(String filename) { }
 
 	@Override
 	public void keySignature(KeySignature keysig) {
@@ -158,11 +163,14 @@ class MetricsMelodicIntervals implements LeadSheetListener {
 	}
 
 	@Override
-	public void newSong() {
+	public void newSong(String filename) {
 		lastValue = -1
 		fifo2 = new ArrayBlockingQueue<>(2)
 		fifo3 = new ArrayBlockingQueue<>(3)
 	}
+
+	@Override
+	public void endSong(String filename) { }
 
 	@Override
 	public void chord(Chord event) {
@@ -231,11 +239,14 @@ class MetricsDuration implements LeadSheetListener {
 	}
 
 	@Override
-	public void newSong() {
+	public void newSong(String filename) {
 		currDuration = _0
 		fifo2 = new ArrayBlockingQueue<>(2)
 		fifo3 = new ArrayBlockingQueue<>(3)
 	}
+
+	@Override
+	public void endSong(String filename) { }
 
 	@Override
 	public void chord(Chord note) {

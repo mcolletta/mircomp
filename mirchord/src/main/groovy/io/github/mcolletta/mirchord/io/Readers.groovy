@@ -51,7 +51,9 @@ interface LeadSheetReader {
 
 	void addLeadSheetListener(LeadSheetListener subscriber);
 
-    void fireNewSong();
+    void fireNewSong(String filename);
+
+    void fireEndSong(String filename);
 
     void fireKeySignature(KeySignature event);
 
@@ -71,8 +73,12 @@ trait LeadSheetReaderTrait implements LeadSheetReader {
 		leadSheetListeners << subscriber
 	}
 
-	void fireNewSong() {
-		leadSheetListeners.each { it.newSong() }
+	void fireNewSong(String filename) {
+		leadSheetListeners.each { it.newSong(filename) }
+	}
+
+	void fireEndSong(String filename) {
+		leadSheetListeners.each { it.endSong(filename) }
 	}
 
 	void fireKeySignature(KeySignature event) {
@@ -131,18 +137,21 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 					}
 				}
 			}
+			fireNewSong(f.name)
 			processXml(mxml)
+			fireEndSong(f.name)
 		}
 
 		folder.eachFileMatch(~/.*\.xml/) { File f ->
+			fireNewSong(f.name)
 			processXml(f.text)
+			fireEndSong(f.name)
 		}
 		
 		fireEndReading()
 	}
 	
 	void processXml(String xml) {
-		fireNewSong()
 
 		Document doc = XMLReader.read(xml)
         Element root = XMLReader.root(doc)
@@ -271,7 +280,7 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 class MirScoreReader implements LeadSheetReader, LeadSheetReaderTrait {
 
 	void read(Score score) {
-		fireNewSong()
+		fireNewSong("")
 		for (Part part: score.parts) {
 			for (Voice voice: part.voices) {
 				def elements = Score.getElementsByTypes(voice.elements, ["KeySignature", "ChordSymbol", "Chord", "Rest"])
@@ -295,6 +304,7 @@ class MirScoreReader implements LeadSheetReader, LeadSheetReaderTrait {
 				}
 			}
 		}
+		fireEndSong("")
 		fireEndReading()
 	}
 
