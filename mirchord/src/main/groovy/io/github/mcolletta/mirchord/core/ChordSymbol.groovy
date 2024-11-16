@@ -104,6 +104,7 @@ class ChordSymbol implements MusicElement {
 		this.chordAlteration = chordsym.chordAlteration
 		this.bass = chordsym.bass
 		this.text = chordsym.text
+		this.duration = chordsym.duration
 	}
 	
 	ChordSymbol(Pitch root, ChordKind kind) {

@@ -41,6 +41,7 @@ public class MirChordGrammar extends Grammar {
 		public final Parser digit = regex("[0-9]")
 		public final Parser number = oneOrMore(digit)
 		public final Parser integerNumber = seq(opt(str('-')), number)
+		public final Parser fraction = seq(number, str("/"), number)
 		public final Parser decimal = seq(opt(str('-')), seq(number, opt(seq(str('.'), number))))
 		public final Parser symbol = regex("^[_A-Za-z](?:_?[A-Za-z0-9])*")
 		public final Parser stringa = regex("\"[^\"]*\"")
@@ -59,9 +60,9 @@ public class MirChordGrammar extends Grammar {
 		public final Parser romanNumeral = cho(str("I"), str("II"), str("III"), str("IV"), str("V"), str("VI"), str("VII"))
 		public final Parser octaveUp = str("'")
 		public final Parser octaveDown = str(",")
-		public final Parser octave = cho(octaveUp, octaveDown)
-		public final Parser octaves = zeroOrMore(octave)
-		public final Parser pitch = seq(cho(pitchName, solfeggioName), opt(accidentals), opt(octaves))		
+		public final Parser octaveModifier = cho(octaveUp, octaveDown)
+		public final Parser octavesModifier = zeroOrMore(octaveModifier)
+		public final Parser pitch = seq(cho(pitchName, solfeggioName), opt(accidentals), opt(octavesModifier))
 		public final Parser velocity = seq(str("%"), cho(str("fffff"), str("ffff"), str("fff"), str("ff"), str("f"), str("mf"), str("mp"), str("p"), str("pp"), str("ppp"), str("pppp"), str("ppppp")))
 		
 		public final Parser stemUp = str("stemUp")
@@ -69,14 +70,14 @@ public class MirChordGrammar extends Grammar {
 		public final Parser stemAuto = str("stemAuto")
 		public final Parser stem = cho(stemUp, stemDown, stemAuto)
 
-		public final Parser tieStart = str("_")
-		public final Parser tieEnd = str("_")
+		public final Parser tieStart = str("-")
+		public final Parser tieEnd = str("-")
 		public final Parser dot = str(".")
-		public final Parser duration =  seq(number, zeroOrMore(dot))
-		public final Parser rest = seq(str("r"), opt(duration))
+		public final Parser reciprocalDuration =  seq(number, zeroOrMore(dot))
+		public final Parser rest = seq(str("_"), opt(reciprocalDuration))
 		public final ParserReference pitchList = ref()
 		public final Parser pitches = oneOrMore(pitch).separatedBy(ws)
-		public final Parser chord = seq(cho(pitchList, pitch, unpitched), opt(duration))
+		public final Parser chord = seq(cho(pitchList, pitch, unpitched), opt(reciprocalDuration))
 
 		public final Parser part = seq(str("="), number)  // staff
 		public final Parser voice = seq(str("~"), number)
@@ -84,8 +85,8 @@ public class MirChordGrammar extends Grammar {
 		public final Parser repeatStart = str("|:")
 		public final Parser repeatEnd = seq(opt(number), str(":|"))
 
-		public final Parser relativeOctave = seq(str("^"), digit)
-		public final Parser stickyDuration = seq(str("`"), duration)
+		public final Parser octave = seq(str("^"), digit)
+		public final Parser duration = seq(str("`"), fraction)
 
 		// chord symbols	
 		public final Parser chordRoot = seq(cho(chordPitchName, romanNumeral), opt(accidentals))
@@ -116,12 +117,12 @@ public class MirChordGrammar extends Grammar {
 		public final Parser atom = seq(opt(tieEnd), cho(rest, chord, chordSymbol, sameChordSymbol), opt(velocity), opt(tieStart))
 		public final ParserReference phrase = ref() 
 		public final ParserReference sexpr = ref()
-		public final Parser contextElement = cho(relativeOctave, stickyDuration, stem, measure)
+		public final Parser contextElement = cho(octave, duration, stem, measure)
 		public final Parser musicElement = cho(contextElement, anchor, repeatStart, repeatEnd, sexpr, atom, phrase, identifier)
 		public final Parser elements = oneOrMore(musicElement).separatedBy(ws)
 
-		public final Parser parm = cho(stringa, identifier, number, integerNumber, decimal, musicElement, sexpr)
-		public final Parser parms = oneOrMore(parm).separatedBy(ws)
+		public final Parser param = cho(stringa, identifier, number, fraction, integerNumber, decimal, musicElement, sexpr)
+		public final Parser params = oneOrMore(param).separatedBy(ws)
 
 		public final Parser scorePosition = cho(part, voice)
 		public final Parser scoreElement = cho(scorePosition, musicElement)
@@ -129,7 +130,7 @@ public class MirChordGrammar extends Grammar {
 		
 		private MirChordGrammar() {
 				init()
-				sexpr.define(seq(str("("), command, parms, str(")")).separatedBy(opt(ws)))
+				sexpr.define(seq(str("("), command, params, str(")")).separatedBy(opt(ws)))
 				phrase.define(seq(str("{"), elements, str("}")).separatedBy(opt(ws)))
 				pitchList.define(seq(str("["), pitches, str("]")).separatedBy(opt(ws)))
 		}

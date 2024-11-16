@@ -54,14 +54,25 @@ import java.lang.annotation.RetentionPolicy
     String info() default "MirChord method used by the interpreter"
 }
 
+enum OctaveMode {
+		ABSOLUTE,
+		RELATIVE
+	}
+
+enum DurationMode {
+		SCOPED,
+		STICKY
+	}
+
 
 @Processes(MirChordGrammar.class)
 class MirChordProcessor extends AbstractProcessor {
 
 	boolean DEBUG = false
 
-	int DEFAULT_OCTAVE = 4
+	int DEFAULT_OCTAVE = 4  // C4 is middle C in scientific pitch notation
 	Fraction DEFAULT_DURATION = fr(1,4)
+	KeySignature DEFAULT_KEYSIGNATURE = new KeySignature()
 
 	Score score
 	int currentPart
@@ -155,6 +166,8 @@ class MirChordProcessor extends AbstractProcessor {
 		return currentVoice[currentPart]
 	}
 
+	// Scopes
+
 	private Stack getEnvironment() {
 		if (!environments.containsKey(currentPart))
 			environments.put(currentPart,[:])
@@ -171,7 +184,9 @@ class MirChordProcessor extends AbstractProcessor {
 	private void ensureScope() {
 		Stack env = getEnvironment()
 		if (env.size() < 1)
-			env.add(['octave': DEFAULT_OCTAVE, 'symbol': null, 'duration': DEFAULT_DURATION])
+			env.add(['octave': DEFAULT_OCTAVE, 'symbol': null,
+				     'keySignature': DEFAULT_KEYSIGNATURE,
+				     'duration': DEFAULT_DURATION])
 	}
 	
 	private Object getVarFromScopes(name) {
@@ -198,22 +213,19 @@ class MirChordProcessor extends AbstractProcessor {
 		}
 	}
 
-	private void stem(String val) {
-		Map scope = getScope()
-		StemDirection stemDir = StemDirection.valueOf(val.toUpperCase())
-		scope['stem'] = stemDir
-	}
+	// end Scopes
 
-	private void relative(String octave) {
-		Map scope = getScope()
-		scope['octave'] = Integer.parseInt(octave)
-		scope['symbol'] = null
-	}
+	// private Map deepCopyElementsMap(Map scope) {
+	// 	Map newScope = [:]
+	// 	for (Map.Entry<K, V> entry: scope) {
+	// 		newScope[entry.key] = entry.value.copy()
+	// 	}
+	// }
 
 	private void addToScore(MusicElement element) {
 		score.parts[currentPart].voices[getVoice()].elements << element
 		if (DEBUG)
-			println "addToScore $element  in  $currentPart    ${getVoice()}"
+			println "addToScore $element  in  $currentPart  ${getVoice()}"
 	}
 
 	private void updateCurrentInstrument(Instrument instrument) {
@@ -222,7 +234,13 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	private Instrument getPercussionInstrument() {
-		return (Instrument)getVarFromScopes("instrument")
+		return (Instrument)getScope()["instrument"]
+	}
+
+	private void stem(String val) {
+		Map scope = getScope()
+		StemDirection stemDir = StemDirection.valueOf(val.toUpperCase())
+		scope['stem'] = stemDir
 	}
 
 	// COMMANDS
@@ -346,8 +364,8 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	@MirChord
-	void define(String id, Phrase phrase) { // List<MusicElement> elements
-		symbolsTable.put(id, phrase)
+	void define(String id, List<MusicElement> elements) {
+		symbolsTable.put(id, elements)
 	}
 	
 	@MirChord
@@ -357,8 +375,8 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	@MirChord
 	TimeSignature timeSignature(int numerator, int denominator) {
-		Fraction time = fr(numerator, denominator)
-		new TimeSignature(time)
+		Fraction timeSig = fr(numerator, denominator)
+		new TimeSignature(timeSig)
 	}
 	
 	@MirChord	
@@ -383,25 +401,46 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	@MirChord
-	Phrase copyTimes(int n, Phrase phrase) {
-		Phrase rep = new Phrase()
+	List<MusicElement> copyTimes(int n, List<MusicElement> elements) {
+		List<MusicElement> rep = []
 		for(int i=0; i<n; i++) {
-			rep.elements.addAll(phrase.copy().elements)
+			for(MusicElement element : elements) {
+				if (element.isCopyable())
+					rep.add(element.copy())
+			}
 		}
 		return rep
 	}
 	
 	@MirChord
-	Phrase callSymbol(Phrase phrase) {
-		return phrase
+	List<MusicElement> callSymbol(List<MusicElement> elements) {
+		return elements
 	}
 	
 	@MirChord
 	Tuplet tuplet(List args) {
-		String ratio = (String)args[0]
-		Fraction fraction = parseFraction(ratio)
+		Fraction fraction = (Fraction)args[0]
 		List<Chord> chords = (List<Chord>)args[1..-1]
+		Fraction dur = chords[0].duration
+		for(Chord c : chords[1..-1]) {
+			if (c.duration != dur)
+				throw new Exception("The chords of a tuplet must have equal duration")
+		}
 		return new Tuplet(fraction, chords)
+	}
+
+	@MirChord
+	void octaveMode(String val) {
+		OctaveMode mode = OctaveMode.valueOf(val.toUpperCase())
+		Map scope = getScope()
+		scope['octaveMode'] = mode
+	}
+
+	@MirChord
+	void durationMode(String val) {
+		DurationMode mode = DurationMode.valueOf(val.toUpperCase())
+		Map scope = getScope()
+		scope['durationMode'] = mode
 	}
 
 	// END COMMANDS
@@ -412,14 +451,14 @@ class MirChordProcessor extends AbstractProcessor {
 		List<Match> children = match.children
 		//printChildren(match.getText(), children)
 		String cmd = ""
-		List parms = []
+		List params = []
 
 		cmd = match.findMatchByType(grammar.command).getText()
-		List<Match> parms_matches = match.findAllMatchByType(grammar.parm)
-		for(Match pm : parms_matches) {
+		List<Match> params_matches = match.findAllMatchByType(grammar.param)
+		for(Match pm : params_matches) {
 			def res = getResult(pm)
 			if (res != null)
-				parms << res
+				params << res
 		}
 
 		if (commands_abbr.containsKey(cmd))
@@ -427,10 +466,10 @@ class MirChordProcessor extends AbstractProcessor {
 		
 		if (extMethods.containsKey(cmd)) {
 			if (DEBUG)
-				println "calling $cmd with $parms"
+				println "calling $cmd with $params"
 			Method meth = (Method)extMethods[cmd]["method"]
 			def obj = extMethods[cmd]["object"]
-			def res = obj.invokeMethod(cmd, parms)
+			def res = obj.invokeMethod(cmd, params)
 			if (res != null)
 				putResult(res)
 		} else
@@ -502,11 +541,11 @@ class MirChordProcessor extends AbstractProcessor {
         putResult(-1)
     }
     
-    void completeOctave(Match match) {
+    void completeOctaveModifier(Match match) {
         putResult(getResult(match.children[0]))
     }
     
-    void completeOctaves(Match match) {
+    void completeOctavesModifier(Match match) {
         List<Match> children = match.children
         List<Integer> list = []
         for(Match child : children) {
@@ -524,11 +563,26 @@ class MirChordProcessor extends AbstractProcessor {
     }
 	
 	void processPitch(Pitch pitch, int octaveSteps, int alterations, boolean natural) {
+		/*
+		 first check octave in scope
+		 if present check symbol (C, A, ecc..) in scope
+		 if both present then as usual (lilypond - fifth distance)
+		 otherwise set the octave as the one from scope 
+
+		 if the octave is not present find in parent scope 
+		 if simultan then create octave in local scope
+
+		 (octaveMode "relative")
+         c e [g b c] c
+         c e {g b c} c
+
+		 for duration similar thing with stickyDuration in scope
+		*/
 		Map scope = getScope()
-		def scopeOctave = getVarFromScopes('octave')
-		if (scopeOctave != null) {
+		def scopeOctave = scope['octave']
+		if (scopeOctave) {
 			int octave = (int)scopeOctave
-			String symbol = getVarFromScopes('symbol')
+			String symbol = scope['symbol']
 			if (symbol) {
 				int numNote = NOTE_NAMES[pitch.symbol]
 				int relNumNote = NOTE_NAMES[symbol]
@@ -545,16 +599,16 @@ class MirChordProcessor extends AbstractProcessor {
 		else {
 			pitch.octave += octaveSteps
 		}
-		
-		setVarFromScopes('octave', pitch.octave)
-		setVarFromScopes('symbol', pitch.symbol)
 
-		scope['octave'] = pitch.octave
-		scope['symbol'] = pitch.symbol
+		def octaveMode = scope['octaveMode']
+		if (octaveMode && octaveMode == OctaveMode.RELATIVE) {
+			scope['octave'] = pitch.octave
+			scope['symbol'] = pitch.symbol
+		}
 
 		if (!natural) {
-			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
-			if (currentKey != null) {
+			KeySignature currentKey = (KeySignature)scope['keySignature']
+			if (currentKey) {
 				int keysig = currentKey.getFifths()
 				pitch.alterForKeySignature(keysig)
 			}
@@ -585,28 +639,17 @@ class MirChordProcessor extends AbstractProcessor {
 		String pitchLetter = ((String)getResult(match.findMatchByType(grammar.pitchName)))
 		if (pitchLetter == null) {
 			String syllable = ((String)getResult(match.findMatchByType(grammar.solfeggioName)))
-			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
+			KeySignature currentKey = (KeySignature)scope['keySignature']
 			if (currentKey == null) {
 				currentKey = new KeySignature()
 			}
 			pitchLetter = getPitchLetterFromSymbol(syllable, currentKey)
 		}
 		Pitch pitch = new Pitch(pitchLetter.toUpperCase())
-		Match octaves_match = match.findMatchByType(grammar.octaves)
+		Match octaves_match = match.findMatchByType(grammar.octavesModifier)
 		List<Integer> octaveSteps = (List<Integer>)getResult(octaves_match)
 		if (octaveSteps == null || octaveSteps.size() == 0)
-			octaveSteps = [0]			
-		/*
-		 first check rel octave in scope
-		 if present check symbol (C, A, ecc..) in scope
-		 if both present then as usual (lilypond - fifth distance)
-		 otherwise set the octave as the one from scope 
-		 
-		 if the octave is not present find in parent scope 
-		 if simultan then create octave in local scope
-		 
-		 for duration similar thing with stickyDuration in scope
-		*/
+			octaveSteps = [0]
 			
 		int alterations = (accidentals != null) ? getAlterationFromAccidentals(accidentals) : 0
 		boolean natural = false
@@ -617,7 +660,7 @@ class MirChordProcessor extends AbstractProcessor {
 		putResult(pitch)
     }
 
-	void completeDuration(Match match) {
+	void completeReciprocalDuration(Match match) {
 		int base_duration = (int)getResult(match.findMatchByType(grammar.number))
 		List<Match> dots = match.findAllMatchByType(grammar.dot)
 		Fraction duration = fr(1,base_duration)
@@ -641,8 +684,7 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
     boolean processPitchList(Match match) {
-    	ensureScope()
-        getEnvironment().add([:])
+        // getEnvironment().add([:])
         return true
     }
 
@@ -654,7 +696,7 @@ class MirChordProcessor extends AbstractProcessor {
 			pitches << pitch
 		}
         putResult(pitches)
-        getEnvironment().pop()
+        // getEnvironment().pop()
     }
 
     void completeUnpitched(Match match) {
@@ -677,23 +719,21 @@ class MirChordProcessor extends AbstractProcessor {
 			chord.pitches = pitchList
 		}
 		// duration
-		Fraction scopeDuration = (Fraction)getVarFromScopes('duration')
+		Map scope = getScope()
+		Fraction scopeDuration = (Fraction)scope['duration']
 		if (scopeDuration)
 			chord.duration = scopeDuration			
-		Match duration_match = match.findMatchByType(grammar.duration)
+		Match duration_match = match.findMatchByType(grammar.reciprocalDuration)
 		Fraction duration = (Fraction)getResult(duration_match)
-		if (duration != null) {
+		if (duration) {
 			chord.duration = duration
 			// update sticky duration
-			if (scopeDuration)
-				setVarFromScopes('duration', duration)
-			else {
-				Map scope = getScope()
+			def durationMode = scope['durationMode']
+			if (durationMode && durationMode == DurationMode.STICKY)
 				scope['duration'] = duration
-			}
 		}
 		// stem
-		StemDirection stemDir = (StemDirection)getVarFromScopes('stem')
+		StemDirection stemDir = (StemDirection)scope['stem']
 		if (stemDir)
 			chord.setStem(stemDir)
 		
@@ -710,31 +750,32 @@ class MirChordProcessor extends AbstractProcessor {
 
 	void completeRest(Match match) {
 		Rest rest = new Rest()
-		Fraction scopeDuration = (Fraction)getVarFromScopes('duration')
+		Map scope = getScope()
+		Fraction scopeDuration = (Fraction)scope['duration']
 		if (scopeDuration)
 			rest.duration = scopeDuration			
-		Match duration_match = match.findMatchByType(grammar.duration)
+		Match duration_match = match.findMatchByType(grammar.reciprocalDuration)
 		Fraction duration = (Fraction)getResult(duration_match)
 		if (duration != null) {
 			rest.duration = duration
 			// update sticky duration
-			if (scopeDuration)
-				setVarFromScopes('duration', duration)
-			else {
-				Map scope = getScope()
+			def durationMode = scope['durationMode']
+			if (durationMode && durationMode == DurationMode.STICKY)
 				scope['duration'] = duration
-			}
 		}
 		putResult(rest)
 	}
     
-	void completeRelativeOctave(Match match) {
-		relative(match.getText()[1..-1])
+	void completeOctave(Match match) {
+		Map scope = getScope()
+		scope['octave'] = Integer.parseInt(match.getText()[1..-1])
+		scope['symbol'] = null
 	}
 	
-	void completeStickyDuration(Match match) {
-		Fraction duration = (Fraction)getResult(match.findMatchByType(grammar.duration))
-		scope["duration"] = duration
+	void completeDuration(Match match) {
+		Map scope = getScope() // could be omitted since using 'scope' groovy invoke the getter method getScope()
+		Fraction duration = (Fraction)getResult(match.findMatchByType(grammar.fraction))
+		scope['duration'] = duration
 	}
 	
 	void completeDot(Match match) {
@@ -770,22 +811,29 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 
 	boolean processPhrase(Match match) {
-		ensureScope()
-        getEnvironment().add(['octave':getVarFromScopes('octave'),
-        					  'symbol': getVarFromScopes('symbol'),
-        					  'duration': getVarFromScopes('duration')])
+		Map scope = getScope()
+		// new scope as copy of parent scope
+		Map clone = scope + [:] // [*:scope]
+		getEnvironment().add(clone)
         return true
     }
 
 	void completePhrase(Match match) {
 		List<Match> children = match.findAllMatchByType(grammar.musicElement)
-		Phrase phrase = new Phrase()
-		for(Match child : children) {
-			MusicElement res = (MusicElement)getResult(child)
-			if (res != null)
-				phrase.elements << res
+		List<MusicElement> elements = []
+		for(Match m : children) {
+			def obj = getResult(m)
+			if (obj instanceof MusicElement) {
+				elements << (MusicElement)obj
+			}
+			else if (obj instanceof List<MusicElement>) {
+				List<MusicElement> phrase = (List<MusicElement>)getResult(m)
+				for(MusicElement element : phrase) {
+					elements << element
+				}
+			}
 		}
-		putResult(phrase)
+		putResult(elements)
 		getEnvironment().pop()
 	}
 
@@ -798,14 +846,16 @@ class MirChordProcessor extends AbstractProcessor {
 		Match m = match.getFirstChild()
 		if (m.parser == grammar.part) {
 			int cp = Integer.parseInt(m.getText()[1..-1]) - 1
+			// for current scope update
 			setCurrentPart(cp)
+			putResult(['part': cp])
 		}
-		if (m.parser == grammar.voice) {
+		else if (m.parser == grammar.voice) {
 			int cv = Integer.parseInt(m.getText()[1..-1]) - 1
+			// for current scope update
 			setCurrentVoice(cv)
+			putResult(['voice': cv])
 		}
-
-		putResult(m)
 	}
 
 	void completeAnchor(Match match) {
@@ -831,34 +881,38 @@ class MirChordProcessor extends AbstractProcessor {
 
 	void completeScore(Match match) {
 		List<Match> children = match.findAllMatchByType(grammar.scoreElement)
-		for(Match scoreElement : children) {
-			def obj = getResult(scoreElement)
-			if (obj != null) {
-				if (obj instanceof Match) {
-					Match m = (Match)obj
-					if (m.parser == grammar.part) {
-						int cp = Integer.parseInt(m.getText()[1..-1]) - 1
-						setCurrentPart(cp)
-					}
-					if (m.parser == grammar.voice) {
-						int cv = Integer.parseInt(m.getText()[1..-1]) - 1
-						setCurrentVoice(cv)
-					}
-				} else {
-					if (obj instanceof CompositionInfo) {
-						score.setInfo((CompositionInfo)obj)
-					} 
-					else
-					{
-						try {
-							MusicElement element = (MusicElement)obj
-							if (element != null) {
-								addToScore(element)
-							}
-						}
-						catch(Exception ex) {
-							throw new Exception("Object " + obj + ": " + ex.getMessage())
-						}
+		for(Match m : children) {
+			// c { e g} { ^5 b {^3 f b}}
+			// (tp 3/2 c e g)
+			// ^4 `1/8 c d e2 f { (durationMode "sticky")  g4 a} { (octaveMode "relative") b c } c _
+			// ~2 `1/2 B
+			// ~1 C
+			// =2 ~1
+			// `=2 ~1
+			// `5/7 C
+			// ~2
+			// _1 `5/8 G `1/4 E
+			def obj = getResult(m)
+			if (m.getFirstChild().parser == grammar.scorePosition) {
+				Map pos = (Map)obj
+				// set correct position on score object
+				if (pos.containsKey('part'))
+					setCurrentPart(pos['part'])
+				else if (pos.containsKey('voice'))
+					setCurrentVoice(pos['voice'])
+			}
+			else if (m.getFirstChild().parser == grammar.musicElement) {
+				if (obj instanceof CompositionInfo) {
+					println "info= " + obj
+					score.setInfo((CompositionInfo)obj)
+				}
+				else if (obj instanceof MusicElement) {
+					addToScore( (MusicElement)obj )
+				}
+				else if (obj instanceof List<MusicElement>) {
+					List<MusicElement> phrase = (List<MusicElement>)getResult(m)
+					for(MusicElement element : phrase) {
+						addToScore( element )
 					}
 				}
 			}
@@ -877,9 +931,10 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	void completeChordRoot(Match match) {			
 		String pitchLetter = getResult(match.findMatchByType(grammar.chordPitchName))
+		Map scope = getScope()
 		if (pitchLetter == null) {
 			String romanNumeral = ((String)getResult(match.findMatchByType(grammar.romanNumeral)))
-			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
+			KeySignature currentKey = (KeySignature)scope['keySignature']
 			if (currentKey == null) {
 				currentKey = new KeySignature()
 			}
@@ -947,9 +1002,10 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	void completeChordBass(Match match) {
 		String pitchLetter = getResult(match.findMatchByType(grammar.chordPitchName))
+		Map scope = getScope()
 		if (pitchLetter == null) {
 			String romanNumeral = ((String)getResult(match.findMatchByType(grammar.romanNumeral)))
-			KeySignature currentKey = (KeySignature)getVarFromScopes('keySignature')
+			KeySignature currentKey = (KeySignature)scope['keySignature']
 			if (currentKey == null) {
 				currentKey = new KeySignature()
 			}
@@ -977,27 +1033,26 @@ class MirChordProcessor extends AbstractProcessor {
 		if (alteration != null)
 			chordSym.chordAlteration = alteration
 
-		Fraction duration = (Fraction)getVarFromScopes('duration')
-		if (duration != null)
+		Map scope = getScope()
+		Fraction duration = (Fraction)scope['duration']
+		if (duration)
 			chordSym.duration = duration
 		else
-			chordSym.duration = fr(1,1)			
-		// update sticky duration
-		setVarFromScopes('duration', duration)
+			chordSym.duration = fr(1,1)
 
 		scope['currentChordSymbol'] = chordSym
 		putResult(chordSym)
 	}
 	
 	void completeSameChordSymbol(Match match) {
-		ChordSymbol curChordSymbol = (ChordSymbol)getVarFromScopes('currentChordSymbol')
-		if (curChordSymbol != null) 
+		ChordSymbol curChordSymbol = (ChordSymbol)scope['currentChordSymbol']
+		if (curChordSymbol) 
 			putResult(curChordSymbol)
 	}
 	
 	//END CHORD SYMBOLS -----------------------
 	
-    void completeParm(Match match) {
+    void completeParam(Match match) {
 		putResult(getResult(match.children[0]))
     }
     
@@ -1007,6 +1062,10 @@ class MirChordProcessor extends AbstractProcessor {
 	
 	void completeNumber(Match match) {
 		putResult(Integer.parseInt(match.getText()))
+	}
+
+	void completeFraction(Match match) {
+		putResult(parseFraction(match.getText()))
 	}
 
 	void completeIntegerNumber(Match match) {
@@ -1024,7 +1083,11 @@ class MirChordProcessor extends AbstractProcessor {
 	void completeIdentifier(Match match) {
 		String sym = match.getText()[1..-1]
 		if (symbolsTable.containsKey(sym)) {
-			Phrase clone = ((Phrase)symbolsTable[sym]).copy()
+			List<MusicElement> clone = []
+			for(MusicElement element : ((List<MusicElement>)symbolsTable[sym])) {
+				if (element.isCopyable())
+					clone.add(element.copy())
+			}
 			putResult(clone)
 		}
 		else
