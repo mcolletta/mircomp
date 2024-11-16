@@ -469,6 +469,8 @@ class MirChordProcessor extends AbstractProcessor {
 				println "calling $cmd with $params"
 			Method meth = (Method)extMethods[cmd]["method"]
 			def obj = extMethods[cmd]["object"]
+			if (params.size() == 1 && params instanceof Collection<?>)
+				params = params[0] as List // invert, retrograde
 			def res = obj.invokeMethod(cmd, params)
 			if (res != null)
 				putResult(res)
