@@ -1,11 +1,9 @@
-=1
-
-~1 
+=1 ~1 (durationMode "sticky") (octaveMode "relative")
 (clef "percussion")
 (unpitched "crashcymbala" "E" 5)
 x4 x x x x2 x2 x x8 x x x
 
-~2 
+~2 (durationMode "sticky") (octaveMode "relative")
 (unpitched "acousticbassdrum" "C" 4)
 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8
 

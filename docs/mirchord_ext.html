@@ -85,9 +85,12 @@
 
     <pre><code class="groovy">
     @MirChord 
-    public Phrase myTranspose(int halfSteps, Phrase phrase) {
-        Phrase newPhrase = phrase.copy()
-        for(MusicElement el : newPhrase.elements) {
+    public List&lt;MusicElement&gt; transpose(int halfSteps, List&lt;MusicElement&gt; phrase) {
+        List&lt;MusicElement&gt; newPhrase = phrase.stream()
+                .filter({ el -> el.isCopyable() })
+                .map({ el -> el.copy() })
+                .collect(Collectors.toList()) as List&lt;MusicElement&gt;
+        for(MusicElement el : newPhrase) {
             if (el.getMusicElementType() == "Chord") {
                 Chord chord = (Chord)el
                 for(Pitch pitch : chord.getPitches()) {
@@ -130,7 +133,7 @@
     <footer>
       <div class="container">
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2023 Mirco Colletta - The content/documentation of the site is released under the <em>GNU General Public License version 3</em>.</p>
+        <p>© 2016-2024 Mirco Colletta - The content/documentation of the site is released under the <em>GNU General Public License version 3</em>.</p>
       </div>
     </footer>
 

@@ -9,6 +9,7 @@
 =1 ~1 ; Part 1 Voice 1
 (time 4 4)
 (instr "flute")
+(durationMode "sticky") (octaveMode "relative")
 
 (* 2 {e e f g | g f e d | c c d e | e4. d8 d2 | 
 e4 e f g | g f d2 | c4 c d e | d4. c8 c2 |

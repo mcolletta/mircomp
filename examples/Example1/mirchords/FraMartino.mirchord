@@ -3,6 +3,7 @@
 =1 ~1
 (instr "flute")
 (key "D" "min")
+(durationMode "sticky") (octaveMode "relative")
 
 (def :fra  { ^4 f4 g a f })             ; Fra Martino campanaro
 

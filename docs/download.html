@@ -120,24 +120,21 @@ export PATH=$PATH:$JAVA_HOME/bin
 	<h4>Create a self-contained private MirIDE application</h4>
 	<p class="spaced">
 		We are almost ready to finally create our own desktop application.<br/>
-		First, create a <em>dist</em> folder (e.g. inside the <em>programs</em> folder) and then launch the <em>createApp</em> task inside <em>miride</em> with the gradle wrapper (<em>gradlew</em>) from the parent folder<br/>
-		On Ubuntu 22.04:<br/>
+		First, unzip the code release inside a folder of your choice (e.g. inside the <em>programs</em> folder) and then launch the <em>createApp</em> task inside <em>mircomp</em> using the gradle wrapper (<em>gradlew</em>)<br/>
+		Example on Ubuntu 22.04:<br/>
 		<pre>
-cd /home/user/programs/
-mkdir dist
-cd /home/user/programs/mircomp/miride
-../gradlew createApp -PdistPath="/home/user/programs/dist"
+cd /home/user/programs/mircomp
+./gradlew createApp
 		</pre>
 		You can finally run the main executable inside the created self-contained application:<br/>
 		<pre>
-cd /home/user/programs/dist/app/MirIDE/bin
-./MirIDE
+./miride/build/app/MirIDE/bin/MirIDE
 		</pre>
 		Similar on Windows 10:
 		<pre>
-C:\programs\mircomp\miride> ..\gradlew createApp -PdistPath="C:\programs\dist"
+C:\programs\mircomp>.\gradlew createApp
 		</pre>
-where inside the just created dist folder is sufficient a double click on the exec file.
+where it is sufficient a double click on the exec file in the corrisponding created folder inside the app.
 	</p>
 </div>
 
@@ -150,7 +147,7 @@ where inside the just created dist folder is sufficient a double click on the ex
     <footer>
       <div class="container">
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>© 2016-2023 Mirco Colletta - The content/documentation of the site is released under the <em>GNU General Public License version 3</em>.</p>
+        <p>© 2016-2024 Mirco Colletta - The content/documentation of the site is released under the <em>GNU General Public License version 3</em>.</p>
       </div>
     </footer>
 

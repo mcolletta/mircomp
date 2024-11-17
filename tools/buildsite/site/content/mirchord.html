@@ -70,7 +70,7 @@
 </div>
 
 <p>
-    In Mirchord pitches are represented as single letters <mark>a-g</mark> while rests with the letter <mark>r</mark>
+    In Mirchord pitches are represented as single letters <mark>a-g</mark> while rests with the underscore character <mark>_</mark>
     <br/>
     To define a major scale you can simply write: <code>c d e f g a b</code> 
 </p>
@@ -81,7 +81,7 @@
 
 <pre><code class="mirchord">
 =1 ~1
-c8 r8 r4 r2 r1
+c8 _8 _4 _2 _1
 </code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/rests.png" />
@@ -106,16 +106,19 @@ The following code <code>c# e&</code> produces:
 </div>
 
 <p>
-    The octave in MirChord is <em>relative</em> to the preceding pitch (a concept borrowed from the Lilypond relative mode).<br/>
-    During pitch entry the octave automatically calculated in the current scope can be raised or lowered using the  <mark>'</mark> and <mark>,</mark> marks respectively.<br/>
-    The current octave can however be forced with the special <mark>^</mark> command. The code <code>^5</code> states that the current octave in this scope is the fifth.
+    The octave in Mirchord can be specified in the current scope with the special <mark>^</mark> command followed by a number (scientific pitch notation)<br/>
+    <code>c</code> in the <code>^4</code> octave is the middle C.<br/>
+    <code>^5</code> states that the current octave in this scope is the fifth.<br/>
+    The octave calculated from the current scope can be raised or lowered using the  <mark>'</mark> and <mark>,</mark> marks respectively.<br/>
+
+    The octave in MirChord can be also specified as <em>relative</em> to the preceding pitch (a concept borrowed from the Lilypond relative mode) using the <code>(octaveMode "relative")</code> command.<br/>
 </p>
-<p class="bg-info">When you get lost o messed up within the score use the octave command to change the current octave value.
 
 <p>For example what follows is a C major scale that spans over two octaves</p>
 <pre><code class="mirchord">
 =1 ~1
 (key "C" "maj")
+(octaveMode "relative")
 c d e f g a b c d e f g a b c
 </code></pre>
 <img class="img-responsive" src="./assets/images/screenshots/scale.png" />
@@ -124,7 +127,7 @@ c d e f g a b c d e f g a b c
 
 <pre><code class="mirchord">
 =1 ~1
-c c, c''
+c c, c'
 </code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/octave-marks.png" />
@@ -135,17 +138,18 @@ c c, c''
 
 <p>
     In the previous examples we have not specified the duration of notes so the default value of <var>1/4</var> is used.
-    As with octaves there are two ways to specify the duration of a music element, i.e. note, chord, rest, ...<br/>
-    One option is the duration command: the symbol <mark>`</mark> followed by a number that represents the reciprocal of the actual duration. For dotted notes a <kbd>.</kbd> char should be placed after the duration number.<br/>
-    For example the directive <code>`8</code> denotes a <var>1/8</var> duration (or <var>0.125</var> of a measure in decimal representation).<br/>
+    There are two ways to specify the duration of a music element, i.e. note, chord, rest, ...<br/>
+    One option is the duration command: the symbol <mark>`</mark> followed by a fraction<br/>
+    For example the directive <code>`1/8</code> denotes a <var>1/8</var> duration (or <var>0.125</var> of a measure in decimal representation).<br/>
 </p>
 
 <p>
-    The other way to assign duration to a pitch or chord is to attach the number to the pitch (or pitch list in case of a chord).
+    The other way to assign duration to a pitch or chord is to attach a number that represents the reciprocal of the actual duration to the pitch (or pitch list in case of a chord).<br/>
+    For dotted notes a <kbd>.</kbd> char should be placed after the duration number.<br/>
 </p>
 
-<p class="bg-warning">It is important to note that durations are <em>sticky</em>, i.e. once defined in a <em>scope</em> (see below) they persist until the next change for all subsequent elements.</p>
-<p class="bg-info">For note longer than an <em>whole</em> ties are required.
+<p class="bg-warning">Using a special <code>(durationMode "sticky")</code> command we can render the durations <em>sticky</em>, i.e. once defined in a <em>scope</em> (see below) they persist until the next change for all subsequent elements.</p>
+
 <p class="bg-info">If a note duration does not fit within a measure length it is divided in more notes and ties are applied automatically between measure boundaries</p>
 
 <pre><code class="mirchord">
@@ -161,8 +165,8 @@ c2. e2 g2.
 </div>
 
 <p>
-    The tie symbol is the <code>_</code><br/>
-    For example we can extend the normal duration of a whole note this way <code>c_ _c</code>
+    The tie symbol is the <code>-</code><br/>
+    For example we can extend the normal duration of a whole note this way <code>c- -c</code>
 </p>
 
 <img class="img-responsive" src="./assets/images/screenshots/tied-notes.png" />
@@ -178,7 +182,8 @@ c2. e2 g2.
 
 <pre><code class="mirchord">
 =1 ~1 
-(tp "3/2" g8 f e)
+`1/8
+(tp 3/2 g f e)
 </code></pre>
 <img class="img-responsive" src="./assets/images/screenshots/triplet.png" />
 
@@ -205,8 +210,7 @@ c2. e2 g2.
 
 <p>
     Scopes are "environments" that contain name bindings of contextual elements such as the current octave, duration, ecc... These elements are updated during code translation as explained above.<br/>
-    Scopes are created automatically for every voice of a staff and every phrase and pitch list of a chord.<br/>
-    There are however differences between the scope of a phrase and the one of a chord since for example the first pitch of a chord updates its parent scope while the phrase has its own copy.
+    Scopes are created automatically for every voice of a staff and every defined phrase.
 </p>
 
 <div class="page-header">
@@ -251,7 +255,7 @@ C C\E C\G
 <p>Example of a chords progression</p>
 <pre><code class="mirchord">
 =1 ~1 
-`4 C / / / | Dm / / / | F / / / | G / / /
+`1/4 C / / / | Dm / / / | F / / / | G / / /
 </code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/chords-progression.png" />
@@ -262,7 +266,7 @@ Other examples:<br/>
 
 <pre><code class="mirchord">
 =1 ~1 
-[c e g]4 ^4 `4 C7 Cmaj7 Cmaj13(#11) ^5 `2 C `4 C/E C\E /
+[c e g]4 ^4 `1/4 C7 Cmaj7 Cmaj13(#11) ^5 `1/2 C `1/4 C/E C\E /
 </code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/chord-symbols.png" />
@@ -299,10 +303,12 @@ Other examples:<br/>
 ~1 
 (clef "percussion")
 (unpitched "crashcymbala" "E" 5)
+(durationMode "sticky")
 x4 x x x x2 x2 x x8 x x x
 
 ~2 
 (unpitched "acousticbassdrum" "C" 4)
+(durationMode "sticky")
 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8 x8 x4 x x8
 
 ~1 (* 3 {o16 o o o})
@@ -346,6 +352,7 @@ do re mi fa sol la si
 =1 ~1
 (instr "flute")
 (key "D" "min")
+(durationMode "sticky") (octaveMode "relative")
 
 ^4 f4 g a f | f4 g a f | a4 b c2 | a4 b c2
             
@@ -366,12 +373,14 @@ do re mi fa sol la si
 =1  ~1
 (key "C" "maj")
 (clef "treble")
-(name "Voice 1")
+(name "Part 1")
+(durationMode "sticky") (octaveMode "relative")
 r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 
-=2 ~2
+=2 ~1
 (clef "bass")
-(name "Voice 2")
+(name "Part 2")
+(durationMode "sticky") (octaveMode "relative")
 ^3 r2 r16 c d e f d e c | g'8 g, r4 r16 g a b c a b g |
 
 =1
@@ -396,15 +405,16 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 (instr "acoustic grand piano")
 (key "E&" "maj")
 (clef "treble")
-    ^4 r r r e8 g | b4 c8 d e b g'4 | g8 f e d e4 [a, c] | [a c] [g b]2 [f a]4 | (tp "3/2" g8 f e) e2 a'4 |
+(durationMode "sticky") (octaveMode "relative")
+    ^4 _ _ _ e8 g | b4 c8 d e b g'4 | g8 f e d e4 [a, c] | [a c] [g b]2 [f a]4 | (tp 3/2 g8 f e) e2 a'4 |
     
 =2 ~1
 (key -3 "maj")
 (clef "bass")
-    ^3 r r r e | g a8 f g4 e | b b' e, a | b2 b, | e4 g8 f g4 e | d b' b, b'
+    ^3 _ _ _ e | g a8 f g4 e | b b' e, a | b2 b, | e4 g8 f g4 e | d b' b, b'
     
 =1 
-(tp "3/2" f8 e d) d d d f e d
+(tp 3/2 f8 e d) d d d f e d
 </code></pre>
 
 <img class="img-responsive" src="./assets/images/screenshots/Marche.png" />
@@ -454,7 +464,7 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 </p>
 
 <pre><code class="mirchord">
-=1 ~1 
+=1 ~1 (durationMode "sticky") (octaveMode "relative")
 ; equivalent to { ^5 c8 d c b a4 f }
 (zip {^5 c d c b a f} {x8 x x x x4 x4})
 </code></pre>
@@ -466,7 +476,7 @@ r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 </p>
 
 <pre><code class="mirchord">
-=1 ~1
+=1 ~1 (durationMode "sticky") (octaveMode "relative")
 (def :fra  { ^4 f4 g a f })
 :fra (transpose 12 :fra)
 </code></pre>
@@ -492,7 +502,7 @@ Thanks to symbols definitions and the special commands that we have presented ab
 </p>
 
 <pre><code class="mirchord">
-=1 ~1
+=1 ~1  (durationMode "sticky") (octaveMode "relative")
 (instr "flute")
 (key "D" "min")
 

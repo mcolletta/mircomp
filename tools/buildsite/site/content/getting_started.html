@@ -61,12 +61,14 @@
 	(key "C" "maj")
 	(clef "treble")
 	(name "Voice 1")
-	r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
+	(durationMode "sticky") (octaveMode "relative")
+	_16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 
-	=2 ~2
+	=2 ~1
 	(clef "bass")
 	(name "Voice 2")
-	^3 r2 r16 c d e f d e c | g'8 g, r4 r16 g a b c a b g |
+	(durationMode "sticky") (octaveMode "relative")
+	^3 _2 _16 c d e f d e c | g'8 g, _4 _16 g a b c a b g |
 
 	=1
 	^5 e16 a g f e g f a g f e d c e d f | e d c b a c b d c b a g f# a g b
@@ -80,7 +82,7 @@
 	</p>
 
 	<figure>
-		<img class="img-responsive" src="./assets/images/screenshots/Bach-Invention1.png" />
+		<img class="img-responsive" src="./assets/images/screenshots/mirscore.png" />
 		<figcaption>J.S. Bach - Invention N.1</figcaption>
 	</figure>
 
@@ -107,7 +109,7 @@
 	    You can visit the <a href="mirmidi.html">MirMidi</a> page for details about the sequencer.
 	</p>
 	<figure>
-		<img class="img-responsive" src="./assets/images/screenshots/mirmidi.png" />
+		<img class="img-responsive" src="./assets/images/screenshots/mirmidi-hp.png" />
 		<figcaption>MirMidi sequencer and editor</figcaption>
 	</figure>
 </div>
