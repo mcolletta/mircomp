@@ -1,19 +1,20 @@
 ; Invention N. 1 - J.S. Bach
+
 (info
 	(title "Invention N. 1") 
 	(composer "Johann Sebastian Bach")
 )
 
-=1  ~1
+=1  ~1 (octaveMode "relative") (durationMode "sticky")
 (key "C" "maj")
 (clef "treble")
 (name "Voice 1")
-r16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
+_16 c d e f d e c g'8 c b8 c | d16 g, a b c a b g d'8 g f g |
 
-=2 ~1
+=2 ~1 (octaveMode "relative") (durationMode "sticky")
 (clef "bass")
 (name "Voice 2")
-^3 r2 r16 c d e f d e c | g'8 g, r4 r16 g a b c a b g |
+^3 _2 _16 c d e f d e c | g'8 g, _4 _16 g a b c a b g |
 
 =1
 ^5 e16 a g f e g f a g f e d c e d f | e d c b a c b d c b a g f# a g b

@@ -1,0 +1,15 @@
+; Fra Martino campanaro
+
+=1 ~1
+(instr "flute")
+(key "D" "min")
+
+(def :fra  { ^4 f4 g a f })             ; Fra Martino campanaro
+
+(def :dormi  { ^4 a4 b c2 })            ; dormi tu?
+
+(def :campane  { ^5 c8 d c b a4 f })    ; suona le campane
+
+(def :din { ^4 f4 c f2 })               ; din don dan
+
+(* 2 :fra) (* 2 :dormi) (* 2 :campane) (* 2 :din)

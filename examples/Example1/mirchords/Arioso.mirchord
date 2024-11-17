@@ -1,0 +1,31 @@
+; Arioso - Johann Sebastian Bach
+
+=1 ~1 ; Part 1 Voice 1
+(durationMode "sticky") (octaveMode "relative")
+
+(key "G" "maj")
+(instr "acoustic grand piano")
+
+(def :intro1 { ^5 b2- -b8 c d e | a,2- -a8 b c d | g,4 g'8 e c2- | -c8 a' f d c4 b8 c | b4 a8 g _2 | })
+
+(def :A1 { _4 b g' _ | _ a e' _ | _ a, f' _ | _ g, d' _ | _ a e' _ | _1 | _8 e, g b _2 | _1 | } )
+
+(def :B1 { ^5 b2- -b8 c d e | a,2- -a8 b c d | g,4 g'8 e c2- | -c8 a' f d c4 b8 c | b d b g f§4 e8 f§ | e f f g g2- | -g8 f g e f4. g8 | g1- | -g1  })
+
+:intro1 :A1 :intro1 :B1
+
+=2 ~1 (durationMode "sticky") (octaveMode "relative")
+
+(key "G" "maj")
+(instr "acoustic grand piano")
+
+(def :intro2 { b2- -b8 c d e | a,2- -a8 b c d | g,4 g'8 e c2- | -c8 a' f d c4 b8 c | b4 a8 g _2 |} )
+
+(def :A2 { g'2- -g8 e f g | a,2- -a8 c# e g | f2- -f8 d b a | g2- -g8 b d f | e2- -e8 c# a g | f a c# d d2- -d4 b c4. d8 | d1 } )
+
+(def :B2 { b8 d b d b _ b4 | a8 d a d a _ a4 | g g'8 e c2- | -c8 a' f d c4 b8 c | b2 g2 | c2 b&2 | b§4 g a d | b d8 e d e c4 | [b d]1 })
+
+:intro2 :A2 :intro2 :B2
+
+
+

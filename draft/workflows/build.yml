@@ -1,0 +1,26 @@
+# name: Build MirIDE
+# on: workflow_dispatch
+
+# jobs:
+#   build-app:
+#     strategy:
+#       matrix:
+#         # os: [ macos-latest, ubuntu-latest, windows-latest ]
+#         os: [ ubuntu-latest, windows-latest ]
+#     name: Build and create a self-contained application
+#     runs-on: ${{ matrix.os }}
+#     steps:
+#       - name: checkout
+#         uses: actions/checkout@v2
+#       - name: Setup Java
+#         uses: actions/setup-java@v3
+#         with:
+#           java-version: '21'
+#           distribution: 'temurin'
+#       - run: ./gradlew :miride:createApp
+#       - run: mv miride/build/app .
+#       - name: upload application as artifact
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: MirIDE-${{matrix.os}}
+#           path: app

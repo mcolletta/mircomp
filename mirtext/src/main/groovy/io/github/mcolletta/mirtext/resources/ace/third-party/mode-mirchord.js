@@ -70,7 +70,8 @@ var MirchordHighlightRules = function() {
         'keySignature copyTimes callSymbol ' +
         'info title composer poet chordsMode lyrics label name ' +
         'stemUp stemDown stemAuto ' +
-        'transpose transposeDiatonic invert invertDiatonic augment diminuition retrograde zip chain ' +        
+        'transpose transposeDiatonic invert invertDiatonic augment diminuition retrograde zip chain ' +
+        'octaveMode durationMode ' +
         'zero? list zipmap'
     );
 
@@ -1239,35 +1240,52 @@ var functionMap = {
     // transformations
     "transpose": [
         "(transpose 2 {})",
-        "Phrase transpose(int halfSteps, Phrase phrase)"
+        "transpose(int halfSteps, phrase)"
     ],
     "transposeDiatonic": [
         "(transposeDiatonic 2 \"maj\" {})",
-        "Phrase transposeDiatonic(int diatonicSteps, String modeText, Phrase phrase)"
+        "transposeDiatonic(int diatonicSteps, String modeText, phrase)"
     ],
     "invert": [
         "(invert {})",
-        "Phrase invert(Phrase phrase)"
+        "invert(phrase)"
     ],
     "invertDiatonic": [
         "(invertDiatonic \"maj\" {})",
-        "Phrase invertDiatonic(String modeText, Phrase phrase)"
+        "invertDiatonic(String modeText, phrase)"
     ],
     "retrograde": [
         "(retrograde {})",
-        "Phrase retrograde(Phrase phrase)"
+        "retrograde(phrase)"
     ],
     "augment": [
-        "(augment \"2/1\" {})",
-        "Phrase augment(String ratio, Phrase phrase)"
+        "(augment 2/1 {})",
+        "augment(Fraction ratio, phrase)"
     ],
     "diminuition": [
-        "(diminuition \"2/1\" {})",
-        "Phrase diminuition(String ratio, Phrase phrase)"
+        "(diminuition 2/1 {})",
+        "diminuition(Fraction ratio, phrase)"
     ],
     "zip": [
         "(zip {} {})",
-        "Phrase zip(Phrase phrase, Phrase pattern)"
+        "zip(phrase, pattern)"
+    ],
+    // modes
+    "octave absolute": [
+        "(octaveMode \"absolute\")",
+        "Octave absolute Mode"
+    ],
+    "octave relative": [
+        "(octaveMode \"relative\")",
+        "Octave relative Mode"
+    ],
+    "duration scoped": [
+        "(durationMode \"scoped\")",
+        "Duration scoped Mode"
+    ],
+    "duration sticky": [
+        "(durationMode \"sticky\")",
+        "Duration sticky Mode"
     ]
 };
 
