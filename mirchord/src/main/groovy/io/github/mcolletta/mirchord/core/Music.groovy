@@ -90,7 +90,7 @@ class Score {
 	static List<MusicElement> getElementsByTypes(List<MusicElement> elements, List<String> types) {
 		List<MusicElement> items = []
 		for(MusicElement el : elements) {
-			if (el.getMusicElementType() == "Tuplet") {
+			if ("Chord" in types && el.getMusicElementType() == "Tuplet") {
 				var tp = (Tuplet)el
 				items.addAll( tp.chords )
 			} else if (el.getMusicElementType() in types) {
@@ -123,16 +123,16 @@ class Voice {
 @Canonical
 class Tuplet implements MusicElement {
 	// fr(3, 2) as in lilypond means a ratio of 2/3
-	Fraction fraction
+	Fraction ratio
 	List<Chord> chords = []
 
-	Tuplet(Fraction fraction, List<Chord> chords) {
-		this.fraction = fraction
+	Tuplet(Fraction ratio, List<Chord> chords) {
+		this.ratio = ratio
 		this.chords = chords
 	}
 
 	Tuplet(Tuplet tuplet) {
-		this.fraction = fr(tuplet.fraction.numerator, tuplet.fraction.denominator)
+		this.ratio = fr(tuplet.ratio.numerator, tuplet.ratio.denominator)
 		for(Chord chord : tuplet.chords) {
 			this.chords.add(chord.copy())
 		}

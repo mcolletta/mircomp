@@ -44,6 +44,7 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.layout.VBox
 import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeView
+import javafx.scene.control.TreeCell
 
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.ClipboardContent
@@ -104,9 +105,9 @@ public class FolderTreeView extends VBox implements FolderTreeListenerList {
 		root.setExpanded(true) 
 		treeView.setRoot(root)
 		treeView.setCellFactory({ p -> 
-                PathTreeCell treeCell = new PathTreeCell(this)
+                var treeCell = new PathTreeCell(this)
                 makeDraggable(treeCell)
-                return treeCell
+                return (TreeCell<Path>)treeCell
             })
 		// watch service
 		stopWatching()

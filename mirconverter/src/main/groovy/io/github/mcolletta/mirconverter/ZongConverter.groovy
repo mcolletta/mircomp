@@ -368,16 +368,16 @@ class ZongConverter {
 	}
 
 	void addTuplet(MirTuplet mirtuplet) {
-		Fraction fraction = mirtuplet.fraction
+		Fraction mtp_ratio = mirtuplet.ratio
 		List<Chord> tuplet_chords = []
 		mirtuplet.chords.each { el -> 
-			Fraction ratio = fr(mirtuplet.fraction.denominator, mirtuplet.fraction.numerator)
+			Fraction ratio = fr(mtp_ratio.denominator, mtp_ratio.numerator)
 			Fraction actualDuration = el.duration.mult(ratio)
 			el.duration = actualDuration
 			addChord(el, mirtuplet, tuplet_chords)
 		}
 		Fraction base_duration = mirtuplet.getBaseDuration()
-		Tuplet tuplet = new Tuplet(fraction.numerator, fraction.denominator, base_duration, true, tuplet_chords)
+		Tuplet tuplet = new Tuplet(mtp_ratio.numerator, mtp_ratio.denominator, base_duration, true, tuplet_chords)
 		tuplet_chords.each { Chord c ->
 			c.tuplet = tuplet
 		}

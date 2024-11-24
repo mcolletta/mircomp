@@ -23,7 +23,7 @@
 
     <pre><code class="groovy">
     @MirChord 
-    public List&lt;MusicElement&gt; transpose(int halfSteps, List&lt;MusicElement&gt; phrase) {
+    public List&lt;MusicElement&gt; myTranspose(int halfSteps, List&lt;MusicElement&gt; phrase) {
         List&lt;MusicElement&gt; newPhrase = phrase.stream()
                 .filter({ el -> el.isCopyable() })
                 .map({ el -> el.copy() })

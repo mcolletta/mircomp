@@ -102,9 +102,12 @@ class ScoreBuilder {
             code()
         }
 
-        def tuplet(Map attributes) {
+        def tuplet(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=TupletNode) Closure cl={}) {
             def node = new TupletNode(attributes)
             node.setParent(voice)
+            def code = cl.rehydrate(node, this, this)
+            code.resolveStrategy = Closure.DELEGATE_ONLY
+            code()
         }
 
         def instrument(Map attributes) {
@@ -273,7 +276,7 @@ class ScoreBuilder {
         Tuplet tuplet
 
         TupletNode(Map attributes) {
-            tuplet = attributes as Tuplet
+            tuplet = new Tuplet((Fraction)attributes["ratio"], [])
         }
 
         def chord(Map attributes, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=ChordNode) Closure cl={}) {

@@ -110,11 +110,11 @@ var MirchordHighlightRules = function() {
 
             {
                 token : "support.function", 
-                regex : /\b(I|II|III|IV|V|VI|VII|A|B|C|D|E|F|G){1}[\#|\&]*(M|maj|m|min|mM|minMaj|\+|aug|°|dim|sus){0,1}[0-9]{0,2}[\(]{0,1}(add|sub){0,1}[\#\&]*[0-9]{0,2}[\)]{0,1}(?![\dA-Za-z\#\&,'])/
+                regex : /\b(I|II|III|IV|V|VI|VII|A|B|C|D|E|F|G){1}[\#|\&|§]*(M|maj|m|min|mM|minMaj|\+|aug|°|dim|sus){0,1}[0-9]{0,2}[\(]{0,1}(add|sub){0,1}[\#\&§]*[0-9]{0,2}[\)]{0,1}(?![\dA-Za-z\#\&,'])/
             },
             {
                 token : "variable.parameter",
-                regex : /\b(do|re|mi|fa|so|sol|la|si|ti|a|b|c|d|e|f|g|_|x|o){1}[\#|\&]*[,|']*[1-9]{0,2}(?![\dA-Za-z\#\&,'])/
+                regex : /\b(do|re|mi|fa|so|sol|la|si|ti|a|b|c|d|e|f|g|_|x|o){1}[\#|\&|§]*[,|']*[1-9]{0,2}(?![\dA-Za-z\#\&§,'])/
             },
 
             {
