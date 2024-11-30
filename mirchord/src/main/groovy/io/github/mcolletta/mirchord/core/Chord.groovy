@@ -262,6 +262,8 @@ class Chord implements MusicElement {
 	boolean tieStart = false
 	boolean tieEnd = false
 
+	Tuplet tuplet = null
+
 	StemDirection stem = StemDirection.AUTO
 
 	boolean unpitched;

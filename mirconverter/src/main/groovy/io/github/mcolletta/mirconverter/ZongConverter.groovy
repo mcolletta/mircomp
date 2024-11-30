@@ -183,8 +183,24 @@ class ZongConverter {
 				currentMeasure = 0
 				currentVoice = idv
 				VoiceContext ctx = createVoiceContext( mp(currentStaff, 0, MP.unknown, _0, 0) )
+				int skip = 0
 				for(el in voice.elements) {
-					addElement(el)
+					// special manage for tuplets
+					// addTuplet add all its chords, we have to skip the one from voice
+					if (skip > 0) {
+						skip -= 1
+						continue
+					}
+					if (el.getMusicElementType() == "Chord") {
+						def mirchord = (MirChord)el
+						MirTuplet mirtuplet = mirchord.tuplet
+						if (mirtuplet != null) {
+							skip = mirtuplet.chords.size() -1
+							addTuplet(mirtuplet)
+						} else
+							addChord(mirchord)
+					} else
+						addElement(el)
 				}
 				closeBeam() // be sure every beam closed
 			}
@@ -206,9 +222,9 @@ class ZongConverter {
 			case { it.getMusicElementType() == "Rest" }:
 				addRest((MirRest)el)
 				break
-			case { it.getMusicElementType() == "Chord" }:
-				addChord((MirChord)el)
-				break
+			// case { it.getMusicElementType() == "Chord" }:
+			// 	addChord(((Chord)el)
+			// 	break
 			case { it.getMusicElementType() == "ChordSymbol" }:
 				addChord(((ChordSymbol)el).getChord())
 				break
@@ -229,9 +245,6 @@ class ZongConverter {
 				break
 			case { it.getMusicElementType() == "Anchor" }:
 				addAnchor((Anchor)el)
-				break
-			case { it.getMusicElementType() == "Tuplet" }:
-				addTuplet((MirTuplet)el)
 				break
 			case { it.getMusicElementType() == "Instrument" }:
 				addInstrument((MirInstrument)el)
@@ -370,10 +383,7 @@ class ZongConverter {
 	void addTuplet(MirTuplet mirtuplet) {
 		Fraction mtp_ratio = mirtuplet.ratio
 		List<Chord> tuplet_chords = []
-		mirtuplet.chords.each { el -> 
-			Fraction ratio = fr(mtp_ratio.denominator, mtp_ratio.numerator)
-			Fraction actualDuration = el.duration.mult(ratio)
-			el.duration = actualDuration
+		mirtuplet.chords.each { el ->
 			addChord(el, mirtuplet, tuplet_chords)
 		}
 		Fraction base_duration = mirtuplet.getBaseDuration()

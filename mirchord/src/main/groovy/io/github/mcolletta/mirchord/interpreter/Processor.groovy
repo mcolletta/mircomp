@@ -418,15 +418,21 @@ class MirChordProcessor extends AbstractProcessor {
 	}
 	
 	@MirChord
-	Tuplet tuplet(List args) {
-		Fraction fraction = (Fraction)args[0]
+	List<Chord> tuplet(List args) {
+		Fraction r = (Fraction)args[0]
+		def tp = new Tuplet(r)
 		List<Chord> chords = (List<Chord>)args[1..-1]
+		Fraction ratio = fr(r.denominator, r.numerator)
 		Fraction dur = chords[0].duration
-		for(Chord c : chords[1..-1]) {
+		for(Chord c : chords) {
 			if (c.duration != dur)
 				throw new Exception("The chords of a tuplet must have equal duration")
+			Fraction actualDuration = c.duration.mult(ratio)
+			c.duration = actualDuration
+			c.tuplet = tp
+			tp.chords << c
 		}
-		return new Tuplet(fraction, chords)
+		return chords
 	}
 
 	@MirChord
@@ -905,7 +911,7 @@ class MirChordProcessor extends AbstractProcessor {
 			}
 			else if (m.getFirstChild().parser == grammar.musicElement) {
 				if (obj instanceof CompositionInfo) {
-					println "info= " + obj
+					//println "info= " + obj
 					score.setInfo((CompositionInfo)obj)
 				}
 				else if (obj instanceof MusicElement) {

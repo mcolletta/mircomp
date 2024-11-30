@@ -288,7 +288,9 @@ class ScoreBuilder {
         }
 
         void setParent(Voice voice) {
-            voice.elements.add(tuplet)
+            for(Chord c : tuplet.chords) {
+                voice.elements.add(c)
+            }
         }
     }
 
