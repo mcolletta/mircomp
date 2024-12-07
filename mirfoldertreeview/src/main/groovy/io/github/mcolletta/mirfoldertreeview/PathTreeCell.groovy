@@ -152,6 +152,14 @@ public class PathTreeCell extends TreeCell<Path> {
                 owner.newFile(path, "mid")
             }
         })
+        MenuItem addMirGramFileMenu = new MenuItem("New MirGram File")
+        addMirGramFileMenu.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                Path path = getTreeItem().getValue()
+                owner.newFile(path, "mirgram")
+            }
+        })
         MenuItem renameFolderMenu = new MenuItem("Rename...");
         renameFolderMenu.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -193,6 +201,7 @@ public class PathTreeCell extends TreeCell<Path> {
                                      addMirChordFileMenu,
                                      addGroovyFileMenu,
                                      addMidiFileMenu,
+                                     addMirGramFileMenu,
                                      renameFolderMenu,
                                      pasteMenu,
                                      deleteFolderMenu)
