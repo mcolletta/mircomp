@@ -444,6 +444,8 @@ class ScoreViewer  extends VBox {
 
     void replay() {
         scoreModel.stop()
+        scoreModel.setCurrentPage(0)
+        scoreModel.playbackAtEnd()
         scoreModel.play()
     }
 

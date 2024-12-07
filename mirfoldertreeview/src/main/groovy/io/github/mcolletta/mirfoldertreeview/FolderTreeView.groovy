@@ -67,7 +67,7 @@ import javafx.concurrent.Task
 
 public class FolderTreeView extends VBox implements FolderTreeListenerList {
 
-	@FXML private TreeView treeView
+	@FXML private TreeView<Path> treeView
 	private Task watchTask
 	Path rootPath
 	TreeItem<Path> root
@@ -81,7 +81,7 @@ public class FolderTreeView extends VBox implements FolderTreeListenerList {
 		if (strPath != null)
 			setRoot(strPath)
 		else {
-			TreeItem<String> noRoot = new TreeItem<String>("<NO FOLDER>")
+			var noRoot = new TreeItem<Path>()
 			treeView.setRoot(noRoot)
 		}
 	}
@@ -107,7 +107,7 @@ public class FolderTreeView extends VBox implements FolderTreeListenerList {
 		treeView.setCellFactory({ p -> 
                 var treeCell = new PathTreeCell(this)
                 makeDraggable(treeCell)
-                return (TreeCell<Path>)treeCell
+                return treeCell
             })
 		// watch service
 		stopWatching()
@@ -124,7 +124,7 @@ public class FolderTreeView extends VBox implements FolderTreeListenerList {
 
     TreeItem<Path> getPathTreeItem(Path path) {
 		try {
-			TreeItem<Path> pathTreeItem = new TreeItem<Path>(path)
+			var pathTreeItem = new TreeItem<Path>(path)
 			if (path != null && Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
 				DirectoryStream<Path> dirs = Files.newDirectoryStream(path)
 				ObservableList<TreeItem<Path>> children = FXCollections.observableArrayList();
