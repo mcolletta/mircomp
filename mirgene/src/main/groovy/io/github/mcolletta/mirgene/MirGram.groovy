@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -26,6 +26,10 @@ package io.github.mcolletta.mirgene
 import java.util.regex.Pattern
 import java.util.regex.Matcher
 
+import com.xenoage.utils.math.Fraction
+import static com.xenoage.utils.math.Fraction.fr
+import static com.xenoage.utils.math.Fraction._0
+
 import com.xenoage.utils.pdlib.PMap
 import com.xenoage.utils.pdlib.PList
 
@@ -36,9 +40,9 @@ class MirGram  {
 
 	static String EMPTY_PATTERN = /empty/
 	static Pattern START_RULE_PATTERN = ~/(<[-_\^,\*,°,.a-zA-Z0-9]+(\([\-\+\*\/\[\] ,.a-zA-Z0-9]+\))*>)[\s\t\r\n]*::=/
-	static Pattern NON_TERMINAL_PATTERN_LHS = ~/(<[-_\^,\*,°,.a-zA-Z0-9]+(\([\[\]\. a-zA-Z0-9]+\))*>)/
+	static Pattern NON_TERMINAL_PATTERN_LHS = ~/(<[-_\^,\*,°,.a-zA-Z0-9]+(\([\[\]\.\/ a-zA-Z0-9]+\))*>)/
 	static Pattern NON_TERMINAL_PATTERN_RHS = ~/(<[-_\^,\*,°,.a-zA-Z0-9]+(\([\-\+\*\.\/\[\] ,.a-zA-Z0-9]+\))*>)/
-	static Pattern FUNC_PATTERN = ~/<([-_\^,\*,°,.a-zA-Z0-9]+)\(([\-\+\*\.\/ ,.a-zA-Z0-9]+)[\s]*\[{0,1}[\s]*(gt|gte|lt|lte){0,1}[\s]*([\.0-9]*)[\s]*\]{0,1}\)>/
+	static Pattern FUNC_PATTERN = ~/<([-_\^,\*,°,.a-zA-Z0-9]+)\(([\-\+\*\.\/ ,.a-zA-Z0-9]+)[\s]*\[{0,1}[\s]*(gt|gte|lt|lte){0,1}[\s]*([\/0-9]*)[\s]*\]{0,1}\)>/
 	static Pattern WEIGHT_PATTERN = ~/\![0-9]+/
 	static String GRAMMAR_SEPARATOR = "ç"
 	static String RULE_SEPARATOR = "::="
@@ -178,7 +182,7 @@ class MirGram  {
 							NonTerminal lhs = e.getKey()
 				            PList<Production> rhs = e.getValue()
 							if (lhs.name == nt.name) {
-								if (lhs.attrValue >= 0 && nt.attrValue >= 0) {
+								if (lhs.attrValue >= _0 && nt.attrValue >= _0) {
 									// ex. <NT(3)> with <NT(3)> or <NT> with <NT>
 									if (lhs.attrValue == nt.attrValue) {
 										choices = rhs
@@ -188,7 +192,7 @@ class MirGram  {
 								else {
 									if (lhs.isAllowed(nt.attrValue)) {
 										// ex. <NT(n)> with <NT(3)>
-										if (lhs.hasSymbolicAttribute() && nt.attrValue >= 0) {
+										if (lhs.hasSymbolicAttribute() && nt.attrValue >= _0) {
 											bindings = bindings.plus(lhs.attr, nt.attrValue)
 											choices = choices.plusAll(rhs)
 										}
@@ -295,7 +299,7 @@ class MirGram  {
 		List<String> nts = extractNonTerminal(nterm)
 		def nt = new NonTerminal(nts[0],nts[1])
 		if (nts.size() == 4) {
-			Constraint c = Constraint.CreateConstraint(nts[2], Float.parseFloat(nts[3]))
+			Constraint c = Constraint.CreateConstraint(nts[2], Fraction.parse(nts[3]))
 			nt.constraint = c
 		}
 		return nt

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -23,6 +23,10 @@
 
 package io.github.mcolletta.mirgene
 
+import com.xenoage.utils.math.Fraction
+import static com.xenoage.utils.math.Fraction.fr
+import static com.xenoage.utils.math.Fraction._0
+
 import com.xenoage.utils.pdlib.PMap
 import com.xenoage.utils.pdlib.PList
 
@@ -36,16 +40,16 @@ public enum ConstraintType { LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATE
 @EqualsAndHashCode
 public class Constraint {
 	ConstraintType type
-	float value
+	Fraction value
 
 	Constraint() {}
 	
-	Constraint(ConstraintType type, float value) {
+	Constraint(ConstraintType type, Fraction value) {
 		this.type=type
 		this.value=value
 	}
 
-	static Constraint CreateConstraint(String typeText, float value) {
+	static Constraint CreateConstraint(String typeText, Fraction value) {
 		Constraint c = new Constraint()
 		c.value = value
 		switch(typeText) {
@@ -67,7 +71,7 @@ public class Constraint {
 		return c
 	}
 
-	boolean isAllowed(float n) {
+	boolean isAllowed(Fraction n) {
 		switch(type) {
 			case ConstraintType.LESS_THAN:
 				return (n < value) 
@@ -95,7 +99,7 @@ public class Constraint {
 public class NonTerminal {
 	String name
 	String attr
-	float attrValue
+	Fraction attrValue
 	Constraint constraint
 
 	NonTerminal(String name, String attr="") {
@@ -111,13 +115,17 @@ public class NonTerminal {
 	void setAttr(String sa) {
 		attr = sa
 		if (attr != null && !attr.isEmpty()) {
-			if (attr.isNumber())
-				attrValue = Float.parseFloat(attr)
+			String[] parts =  attr.split('/')
+			boolean isFraction = parts[0].isNumber()
+			if (parts.size() > 1)
+				isFraction = isFraction && parts[1].isNumber()
+			if (isFraction)
+				attrValue = Fraction.parse(attr)
 			else
-				attrValue = -1
+				attrValue = fr(-1)
 		}
 		else
-			attrValue = 0  // default
+			attrValue = _0  // default
 	}
 
 	boolean hasAttribute() {
@@ -125,16 +133,16 @@ public class NonTerminal {
 	}
 
 	boolean hasSymbolicAttribute() {
-		return attrValue < 0;
+		return attrValue < _0;
 	}
 	
 	void evaluateAttribute(Map binding=[:]) {
-		attrValue = (float) Expression.parse(attr, binding)
-		if (attrValue < 0)
+		attrValue = (Fraction) Expression.parse(attr, binding)
+		if (attrValue < _0)
 			throw new Exception("Attribute value can't be negative $attr  $binding.")
 	}
 
-	boolean isAllowed(float n) {
+	boolean isAllowed(Fraction n) {
 		if (constraint != null)
 			return constraint.isAllowed(n)
 		return true

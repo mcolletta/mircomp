@@ -1,6 +1,6 @@
 # mirgene
 
-**MirGene** is a Grammatical Evolution library implemented with the [Groovy programming language](http://www.groovy-lang.org/)
+**MirGene** is a Grammatical Evolution library
 
 The library has several components.
 
@@ -20,7 +20,7 @@ See the _References_ section for some of the papers that have inspired this work
 
 MirGene is part of MirComp and is released under the GPL3 License, see the LICENSE file for details.
 
-Copyright (c) 2016-2023 Mirco Colletta
+Copyright (c) 2016-2024 Mirco Colletta
 
 
 ## References
@@ -33,6 +33,9 @@ Alfonso Ortega, Marina de la Cruz, Manuel Alfonseca
 
 _Sexual Selection for Genetic Algorithms_
 Kai Song Goh, Andrew Lim, Brian Rodrigues 
+
+_Grammatical Evolution: Evolving Programs for an Arbitrary Language_
+Conor Ryan, J.J. Collins, Michael O'Neill
 
 _Grammar based function definition in Grammatical Evolution_
 Michael O'Neill, Conor Ryan

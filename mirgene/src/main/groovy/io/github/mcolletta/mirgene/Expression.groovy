@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -26,6 +26,8 @@ package io.github.mcolletta.mirgene
 import java.math.*;
 import java.util.List;
 
+import com.xenoage.utils.math.Fraction
+
 import com.googlecode.lingwah.*;
 import com.googlecode.lingwah.Grammar as LingwahGrammar;
 import com.googlecode.lingwah.parser.ParserReference;
@@ -38,15 +40,14 @@ public class ExpressionGrammar extends LingwahGrammar {
 		public final Parser identifier = seq(character, zeroOrMore(cho(character,digit)));
 		public final Parser digit = regex("[0-9]");
 		public final Parser number = oneOrMore(digit);
-		public final Parser decimal = seq(opt(str('-')), seq(number, opt(seq(str('.'), number))));
+		public final Parser fraction = seq(number, opt(seq(str('/'), number)));
 		public final ParserReference expr = ref();
 		public final Parser addition = seq(expr, str('+'), expr).separatedBy(opt(ws));
 		public final Parser subtraction = seq(expr, str('-'), expr).separatedBy(opt(ws));
 		public final Parser multiplication = seq(expr, str('*'), expr).separatedBy(opt(ws));
-		public final Parser division = seq(expr, str('/'), expr).separatedBy(opt(ws));
 		public final Parser group = seq(str('('), expr, str(')')).separatedBy(opt(ws));
 		{
-				expr.define(cho(character, decimal, addition, subtraction, multiplication, division, group));
+				expr.define(cho(character, fraction, addition, subtraction, multiplication, group));
 		}
 		
 		private ExpressionGrammar() {
@@ -69,29 +70,23 @@ public class ExpressionProcessor extends AbstractProcessor {
 		
 		public void completeAddition(Match addition) {
 				List<Match> children= addition.getChildrenByType(grammar.expr);
-				float left = getResult(children.get(0));
+				Fraction left = getResult(children.get(0));
 				println left
-				float right= getResult(children.get(1));
+				Fraction right= getResult(children.get(1));
 				println right
-				putResult(left + right);
+				putResult(left.add(right));
 		}
 		public void completeSubtraction(Match subtraction) {
 				List<Match> children= subtraction.getChildrenByType(grammar.expr);
-				float left= getResult(children.get(0));
-				float right= getResult(children.get(1));
-				putResult(left - right);
+				Fraction left= getResult(children.get(0));
+				Fraction right= getResult(children.get(1));
+				putResult(left.sub(right));
 		}
 		public void completeMultiplication(Match multiplication) {
 				List<Match> children= multiplication.getChildrenByType(grammar.expr);
-				float left= getResult(children.get(0));
-				float right= getResult(children.get(1));
-				putResult(left * right);
-		}
-		public void completeDivision(Match division) {
-				List<Match> children= division.getChildrenByType(grammar.expr);
-				float left= getResult(children.get(0));
-				float right= getResult(children.get(1));
-				putResult(left / right);
+				Fraction left= getResult(children.get(0));
+				Fraction right= getResult(children.get(1));
+				putResult(left.mult(right));
 		}
 		public void completeGroup(Match group) {
 				putResult(getResult(group.getChildByType(grammar.expr)));
@@ -100,14 +95,14 @@ public class ExpressionProcessor extends AbstractProcessor {
 				if (binding.containsKey(character.getText()))
 					putResult(binding[character.getText()]);
 		}
-		public void completeDecimal(Match decimal) {
-				putResult(Float.parseFloat(decimal.getText()));
+		public void completeFraction(Match fraction) {
+				putResult(Fraction.parse(fraction.getText()));
 		}
 		public void completeExpr(Match expr) {
 				putResult(getResult(expr.getFirstChild()));
 		}
 
-		public static float process(ParseResults results, Map binding) {
+		public static Fraction process(ParseResults results, Map binding) {
 				ExpressionProcessor processor= new ExpressionProcessor(binding);
 				results.getLongestMatch().accept(processor);
 				return processor.getResult(results.getLongestMatch());
@@ -118,7 +113,7 @@ public class ExpressionProcessor extends AbstractProcessor {
 
 public class Expression {
 		static final Parser PARSER= ExpressionGrammar.INSTANCE.expr;
-		public static float parse(String expression, Map binding)
+		public static Fraction parse(String expression, Map binding)
 		{
 				ParseResults parseResults= ParseContext.parse(PARSER, expression);
 				if (!parseResults.success())
