@@ -56,8 +56,24 @@ class TreeDictionary<K extends List, V> implements Iterable<Map.Entry<K, V>> {
         }
         return retVal
     }
+
+    V getAt(K key) {
+        V val = null
+        TreeDictionaryNode<V> pointer = root
+        for(Object item: key) {
+            TreeDictionaryNode node = pointer.getChild(item, comparator)
+            if (node == null) {
+                if (defaultValue != null)
+                    return defaultValue()
+                else
+                    throw new Exception("The key $key does not belong to the dictionary")
+            }
+            pointer = node
+        }
+        return pointer.value
+    }
     
-    TreeDictionaryNode navigate(List key) {
+    void putAt(K key, V value) {
         TreeDictionaryNode pointer = root
         for(Object item: key) {
             TreeDictionaryNode node = pointer.getChild(item, comparator)
@@ -67,20 +83,7 @@ class TreeDictionary<K extends List, V> implements Iterable<Map.Entry<K, V>> {
             }
             pointer = node
         }
-        return pointer
-    }
-
-    V getAt(K key) {
-        TreeDictionaryNode<V> node = navigate(key)
-        if (node.content == null && defaultValue != null)
-            node.value = defaultValue()
-        return node.value
-         
-    }
-    
-    void putAt(K key, V value) {
-        TreeDictionaryNode node = navigate(key)
-        node.value = value
+        pointer.value = value
     }
 
     public Iterator iterator() {

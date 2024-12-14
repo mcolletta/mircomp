@@ -62,7 +62,7 @@ public class Demo {
 	static exampleIP(boolean rotate_seq = false) {
 		println "testIP: --------------------------------------------------"
 
-		def seq = "abababcabdabcdabce".toList()
+		def seq = ['a', 'b', 'a', 'b', 'a', 'b', 'c', 'a', 'b', 'd', 'a', 'b', 'c', 'd', 'a', 'b', 'c', 'e']
 
 		Comparator <String>comparator = [
 			compare:{ String a, String b-> b.toLowerCase() <=> a.toLowerCase() }
