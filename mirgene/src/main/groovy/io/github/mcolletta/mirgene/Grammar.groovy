@@ -209,7 +209,7 @@ class InterpolatedString {
 
 	public String toString() {
 		if (binding != null) {
-			//println indexes
+			//println "indexes = $indexes"
 			StringBuilder outBuilder = new StringBuilder()
 			int idx = 0
 			for (LinkedHashMap dict : indexes) {
@@ -243,14 +243,14 @@ class NewRuleAction extends SemanticAction {
 	Grammar getGrammar(Grammar g0, Map binding=[:]) {
 		istr.setBinding(binding)
 		Grammar tmp = MirGram.parse(istr.toString(), false)
-		Grammar g
+		Grammar g = g0
 		for(Map.Entry<NonTerminal, PList<Production>> e : tmp.rules.entrySet()) {
 			NonTerminal k = e.getKey()
             PList<Production> v = e.getValue()
             PList<Production> rhs = v
 			if (g0.rules.containsKey(k))
 				rhs = g0.rules[k].plusAll(v)
-			g = g0.plus(k, rhs)
+			g = g.plus(k, rhs)
 		}
 		return g
 	}

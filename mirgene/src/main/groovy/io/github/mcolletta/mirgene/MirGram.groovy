@@ -44,10 +44,10 @@ class MirGram  {
 	static Pattern NON_TERMINAL_PATTERN_RHS = ~/(<[-_\^,\*,°,.a-zA-Z0-9]+(\([\-\+\*\.\/\[\] ,.a-zA-Z0-9]+\))*>)/
 	static Pattern FUNC_PATTERN = ~/<([-_\^,\*,°,.a-zA-Z0-9]+)\(([\-\+\*\.\/ ,.a-zA-Z0-9]+)[\s]*\[{0,1}[\s]*(gt|gte|lt|lte){0,1}[\s]*([\/0-9]*)[\s]*\]{0,1}\)>/
 	static Pattern WEIGHT_PATTERN = ~/\![0-9]+/
+	static Pattern CODE_PATTERN = ~/(<[\%][^%]+?[\%]>)/
 	static String GRAMMAR_SEPARATOR = "ç"
 	static String RULE_SEPARATOR = "::="
 	static String PRODUCTION_SEPARATOR = "\\|"
-	static String CODE_PATTERN = /(<[\%][^%]+?[\%]>)/
 	
 	String startSymbol
 	int maxWraps
@@ -64,10 +64,10 @@ class MirGram  {
 		Grammar g = new Grammar()
 		
 		if (actions)
-			bnf = bnf.replaceAll(CODE_PATTERN, { String full, String action -> full.replace('::=', '<--') } )
+			bnf = bnf.replaceAll(CODE_PATTERN, { String full, String action -> full.replaceAll("::=", "<--").replaceAll(/\|/, "£") } )
 		bnf = bnf.trim().replaceAll(START_RULE_PATTERN, { List<String> it ->  GRAMMAR_SEPARATOR + it[0] } )[1..-1]
 		if (actions)
-			bnf = bnf.replaceAll(CODE_PATTERN, {String full, String action -> full.replace('<--', '::=') } )
+			bnf = bnf.replaceAll(CODE_PATTERN, {String full, String action -> full.replaceAll("<--", "::=") } )
 
 		for(String rule: bnf.split(GRAMMAR_SEPARATOR)) {
 			if (rule.find(RULE_SEPARATOR)) {
@@ -96,7 +96,7 @@ class MirGram  {
 								else if (token ==~ CODE_PATTERN) {
 									def code = token[2..-3]
 									if (code.startsWith('+')) {
-										def istr = new InterpolatedString(code[1..-1].trim())
+										def istr = new InterpolatedString(code[1..-1].replaceAll("£", "|").trim())
 										production << new NewRuleAction(istr)
 									}
 									else if (code.startsWith('=')) {
