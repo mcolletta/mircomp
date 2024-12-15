@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -29,10 +29,10 @@ import groovy.test.GroovyTestCase
 class PredictorTests extends GroovyTestCase {
 
 	void testIP1() {
-		def seq = "abababcabdabcdabce".toList()
+		List<String> seq = "abababcabdabcdabce".toList()
 
 
-		def ip = new IncrementalParser(seq)
+		def ip = new IncrementalParser<String>(seq)
 
 		def dict = ip.dict
 

@@ -8,7 +8,7 @@ The library has several parts: a tree-based dictionary predictor (ContinuationDi
 
 MircOracle is part of MirComp and is released under the GPL3 License, see the LICENSE file for details.
 
-Copyright (c) 2016-2023 Mirco Colletta
+Copyright (c) 2016-2024 Mirco Colletta
 
 
 ## References

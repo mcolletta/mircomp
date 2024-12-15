@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -77,7 +77,7 @@ public class Demo {
 			}
 		}
 
-		def ip = new IncrementalParser(seq, comparator)
+		def ip = new IncrementalParser<String>(seq, comparator)
 		println "MOTIF"
 		println seq
 		println "MOTIF DICTIONARY"
@@ -107,8 +107,8 @@ public class Demo {
 		------------a^[[sym: d, prob: 0.5], [sym: e, prob: 0.5]]
 		*/
 
-		List domainValues = ['a', 'b', 'c', 'd', 'e']
-		List generatedSeq = ip.generate('a', 50, 3, domainValues)
+		List<String> domainValues = ['a', 'b', 'c', 'd', 'e']
+		List<String> generatedSeq = ip.generate('a', 50, 3, domainValues)
 		println "GENERATED SEQUENCE"
 		println generatedSeq
 	}

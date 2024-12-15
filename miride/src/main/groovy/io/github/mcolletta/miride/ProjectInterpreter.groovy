@@ -103,6 +103,10 @@ protected class ProjectInterpreter {
                 //setIndirectImportCheckEnabled(true);
                 setAllowedReceivers(Arrays.asList("java.lang.Object","java.lang.Math", // "org.codehaus.groovy.runtime.InvokerHelper",
                                                     "groovy.lang.Range",
+                                                    "java.lang.Integer",
+                                                    "java.lang.Float",
+                                                    "java.lang.Double",
+                                                    "java.lang.String",
                                                     "java.util.HashMap",
                                                     "java.util.LinkedHashMap",
                                                     "java.util.concurrent.ConcurrentSkipListMap",
@@ -146,6 +150,7 @@ protected class ProjectInterpreter {
                                                     "io.github.mcolletta.mirgene.Individual",
                                                     "io.github.mcolletta.mircoracle.FactorOracle",
                                                     "io.github.mcolletta.mirgene.OracleNavigator",
+                                                    "io.github.mcolletta.mircoracle.TreeDictionary",
                                                     "io.github.mcolletta.mircoracle.IncrementalParser",
                                                     "io.github.mcolletta.mircoracle.Continuation"
                                                     ));

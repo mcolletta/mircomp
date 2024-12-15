@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -23,29 +23,31 @@
 
 package io.github.mcolletta.mircoracle
 
+import com.xenoage.utils.pdlib.PList
 
-class TreeDictionary<K extends List, V> implements Iterable<Map.Entry<K, V>> {
+
+class TreeDictionary<K, V> implements Iterable<Map.Entry<K, V>> {
     
-    TreeDictionaryNode<V> root
+    TreeDictionaryNode<K,V> root
     Comparator comparator
-    Closure defaultValue
+    K defaultValue
     
     
     TreeDictionary(Comparator cmp=null) {
-        root = new TreeDictionaryNode<V>()
+        root = new TreeDictionaryNode<K,V>()
         comparator = cmp
     }
 
-    TreeDictionary(TreeDictionaryNode<V> tree, Comparator cmp=null) {
+    TreeDictionary(TreeDictionaryNode<K,V> tree, Comparator cmp=null) {
         root = tree
         comparator = cmp
     }
     
-    boolean containsKey(List key) {
-        TreeDictionaryNode pointer = root
+    boolean containsKey(List<K> key) {
+        TreeDictionaryNode<K,V> pointer = root
         boolean retVal = false
-        for(Object item: key) {
-            TreeDictionaryNode node = pointer.getChild(item, comparator)
+        for(K item: key) {
+            TreeDictionaryNode<K,V> node = pointer.getChild(item, comparator)
             if (node != null) {
                 pointer = node
                 retVal = true
@@ -57,14 +59,14 @@ class TreeDictionary<K extends List, V> implements Iterable<Map.Entry<K, V>> {
         return retVal
     }
 
-    V getAt(K key) {
+    V getAt(List<K> key) {
         V val = null
-        TreeDictionaryNode<V> pointer = root
-        for(Object item: key) {
-            TreeDictionaryNode node = pointer.getChild(item, comparator)
+        TreeDictionaryNode<K,V> pointer = root
+        for(K item: key) {
+            TreeDictionaryNode<K,V> node = pointer.getChild(item, comparator)
             if (node == null) {
                 if (defaultValue != null)
-                    return defaultValue()
+                    return defaultValue
                 else
                     throw new Exception("The key $key does not belong to the dictionary")
             }
@@ -73,13 +75,14 @@ class TreeDictionary<K extends List, V> implements Iterable<Map.Entry<K, V>> {
         return pointer.value
     }
     
-    void putAt(K key, V value) {
+    void putAt(List<K> key, V value) {
+        //println "INSERTING ${key[0]} of type ${key[0].getClass().getName()}"
         TreeDictionaryNode pointer = root
-        for(Object item: key) {
-            TreeDictionaryNode node = pointer.getChild(item, comparator)
+        for(K item: key) {
+            TreeDictionaryNode<K,V> node = pointer.getChild(item, comparator)
             if (node == null) {
-                node = new TreeDictionaryNode(pointer, item)
-                pointer.children << node
+                node = new TreeDictionaryNode<K,V>(pointer, item)
+                pointer.children = pointer.children.plus(node)
             }
             pointer = node
         }
@@ -90,9 +93,9 @@ class TreeDictionary<K extends List, V> implements Iterable<Map.Entry<K, V>> {
         return new TreeDictionaryIterator<>()
     }
     
-    private class TreeDictionaryIterator<K extends List, V> implements Iterator {
+    private class TreeDictionaryIterator<K, V> implements Iterator {
    
-        List<TreeDictionaryNode> queue
+        List<TreeDictionaryNode<K,V>> queue
         private List v = []
         
         TreeDictionaryIterator() {
@@ -104,39 +107,39 @@ class TreeDictionary<K extends List, V> implements Iterable<Map.Entry<K, V>> {
             return queue.size() > 0
         }
         
-        public Map.Entry<K, V> next() {
-           Map.Entry<K, V> kvp
-           boolean isRoot = true
-           while (queue.size() > 0) {
-                TreeDictionaryNode node = queue.remove(0)
+        public Map.Entry<List<K>, V> next() {
+          Map.Entry<List<K>, V> kvp
+          boolean isRoot = true
+          while (queue.size() > 0) {
+                TreeDictionaryNode<K,V> node = queue.remove(0)
                 //println "Node ${node.path} value ${node.value}"
                 if (node.children.size() > 0) {
-                    queue = node.children + queue
+                    queue = node.children.plus(queue)
                 }
                 List path = node.getPath()
                 if (path.size() > 1) {
                     kvp = Map.entry(path[1..-1], node.value)
                     break
                 }
-           }
-           return kvp
+          }
+          return kvp
         }
         
         public void remove(){}
     }
     
     void each(Closure clos) {
-        for (Map.Entry<K, V> item: this) {
+        for (Map.Entry<List<K>, V> item: this) {
             clos(item.key, item.value)
         }
     }
     
-    void withDefault(Closure clos) {
-        defaultValue = clos
+    void withDefault(K obj) {
+        defaultValue = obj
     }
     
     String toString() {
-        for (Map.Entry<K, V> item: this) {
+        for (Map.Entry<List<K>, V> item: this) {
             println "${item.key} = ${item.value}"
         }
     }
@@ -144,33 +147,33 @@ class TreeDictionary<K extends List, V> implements Iterable<Map.Entry<K, V>> {
 }
 
 
-class TreeDictionaryNode<T> {
+class TreeDictionaryNode<K,V> {
     TreeDictionaryNode parent
-    List<TreeDictionaryNode> children = []
-    def content
-    T value
-    List<Continuation> continuations = []
+    PList<TreeDictionaryNode> children = []
+    K content
+    V value
+    PList<Continuation> continuations = []
     
     TreeDictionaryNode() { }
 
-    TreeDictionaryNode(TreeDictionaryNode parent) {
+    TreeDictionaryNode(TreeDictionaryNode<K,V> parent) {
         this.parent = parent
     }
 
-    TreeDictionaryNode(TreeDictionaryNode parent, Object content) {
+    TreeDictionaryNode(TreeDictionaryNode<K,V> parent, K content) {
         this.parent = parent
         this.content = content
     }
 
-    TreeDictionaryNode(TreeDictionaryNode parent, Object content, T value) {
+    TreeDictionaryNode(TreeDictionaryNode<K,V> parent, K content, V value) {
         this.parent = parent
         this.content = content
         this.value = value
     }
     
-    List getPath() {
-        List path = [content]
-        TreeDictionaryNode pointer = parent
+    List<K> getPath() {
+        List<K> path = [content]
+        TreeDictionaryNode<K,V> pointer = parent
         while (pointer != null) {
             path.add(0,pointer.content)
             pointer = pointer.parent
@@ -178,10 +181,10 @@ class TreeDictionaryNode<T> {
         return path
     }
     
-    TreeDictionaryNode getChild(Object item, Comparator comparator=null) {
-        TreeDictionaryNode retVal = null
+    TreeDictionaryNode<K,V> getChild(K item, Comparator comparator=null) {
+        TreeDictionaryNode<K,V> retVal = null
         boolean found = false
-        for(TreeDictionaryNode child: children) {
+        for(TreeDictionaryNode<K,V> child: children) {
             if (comparator)
                 found = (comparator.compare(child.content,item) == 0)
             else
@@ -211,6 +214,4 @@ class TreeDictionaryNode<T> {
             str += "$indent${node.content}^${node.continuations}" + "\n"
         return str
     }
-    
 }
-
