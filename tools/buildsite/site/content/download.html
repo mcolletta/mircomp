@@ -12,12 +12,8 @@
 </p>
 
 
-<p>
-	Download the latest code release from: <a href="https://github.com/mcolletta/mircomp/releases">GitHub releases page</a>
-</p>
-
 <p class="bg-warning">	
-	At the moment there are not pre-built binaries available for MirIDE.
+	At the moment there are not pre-built binaries available for MirIDE but the process to create a self-contained application is very fast and straightforward.
 </p>
 
 <div class="spaced">
@@ -35,8 +31,8 @@
 <div class="spaced">
 	<h4>Set up your environment variables</h4>
 	<p class="spaced">
-		Supposing the folder is named "programs"<br/>
-		On Ubuntu 22.04:<br/>
+		Ex.supposing you unzipped the files in "/home/user/programs"<br/>
+		On Ubuntu 22.04 open a terminal and type:<br/>
 		<pre>
 export JAVA_HOME=/home/user/programs/jdk-21.0.1/
 export JRE_HOME=$JAVA_HOME
@@ -44,7 +40,7 @@ export PATH=$PATH:$JAVA_HOME/bin
 		</pre>
 	</p>
 	<p class="spaced">
-		On Windows 10 you can open a powershell and enter:<br/>
+		Similar on Windows when, supposing you unzipped Java in "C:\programs", you can open a powershell and enter:<br/>
 		<pre>
 [Environment]::SetEnvironmentVariable("JAVA_HOME", "C:\programs\jdk-21.0.1", [System.EnvironmentVariableTarget]::Process)
 [Environment]::SetEnvironmentVariable("JRE_HOME", $env:JAVA_HOME, [System.EnvironmentVariableTarget]::Process)
@@ -58,17 +54,19 @@ export PATH=$PATH:$JAVA_HOME/bin
 	<h4>Create a self-contained private MirIDE application</h4>
 	<p class="spaced">
 		We are almost ready to finally create our own desktop application.<br/>
-		First, unzip the code release inside a folder of your choice (e.g. inside the <em>programs</em> folder) and then launch the <em>createApp</em> task inside <em>mircomp</em> using the gradle wrapper (<em>gradlew</em>)<br/>
+		First, download the latest code release from: <a href="https://github.com/mcolletta/mircomp/releases">GitHub releases page</a>.<br/>
+		Eventually unzip the code release inside a folder of your choice (e.g. inside the <em>programs</em> folder) and then launch the <em>createApp</em> task inside <em>mircomp</em> using the gradle wrapper (<em>gradlew</em>)<br/>
 		Example on Ubuntu 22.04:<br/>
 		<pre>
 cd /home/user/programs/mircomp
 ./gradlew createApp
 		</pre>
-		You can finally run the main executable inside the created self-contained application:<br/>
+		You can finally find (and run) the main executable inside the created self-contained application (app folder):<br/>
 		<pre>
-./miride/build/app/MirIDE/bin/MirIDE
+mv ./miride/build/app .
+./app/MirIDE/bin/MirIDE
 		</pre>
-		Similar on Windows 10:
+		Similar on Windows:
 		<pre>
 C:\programs\mircomp>.\gradlew createApp
 		</pre>
