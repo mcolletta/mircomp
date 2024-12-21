@@ -1,0 +1,12 @@
+File f = new File( projectPath.resolve("musicxml").toString() )
+def reader = new MusicXmlLeadSheetReader()
+def intervals = new MelodicIntervals()
+def durations = new DurationRatios()
+reader.addLeadSheetListener(intervals)
+reader.addLeadSheetListener(durations)
+reader.read(f)
+
+var intCompr = new Compressor<Integer>(intervals.intervals)
+saveObjectToBinaryFile(intCompr, projectPath.resolve("data/intcompr.ser").toString() )
+var durCompr = new Compressor<Fraction>(durations.ratios)
+saveObjectToBinaryFile(durCompr, projectPath.resolve("data/durcompr.ser").toString() )

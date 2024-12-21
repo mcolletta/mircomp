@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -41,27 +41,27 @@ import static Gender.*
 
 @ToString
 @EqualsAndHashCode
-class Individual {
+class Individual implements Serializable {
 	Gender gender
 	PList<Integer> dna
 	int genomeSize
 	int codonSize
 	String blueprint
 	// T phenotype
-	
+
 	Individual(Gender gender, PList dna, int maxVal=255, int size=200, String blueprint) {
 		this.gender = gender
-		this.dna = dna		
+		this.dna = dna
 		this.blueprint = blueprint
-		codonSize = maxVal		
-		genomeSize = size		
+		codonSize = maxVal
+		genomeSize = size
 	}
 
 }
 
 @ToString
 @EqualsAndHashCode
-class IndividualFitness {
+class IndividualFitness implements Serializable {
 	float fitness
 	Individual individual
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -53,7 +53,7 @@ class MirGene {
 	Boolean parallel
 
 	MirGene(MirGram grammar, FitnessFunction fitnessFunction, long seed=-1, boolean pars=false) {
-		this.grammar = grammar 
+		this.grammar = grammar
 		this.fitnessFunction = fitnessFunction
 		this.maxGenerations = maxGenerations
 		if (fitnessFunction.type == FitnessType.MAX) {
@@ -71,11 +71,11 @@ class MirGene {
 		parallel = pars
 		population = []
 	}
-	
+
 	int randRange(IntRange range) {
 		rng.nextInt(range.to - range.from + 1) + range.from
 	}
-	
+
 	Comparator<IndividualFitness> byFitnessMIN = new MinFitnessComparator()
 
 	Comparator<IndividualFitness> byFitnessMAX = new MaxFitnessComparator()
@@ -83,7 +83,7 @@ class MirGene {
 	Individual createIndividual(PList genotype=null) {
 		if (genotype == null) {
 			genotype = new PList()
-			(1..genomeSize).each {  
+			(1..genomeSize).each {
 				genotype += rng.nextInt(codonSize)
 			}
 		}
@@ -94,13 +94,13 @@ class MirGene {
 			blueprint = grammar.translate(genotype)
 		return new Individual(gender, genotype, codonSize, genomeSize, blueprint)
 	}
-	
+
 	void initPopulation() {
 		population = rate( (1..populationSize).collect {
 			 createIndividual()
 		} )
 	}
-	
+
 	List<IndividualFitness> mate(Individual ind1, Individual ind2) {
         PList<Integer> dna1 = ind1.dna
         PList<Integer> dna2 = ind2.dna
@@ -115,7 +115,7 @@ class MirGene {
 		List<IndividualFitness> offspring = rate([child1,child2])
 		return offspring
     }
-	
+
 	List<PList<Integer>> crossover(PList<Integer> dna1, PList<Integer> dna2) {
 		PList<Integer> child_dna1, child_dna2
 		int min = Math.min(dna1.size(),dna2.size())
@@ -136,7 +136,7 @@ class MirGene {
 		assert child_dna2.size() == genomeSize
 		return [child_dna1, child_dna2]
 	}
-	
+
 	PList<Integer> flipMutation(PList<Integer> dna) {
 		for(int i=0; i < dna.size(); i++) {
 			int codon = dna[i]
@@ -153,16 +153,16 @@ class MirGene {
 		assert dna.size() == genomeSize
 		return dna
 	}
-	
+
 	IndividualFitness tournamentSelection(List<IndividualFitness> contestants, int tournamentSize=2) {
 		List<IndividualFitness> competitors = []
 		for(int i = 1; i <=tournamentSize; i++) {
 			competitors << contestants[rng.nextInt(contestants.size()-1)]
-		}	
+		}
 		competitors.sort(byFitness)
 		return competitors.first()
 	}
-	
+
 	List<IndividualFitness> generationalReplacement(List<IndividualFitness> newPopulation) {
 		population.sort(byFitness)
 		population[0..eliteSize-1].each {
@@ -173,24 +173,24 @@ class MirGene {
 			return newPopulation[0..populationSize-1]
 		return newPopulation
 	}
-	
+
 	List<IndividualFitness> rate(List<Individual> individuals) {
 		return individuals.collect { Individual ind ->
 			return [fitness: fitnessFunction.rate(ind), individual: ind] as IndividualFitness
 		}
 	}
-	
+
 	IndividualFitness step() {
 		List<IndividualFitness> newPopulation
 		if (parallel) {
 			List<IndividualFitness> females = population
 												.parallelStream()
-												.filter({ IndividualFitness it -> 
+												.filter({ IndividualFitness it ->
 														  it.individual.gender == FEMALE })
 												.collect(Collectors.toList())  as List<IndividualFitness>
 			List<IndividualFitness> males = population
 												.parallelStream()
-												.filter({ IndividualFitness it -> 
+												.filter({ IndividualFitness it ->
 														  it.individual.gender == MALE })
 												.collect(Collectors.toList())  as List<IndividualFitness>
 			if (females.size() == 0)
@@ -231,17 +231,20 @@ class MirGene {
 			|| (fitnessFunction.type == FitnessType.MAX && best.fitness >= fit_max_value) )
 			)
 	}
-	
+
 	IndividualFitness runGE() {
-		initPopulation()
+		if (population.size() == 0)
+			initPopulation()
+		else if (population.size() != populationSize)
+			throw new Exception("wrong population size")
 		for(int i=1; i <= maxGenerations && !checkTermination(); i++) {
-			best = step()			
+			best = step()
 			println "Generation: $i"
 			println "Best Individual with fitness ${best.fitness}"
 		}
 		return best
 	}
-	
+
 	int hamming (PList<Integer> s1, PList<Integer> s2) {
 		if(s1.size() != s2.size()) return -1
 		int count = 0
@@ -249,5 +252,5 @@ class MirGene {
 			if(s1[i] != s2[i]) ++count
 		return count
 	}
-	
+
 }
