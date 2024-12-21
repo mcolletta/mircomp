@@ -101,12 +101,15 @@ protected class ProjectInterpreter {
                 setMethodDefinitionAllowed(true); 
                 setPackageAllowed(false);
                 //setIndirectImportCheckEnabled(true);
-                setAllowedReceivers(Arrays.asList("java.lang.Object","java.lang.Math", // "org.codehaus.groovy.runtime.InvokerHelper",
+                setAllowedReceivers(Arrays.asList("org.codehaus.groovy.runtime.InvokerHelper",
                                                     "groovy.lang.Range",
+                                                    "java.lang.Object",
+                                                    "java.lang.Math",
                                                     "java.lang.Integer",
                                                     "java.lang.Float",
                                                     "java.lang.Double",
                                                     "java.lang.String",
+                                                    "java.lang.Exception",
                                                     "java.util.HashMap",
                                                     "java.util.LinkedHashMap",
                                                     "java.util.concurrent.ConcurrentSkipListMap",
@@ -145,11 +148,14 @@ protected class ProjectInterpreter {
                                                     "io.github.mcolletta.mirchord.interpreter.MirChordInterpreter",
                                                     "com.xenoage.utils.math.Fraction",
                                                     "io.github.mcolletta.mirgene.MirGram",
+                                                    "io.github.mcolletta.mirgene.FitnessType",
                                                     "io.github.mcolletta.mirgene.FitnessFunction",
                                                     "io.github.mcolletta.mirgene.MirGene",
                                                     "io.github.mcolletta.mirgene.Individual",
+                                                    "io.github.mcolletta.mirgene.IndividualFitness",
                                                     "io.github.mcolletta.mircoracle.FactorOracle",
                                                     "io.github.mcolletta.mirgene.OracleNavigator",
+                                                    "io.github.mcolletta.mircoracle.Compressor",
                                                     "io.github.mcolletta.mircoracle.TreeDictionary",
                                                     "io.github.mcolletta.mircoracle.IncrementalParser",
                                                     "io.github.mcolletta.mircoracle.Continuation"
