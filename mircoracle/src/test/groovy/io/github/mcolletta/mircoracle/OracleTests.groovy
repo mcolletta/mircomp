@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -37,7 +37,7 @@ class OracleTests extends GroovyTestCase {
 	void testOracle1() {
 		def seq = "aabbabbabbab".toList()
 		Comparator comparator = new LowerCaseStringComparator()
-		def fo = new FactorOracle(seq,comparator)
+		def fo = new FactorOracle<String>(seq,comparator)
 
 		assert fo.transitions == [0:[a:1, b:3], 1:[a:2, b:3], 2:[b:3], 3:[a:5, b:4], 4:[a:5], 5:[b:6], 6:[b:7], 7:[a:8], 8:[b:9], 9:[b:10], 10:[a:11], 11:[b:12]]
 		assert fo.suffixLinks == [1:0, 2:1, 3:0, 4:3, 5:1, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9]
@@ -48,7 +48,7 @@ class OracleTests extends GroovyTestCase {
 
 	void testOracle2() {
 		def seq = "abbcabcdabc".toList()
-		def fo = new FactorOracle(seq)
+		def fo = new FactorOracle<String>(seq)
 		
 		assert fo.transitions == [0:[a:1, b:2, c:4, d:8], 1:[b:2], 2:[b:3, c:4], 3:[c:4], 4:[a:5, d:8], 5:[b:6], 6:[c:7], 7:[d:8], 8:[a:9], 9:[b:10], 10:[c:11]]
 		assert fo.suffixLinks == [1:0, 2:0, 3:2, 4:0, 5:1, 6:2, 7:4, 8:0, 9:1, 10:2, 11:4]
@@ -63,7 +63,7 @@ class OracleTests extends GroovyTestCase {
 		Comparator comparator = [
 			compare:{ String a, String b-> b.toLowerCase() <=> a.toLowerCase() }
 		] as Comparator
-		def fo = new FactorOracle(seq,comparator)
+		def fo = new FactorOracle<String>(seq,comparator)
 
 		assert fo.transitions == [0:[a:1, b:2, c:7], 1:[a:4, b:2, c:7], 2:[A:3], 3:[a:4, c:7], 4:[B:5], 5:[a:6], 6:[c:7], 7:[b:8], 8:[a:9]]
 		assert fo.suffixLinks == [1:0, 2:0, 3:1, 4:1, 5:2, 6:3, 7:0, 8:2, 9:3]
@@ -74,7 +74,7 @@ class OracleTests extends GroovyTestCase {
 
 	void testOracle4() {
 		def seq = "abbbaab".toList()
-		def fo = new FactorOracle(seq)
+		def fo = new FactorOracle<String>(seq)
 
 		assert fo.transitions == [0:[a:1, b:2], 1:[a:6, b:2], 2:[a:5, b:3], 3:[a:5, b:4], 4:[a:5], 5:[a:6], 6:[b:7]]
 		assert fo.suffixLinks == [1:0, 2:0, 3:2, 4:3, 5:1, 6:1, 7:2]
@@ -82,7 +82,7 @@ class OracleTests extends GroovyTestCase {
 
 	void testOracle5() {
 		def seq1 = "abaaba".toList()
-		def fo1 = new FactorOracle(seq1)
+		def fo1 = new FactorOracle<String>(seq1)
 
 		def seq2 = "cba".toList()
 		def fo2 = fo1.extend(seq2)

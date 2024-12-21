@@ -71,4 +71,18 @@ class PredictorTests extends GroovyTestCase {
 		assert node.children[0].continuations[1].sym == 'e' 
 		assert node.children[0].continuations[1].prob == 0.5f
 	}
+
+	void testCompressor1() {
+		var compr = new Compressor<String>("ABABABABAB".toList(), true)
+		compr.encoded.toString() == "{size:6, data:[[0, A], [0, B], [1, B], [3, A], [2, A], [2, null]]}"
+	}
+
+	void testCompressor2() {
+		var compr0 = new Compressor<String>("ABABABABAB".toList(), true)
+		var compr1 = new Compressor<String>("ABABAB".toList(), true)
+		var compr2 = new Compressor<String>(compr1, "ABAB".toList())
+
+		assert compr0.encoded == compr2.encoded
+		assert compr0.dict == compr2.dict
+	}
 }

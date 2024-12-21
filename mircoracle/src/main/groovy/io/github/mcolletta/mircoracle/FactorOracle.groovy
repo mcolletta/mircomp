@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2023 Mirco Colletta
+ * Copyright (C) 2016-2024 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -27,11 +27,11 @@ import com.xenoage.utils.pdlib.PList
 import com.xenoage.utils.pdlib.PMap
 
 
-class FactorOracle {
-    PList sequence
+class FactorOracle<T> {
+    PList<T> sequence
     private int i = 0
     private int l = 0
-    PMap<Integer,PMap<Object,Integer>> transitions = new PMap()
+    PMap<Integer,PMap<T,Integer>> transitions = new PMap()
     PMap<Integer,Integer> suffixLinks = new PMap()
     PMap<Integer,PList<Integer>> reverseSuffixLinks = new PMap()
     PMap<Integer,Integer> lrs = new PMap()
@@ -39,14 +39,14 @@ class FactorOracle {
     PList encoded = new PList()
 
     private FactorOracle() {}
-    
-    FactorOracle(List seq, Comparator cmp=null) {
+
+    FactorOracle(List<T> seq, Comparator cmp=null) {
         comparator = cmp
-        sequence = new PList(seq)
+        sequence = new PList<T>(seq)
         build()
     }
 
-    private setTransitions(PMap<Integer,PMap<Object,Integer>> tr) {
+    private setTransitions(PMap<Integer,PMap<T,Integer>> tr) {
         transitions = tr;
     }
 
@@ -82,7 +82,7 @@ class FactorOracle {
                 }
             }
         }
-        if (l < m) 
+        if (l < m)
             encoded += new PList( [suffixLinks[m] - (m - l) + 1, m - l] )
     }
 
@@ -102,7 +102,7 @@ class FactorOracle {
         return fo
     }
 
-    private void addTransition(int k, Object symbol, int j) {
+    private void addTransition(int k, T symbol, int j) {
         PMap tr
         if (transitions.containsKey(k)) {
             tr = transitions[k]
@@ -151,7 +151,7 @@ class FactorOracle {
     }
 
     private void leftShift(item) { plus(item) }
-    
+
     private void plus(item) {
         i += 1
         //transitions[i-1][item] = i
@@ -188,8 +188,8 @@ class FactorOracle {
         }
         addReverseSuffixLink(sfxLink, i)
     }
-    
-    private int findBetter(int k, Object a) {
+
+    private int findBetter(int k, T a) {
         for(int j: getReverseSuffixLink(k).sort()) {
             boolean eq
             if (comparator)
@@ -201,24 +201,24 @@ class FactorOracle {
         }
         return 0
     }
-    
+
     int lengthCommonSuffix(int pi1, int pi2) {
-        if (getSuffixLink(pi1) == pi2) 
+        if (getSuffixLink(pi1) == pi2)
             return get_lrs(pi1)
         else
             while (getSuffixLink(pi2) != getSuffixLink(pi1))
                 pi2 = getSuffixLink(pi2)
         return Math.min(get_lrs(pi1),get_lrs(pi2))
     }
-    
-    private int findTransition(int k, Object item) {
+
+    private int findTransition(int k, T item) {
         int retVal
         if (comparator) {
-            for(Object key: transitions[k].keySet()) {
+            for(T key: transitions[k].keySet()) {
                 if (comparator.compare(key,item) == 0) {
                     retVal = transitions[k][key]
                     break
-                }  
+                }
             }
         }
         else
@@ -227,10 +227,10 @@ class FactorOracle {
         return retVal
     }
     
-    boolean transitionsContains(int k, Object item) {
+    boolean transitionsContains(int k, T item) {
         boolean found = false
         if (comparator) {
-            for(Object key: transitions[k].keySet()) {
+            for(T key: transitions[k].keySet()) {
                 if (comparator.compare(key,item) == 0) {
                     found = true
                     break

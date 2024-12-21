@@ -24,42 +24,70 @@
 package io.github.mcolletta.mircoracle
 
 import com.xenoage.utils.pdlib.PList
+// import com.xenoage.utils.kernel.Tuple2
+
+import groovy.lang.Tuple2
+import groovy.json.JsonBuilder
+
+import java.util.stream.Collectors
 
 
-public class Compressor<T> {
+public class Compressor<T> implements Serializable  {
     
     PList<List<T>> dict
+    boolean encode
+    PList<Tuple2<Integer,T>> encoded
     int len
     
-    Compressor(Compressor orig, List<T> seq) {
+    int ptr = 0
+    List<T> phrase
+
+    Compressor(Compressor<T> orig, List<T> seq) {
         dict = orig.dict
+        encode = orig.encode
+        if (encode)
+            encoded = orig.encoded.minus(orig.encoded.size()-1) as PList<Tuple2<Integer,T>>
         len = orig.len
+        phrase = orig.phrase
+        ptr = orig.ptr
         compress(seq)
     }
     
-    Compressor(List<T> seq) {
+    Compressor(List<T> seq, boolean enc=false) {
         dict = new PList<>()
-        dict.plus([])
+        dict = dict.plus([])
         len = 0
+        encode = enc
+        encoded = new PList<>()
+        phrase = []
         compress(seq)
     }
     
     void compress(List<T> seq) {
-        List<T> phrase = []
-        int ptr = 0
-
         for(int i=0; i < seq.size(); i++) {
             phrase << seq[i]
-            int index = dict.indexOf(phrase)
+            int index = dict.lastIndexOf(phrase)
 
             if(index == -1) {
                 dict = dict.plus(phrase)
+                if (encode)
+                    encoded = encoded.plus(new Tuple2<Integer, T>(ptr, seq[i]))
                 phrase = []
                 ptr = 0
                 len += 1
             }
-            else
-                ptr=index
+            else {
+                ptr = index
+                if(encode && (i == seq.size() - 1)){
+                  encoded = encoded.plus(new Tuple2<Integer, T>(ptr, null))
+                }
+            }
         }
+    }
+
+    String toJson(boolean pp=false) {
+        if (pp)
+            return new JsonBuilder(this).toPrettyString()
+        return new JsonBuilder(this).toString()
     }
 }
