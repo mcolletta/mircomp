@@ -280,3 +280,144 @@ class MetricsDuration implements LeadSheetListener {
 		normalizeStats(trigrams)
 	}
 }
+
+class MelodicIntervals implements LeadSheetListener {
+
+	int lastValue = -1
+	List<Integer> intervals
+
+	MelodicIntervals() {
+		intervals = []
+	}
+
+	@Override
+	public void newSong(String filename) {
+		lastValue = -1
+	}
+
+	@Override
+	public void endSong(String filename) { }
+
+	@Override
+	public void chord(Chord event) {
+		int midiValue = event.pitch.getMidiValue()
+		if (lastValue > 0) {
+			int interval = midiValue - lastValue
+			intervals << interval
+		}
+		else
+		    intervals << Integer.MIN_VALUE
+		lastValue = midiValue
+	}
+
+	@Override
+	public void keySignature(KeySignature keysig) { }
+
+	@Override
+	public void chordSymbol(ChordSymbol chordSymbol) { }
+
+	@Override
+	public void rest(Rest rest) { }
+
+	@Override
+	public void endReading() { }
+}
+
+class DurationRatios implements LeadSheetListener {
+
+	Fraction currDuration = _0
+	List<Fraction> ratios
+
+	DurationRatios() {
+		ratios = []
+	}
+
+	@Override
+	public void newSong(String filename) {
+		currDuration = _0
+	}
+
+	@Override
+	public void endSong(String filename) { }
+
+	@Override
+	public void chord(Chord note) {
+		Fraction duration = note.duration
+		if (currDuration > _0) {
+			Fraction ratio = duration.divideBy(currDuration)
+			ratios << ratio
+		}
+		else
+		    ratios << _0
+		currDuration = duration
+	}
+
+	@Override
+	public void keySignature(KeySignature keysig) { }
+
+	@Override
+	public void chordSymbol(ChordSymbol chordSymbol) { }
+
+	@Override
+	public void rest(Rest rest) { }
+
+	@Override
+	public void endReading() { }
+}
+
+class MirchordScoreBuilder implements LeadSheetListener {
+
+	List<Score> scores
+	Score score
+	boolean useChordSymbols
+
+	MirchordScoreBuilder(boolean useChordSymbols=false) {
+		scores = []
+		this.useChordSymbols = useChordSymbols
+	}
+
+	@Override
+	public void newSong(String filename) {
+		score = new Score()
+		Part part = new Part("Melody")
+		score.parts.add(part)
+		part.voices.add(new Voice())
+		part.voices[0].elements = []
+		// if (useChordSymbols) {
+		// 	Part hpart = new Part("Harmony")
+		// 	score.parts.add(hpart)
+		// 	hpart.voices.add(new Voice())
+		// 	hpart.voices[0].elements = []
+		// }
+	}
+
+	@Override
+	public void endSong(String filename) {
+		scores << score
+	}
+
+	@Override
+	public void chord(Chord note) {
+		score.parts[0].voices[0].elements << note
+	}
+
+	@Override
+	public void keySignature(KeySignature keysig) {
+		score.parts[0].voices[0].elements << keysig
+	}
+
+	@Override
+	public void chordSymbol(ChordSymbol chordSymbol) {
+		// if (useChordSymbols) {
+		// 	score.parts[1].voices[0].elements << chordSymbol
+		// }
+	}
+
+	@Override
+	public void rest(Rest rest) {
+		score.parts[0].voices[0].elements << rest
+	}
+
+	@Override
+	public void endReading() { }
+}

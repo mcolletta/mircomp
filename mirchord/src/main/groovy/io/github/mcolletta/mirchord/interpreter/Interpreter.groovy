@@ -41,16 +41,13 @@ import com.googlecode.lingwah.StringDocument
 
 class MirChordInterpreter {
 	
+	List extensions = []
 	MirChordGrammar PARSER
-	MirChordProcessor processor
-	
+
 	MirChordInterpreter(List ext=[]) {
 		PARSER = MirChordGrammar.INSTANCE
-		List extensions = []
-		extensions.add(new MirchordAddon())
 		if (ext != null && ext.size() > 0)
 			extensions.addAll(ext)
-		processor = new MirChordProcessor(extensions)
 	}
 	
 	Score evaluate(String source) {
@@ -60,6 +57,7 @@ class MirChordInterpreter {
 		ParseResults parseResults= ctx.getParseResults(PARSER.score, 0)
 		if (!parseResults.success())
 				throw parseResults.getError()
+		MirChordProcessor processor = new MirChordProcessor(extensions)
 		Score score = processor.process(parseResults)
 		return score
 	}
@@ -73,10 +71,10 @@ class MirChordInterpreter {
 
 }
 
-class MirchordAddon {
+class MirchordAddonExample {
 
 	@MirChord 
-	public List<MusicElement> transpose(int halfSteps, List<MusicElement> phrase) {
+	public List<MusicElement> MyTranspose(int halfSteps, List<MusicElement> phrase) {
 		List<MusicElement> newPhrase = phrase.stream()
                 .filter({ el -> el.isCopyable() })
                 .map({ el -> el.copy() })
@@ -87,121 +85,6 @@ class MirchordAddon {
 				for(Pitch pitch : chord.getPitches()) {
 					pitch.setMidiValue(pitch.getMidiValue() + halfSteps)
 				}
-			}
-		}
-		return newPhrase
-	}
-
-	@MirChord
-	public List<MusicElement> transposeDiatonic(int diatonicSteps, String modeText, List<MusicElement> phrase) {
-		KeyMode mode = ModeFromName(modeText)
-		List<MusicElement> newPhrase = phrase.stream()
-                .filter({ el -> el.isCopyable() })
-                .map({ el -> el.copy() })
-                .collect(Collectors.toList()) as List<MusicElement>
-		for(MusicElement el : newPhrase) {
-			if (el.getMusicElementType() == "Chord") {
-				Chord chord = (Chord)el
-				int halfSteps = getHalfStepsFromDiatonic(chord.getPitch(), diatonicSteps, mode)
-				for(Pitch pitch : chord.getPitches()) {
-					pitch.setMidiValue(pitch.getMidiValue() + halfSteps)
-				}
-			}
-		}
-		return newPhrase
-	}
-
-	@MirChord
-	public List<MusicElement> invert(List<MusicElement> phrase) {
-		List<MusicElement> newPhrase = phrase.stream()
-                .filter({ el -> el.isCopyable() })
-                .map({ el -> el.copy() })
-                .collect(Collectors.toList()) as List<MusicElement>
-		List<MusicElement> chords = newPhrase.findAll { it.getMusicElementType() == "Chord" }
-		Chord mirror = (Chord)chords[0]
-		for(MusicElement el : newPhrase) {
-			if (el.getMusicElementType() == "Chord") {
-				Chord chord = (Chord)el
-				int interval = mirror.getPitch().getMidiValue() - chord.getPitch().getMidiValue()
-				chord.getPitch().setMidiValue(mirror.getPitch().getMidiValue() + interval)
-			}
-		}
-		return newPhrase
-	}
-
-	@MirChord
-	public List<MusicElement> invertDiatonic(String modeText, List<MusicElement> phrase) {
-		KeyMode mode = ModeFromName(modeText)
-		List<MusicElement> newPhrase = phrase.stream()
-                .filter({ el -> el.isCopyable() })
-                .map({ el -> el.copy() })
-                .collect(Collectors.toList()) as List<MusicElement>
-		List<MusicElement> chords = newPhrase.findAll { it.getMusicElementType() == "Chord" }
-		Chord mirror = (Chord)chords[0]
-		for(MusicElement el : newPhrase) {
-			if (el.getMusicElementType() == "Chord") {
-				Chord chord = (Chord)el
-				int octaves = (int)((mirror.getPitch().getMidiValue() - chord.getPitch().getMidiValue()) / 12) * 12
-				int interval = getDiatonicPitchesInterval(mirror.getPitch(), chord.getPitch())
-				int halfSteps = getHalfStepsFromDiatonic(chord.getPitch(), interval, mode)
-				chord.getPitch().midiValue = mirror.getPitch().midiValue + halfSteps + octaves
-			}
-		}
-		return newPhrase
-	}
-
-	@MirChord 
-	public List<MusicElement> retrograde(List<MusicElement> phrase) {
-		List<MusicElement> newPhrase = phrase.stream()
-                .filter({ el -> el.isCopyable() })
-                .map({ el -> el.copy() })
-                .collect(Collectors.toList()) as List<MusicElement>
-		return newPhrase.reverse()
-	}
-
-	@MirChord 
-	public List<MusicElement> augment(Fraction ratio, List<MusicElement> phrase) {
-		List<MusicElement> newPhrase = phrase.stream()
-                .filter({ el -> el.isCopyable() })
-                .map({ el -> el.copy() })
-                .collect(Collectors.toList()) as List<MusicElement>
-		for(MusicElement el : newPhrase) {
-			if (el.getMusicElementType() == "Chord") {
-				Chord chord = (Chord)el
-				chord.duration = chord.duration.mult(ratio)
-			}
-		}
-		return newPhrase
-	}
-
-	@MirChord 
-	public List<MusicElement> diminuition(Fraction ratio, List<MusicElement> phrase) {
-		List<MusicElement> newPhrase = phrase.stream()
-                .filter({ el -> el.isCopyable() })
-                .map({ el -> el.copy() })
-                .collect(Collectors.toList()) as List<MusicElement>
-		for(MusicElement el : newPhrase) {
-			if (el.getMusicElementType() == "Chord") {
-				Chord chord = (Chord)el
-				chord.duration = chord.duration.divideBy(ratio)
-			}
-		}
-		return newPhrase
-	}
-
-	@MirChord 
-	public List<MusicElement> zip(List<MusicElement> phrase, List<MusicElement> pattern) {
-		List<MusicElement> newPhrase = phrase.stream()
-                .filter({ el -> el.isCopyable() })
-                .map({ el -> el.copy() })
-                .collect(Collectors.toList()) as List<MusicElement>
-		List<MusicElement> rhythm = pattern.findAll { it.getMusicElementType() == "Chord" }
-		int i = 0;
-		for(MusicElement el : newPhrase) {
-			if (el.getMusicElementType() == "Chord") {
-				Chord chord = (Chord)el
-				chord.duration = (rhythm.size() < i) ? ((Chord)rhythm[i]).duration : ((Chord)rhythm[i % rhythm.size()]).duration
-				i++
 			}
 		}
 		return newPhrase

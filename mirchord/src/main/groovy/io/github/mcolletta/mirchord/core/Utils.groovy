@@ -23,10 +23,12 @@
 
 package io.github.mcolletta.mirchord.core
 
+import java.util.stream.Collectors
 import static java.lang.Math.*
 import javax.sound.midi.*
 
 import com.xenoage.utils.math.Fraction
+import com.xenoage.utils.pdlib.PList
 import static com.xenoage.utils.math.Fraction.fr
 import static com.xenoage.utils.math.Fraction._0
 
@@ -36,23 +38,91 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
 
+public class MirObjectOutputStream extends ObjectOutputStream {
+
+    MirObjectOutputStream(java.io.OutputStream stream) {
+        super(stream)
+        enableReplaceObject(true)
+    }
+
+    public Object replaceObject(Object obj) {
+        if( obj instanceof Fraction ) {
+            obj = new FractionSerializableWrapper(obj);
+        }
+        else if (  obj instanceof PList ) {
+            obj = new PListSerializableWrapper(obj)
+        }
+        return obj
+    }
+}
+
+
+public class MirObjectInputStream extends ObjectInputStream {
+
+    MirObjectInputStream(java.io.InputStream stream) {
+        super(stream)
+        enableResolveObject(true)
+    }
+
+    public Object resolveObject(Object obj) {
+        if( obj instanceof FractionSerializableWrapper ) {
+            obj = ((FractionSerializableWrapper)obj).getValue()
+        }
+        else if ( obj instanceof PListSerializableWrapper ) {
+            obj = ((PListSerializableWrapper)obj).getValue()
+        }
+        return obj
+    }
+}
+
+
+public class FractionSerializableWrapper implements Serializable {
+
+    int numerator
+    int denominator
+
+    public FractionSerializableWrapper(Fraction f) {
+        this.numerator = f.getNumerator()
+        this.denominator = f.getDenominator()
+    }
+
+    public Fraction getValue() {
+        return fr(numerator, denominator)
+    }
+}
+
+
+public class PListSerializableWrapper<T> implements Serializable {
+
+    List<T> list
+
+    public PListSerializableWrapper(PList<T> pl) {
+        this.list = pl.stream().map { it }.collect(Collectors.toList())
+    }
+
+    public PList<T> getValue() {
+        return new PList<T>(list)
+    }
+}
+
+
 class Utils {
 
 	// it works only for object that implements Serializable
 	static def deepcopy(orig) {
 	     def bos = new ByteArrayOutputStream()
-	     def oos = new ObjectOutputStream(bos)
+	     def oos = new MirObjectOutputStream(bos)
 	     oos.writeObject(orig); oos.flush()
 	     def bin = new ByteArrayInputStream(bos.toByteArray())
-	     def ois = new ObjectInputStream(bin)
+	     def ois = new MirObjectInputStream(bin)
 	     return ois.readObject()
 	}
 
 	// it works only for object that implements Serializable
 	static void saveObjectToBinaryFile(Object obj, String path) {
 		try(
-		    FileOutputStream fos = new FileOutputStream(new File(path), true)
-		    ObjectOutputStream oos = new ObjectOutputStream(fos)
+		    var fos = new FileOutputStream(new File(path), true)
+		    var oos = new MirObjectOutputStream(fos)
 		) {
 		    oos.writeObject(obj)
 		} catch (Exception ex) {
@@ -62,10 +132,10 @@ class Utils {
 
 	// it works only for object that implements Serializable
 	static <T> loadObjectFromBinaryFile(String path) {
-		ObjectInputStream  ois = null
+		MirObjectInputStream  ois = null
 		try {
 		    def fis = new FileInputStream(path)
-		    ois = new ObjectInputStream(fis)
+		    ois = new MirObjectInputStream(fis)
 		    return (T) ois.readObject()
 		} catch (Exception e) {
 		    e.printStackTrace()
