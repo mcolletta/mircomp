@@ -1,6 +1,6 @@
 
 <score> ::= =1 ~1 \n
-            <%+ <octave> ::= ^4  !80 | ^3  !20 %> <octave> \s <intro(10)>
+            <%+ <octave> ::= ^4  !80 | ^3  !20 %> <octave> \s <intro(8)>
             <%/%> \n
             ; CHORUS \n
             <%+ 
@@ -8,12 +8,11 @@
                 <notes(n [gt 1/8])> ::=  <notes(1/16)> \s <notes(n - 1/16)>     !5 |
                                          <notes(1/8)>  \s <notes(n - 1/8)>      !10
                 <notes(1/16)> ::=  <note>16
-                <notes(1/8)>  ::=  <note>8
             %> 
-            <octave> \s <chorus(30)>
+            <octave> \s <chorus(16)>
             <%/%> \n
             ; ENDING \n
-            <%+ <octave> ::= ^4  !80 | ^3  !20 %> <octave> \s <ending(10)>
+            <%+ <octave> ::= ^4  !80 | ^3  !20 %> <octave> \s <ending(8)>
 
 <intro(n)> ::= <notes(n)> 
 
@@ -24,7 +23,7 @@
 <declarations(3)> ::= <declaration(3)>
 
 <declarations(n [gt 3])> ::= <declaration(3)> \s <declarations(n - 3)>
-          
+
 <declaration(n)> ::= (def :<id>  \s { <octave> \s <notes(n)> })
           <%+ 
           <notes(n [gt ${n}])> ::= :${id} \s <notes(n - ${n})>                      !35 |
@@ -48,10 +47,13 @@
 
 <notes(n [gt 1])> ::=  <notes(1)>   \s <notes(n - 1)>        !5
                         
-<notes(n [gt 1/2])> ::=  <notes(1/2)>  \s <notes(n - 1/2)>      !10
+<notes(n [gt 1/2])> ::= <notes(1/2)>  \s <notes(n - 1/2)>      !10
                 
-<notes(n [gt 1/4])> ::=  <notes(1/4)>  \s <notes(n - 1/4)>      !70
+<notes(n [gt 1/4])> ::= <notes(1/4)>  \s <notes(n - 1/4)>      !70
 
+<notes(n [gt 1/8])> ::= <notes(1/8)>  \s <notes(n - 1/8)>      !10
+
+<notes(1/8)>  ::=  <note>8
 <notes(1/4)>  ::=  <note>4
 <notes(1/2)>  ::=  <note>2
 <notes(1)>    ::=  <note>1

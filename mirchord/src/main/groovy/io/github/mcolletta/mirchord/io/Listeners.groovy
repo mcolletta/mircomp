@@ -365,6 +365,86 @@ class DurationRatios implements LeadSheetListener {
 	public void endReading() { }
 }
 
+class ChromaFeatures implements LeadSheetListener {
+
+	int transposition = 0
+	List<Integer> features
+
+	ChromaFeatures() {
+		features = []
+	}
+
+	@Override
+	public void newSong(String filename) {
+		features << Integer.MIN_VALUE
+	}
+
+	@Override
+	public void endSong(String filename) { }
+
+	@Override
+	public void keySignature(KeySignature keysig) {
+		transposition = Utils.getTonicTransposition(keysig)
+	}
+
+	@Override
+	public void chord(Chord event) {
+		int midiValue = event.pitch.getMidiValue()
+		if (transposition > 0)
+			midiValue -= transposition
+		def chroma = midiValue % 12
+		features << chroma
+	}
+
+	@Override
+	public void chordSymbol(ChordSymbol chordSymbol) { }
+
+	@Override
+	public void rest(Rest rest) {
+		features << 0
+	}
+
+	@Override
+	public void endReading() { }
+}
+
+class Durations implements LeadSheetListener {
+
+	Fraction currDuration = _0
+	List<Fraction> durations
+
+	Durations() {
+		durations = []
+	}
+
+	@Override
+	public void newSong(String filename) {
+		durations << fr(-1)
+	}
+
+	@Override
+	public void endSong(String filename) { }
+
+	@Override
+	public void chord(Chord note) {
+		durations << note.duration
+	}
+
+	@Override
+	public void keySignature(KeySignature keysig) { }
+
+	@Override
+	public void chordSymbol(ChordSymbol chordSymbol) { }
+
+	@Override
+	public void rest(Rest rest) {
+		durations << _0
+	}
+
+	@Override
+	public void endReading() { }
+}
+
 class MirchordScoreBuilder implements LeadSheetListener {
 
 	List<Score> scores

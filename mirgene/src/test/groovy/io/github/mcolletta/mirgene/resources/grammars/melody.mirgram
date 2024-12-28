@@ -1,58 +1,59 @@
 
-<score> ::= 
-            =1 ~1 \n
-            <octave> \s <intro(64)> <%/%> \n
+<score> ::= =1 ~1 \n
+            <%+ <octave> ::= ^4  !80 | ^3  !20 %> <octave> \s <intro(8)>
+            <%/%> \n
             ; CHORUS \n
-            <octave> \s <chorus(32)> <%/%> \n
+            <%+
+                <octave> ::= ^4  !50 | ^5  !50
+                <notes(n [gt 1/8])> ::=  <notes(1/16)> \s <notes(n - 1/16)>     !5 |
+                                         <notes(1/8)>  \s <notes(n - 1/8)>      !10
+                <notes(1/16)> ::=  <note>16
+            %>
+            <octave> \s <chorus(16)>
+            <%/%> \n
             ; ENDING \n
-            <octave> \s <ending(24)>
+            <%+ <octave> ::= ^4  !80 | ^3  !20 %> <octave> \s <ending(8)>
 
-<intro(n)> ::= <declaration(12)> \n <declaration(8)> \n <notes(n - 20)>
+<intro(n)> ::= <notes(n)>
 
-<chorus(n)> ::= <declaration(4)> \n <declaration(8)> \n <notes(n - 12)>
+<chorus(n)> ::= <declarations(9)> \n <notes(n)>
 
 <ending(n)> ::= <notes(n)>
 
+<declarations(3)> ::= <declaration(3)>
+
+<declarations(n [gt 3])> ::= <declaration(3)> \s <declarations(n - 3)>
 
 <declaration(n)> ::= (def :<id>  \s { <octave> \s <notes(n)> })
-				  <%+ <notes(n [gte ${n}])> ::= :${id} \s <notes(n - ${n})>  !25 %>
+          <%+
+          <notes(n [gt ${n}])> ::= :${id} \s <notes(n - ${n})>                      !35 |
+                                   (<transform> \s :${id})  \s <notes(n - ${n})>)   !10
+          %>
 
 <id> ::= <%= phrase %>
 
-<transform> ::= transpose \s <number> | invert | retrograde
+<transposition> ::= 1 !90 | 2 !10
+<transform> ::= transposeDiatonic \s <transposition> \s "maj"
 
-<number> ::= 1 | 2 | 3
+<pitch> ::= c | d | e | f | g | a | b
+
+<accidental> ::= empty !90 |
+                 # !5 |
+                 & !5
 
 <note> ::= <pitch><accidental>
 
 <notes> ::= empty
 
-<notes(1)> ::= <note>4                             !20 |
-               <note>8 \s <note>8                  !15 |
-               <note>16 \s <note>16 \s <note>8     !15
+<notes(n [gt 1])> ::=  <notes(1)>   \s <notes(n - 1)>        !5
 
-<notes(2)> ::= <note>4 \s <note>8 \s <note>8                !15 |
-               <note>4 \s <note>8_ \s _<% ${note} %>8       !30 |
-               <note>2                                      !10
+<notes(n [gt 1/2])> ::= <notes(1/2)>  \s <notes(n - 1/2)>      !10
 
-<notes(3)> ::= <note>16 \s <note>16 \s <note>8 \s <note>8 \s <note>8 \s <note>4     |
-               <note>16 \s <% ${note} %>16 \s <% ${note} %>16 \s <% ${note} %>16 \s <note>2
+<notes(n [gt 1/4])> ::= <notes(1/4)>  \s <notes(n - 1/4)>      !70
 
-<notes(n)> ::=  <notes(1)> \s <notes(n-1)>      !10 |
-                <notes(2)> \s <notes(n-2)>      !20 |
-                <notes(3)> \s <notes(n-3)>      !35
-                | (<transform> \s {<notes(n)>})   !20
+<notes(n [gt 1/8])> ::= <notes(1/8)>  \s <notes(n - 1/8)>      !10
 
-
-<pitch> ::= c | d | e | f | g | a | b
-
-<accidental> ::= empty !80 |
-				     # !10 | 
-				     & !10
-
-<octave> ::= ^4  !10 |
-             ^5  !5
-
-<poctave> ::= empty !90 |
-             '     !5 | 
-             ,     !5
+<notes(1/8)>  ::=  <note>8
+<notes(1/4)>  ::=  <note>4
+<notes(1/2)>  ::=  <note>2
+<notes(1)>    ::=  <note>1

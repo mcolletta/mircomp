@@ -108,6 +108,11 @@ public class PListSerializableWrapper<T> implements Serializable {
 
 class Utils {
 
+	static boolean fileExists(String path) {
+		File f = new File( path );
+		return (f.exists() && !f.isDirectory());
+	}
+
 	// it works only for object that implements Serializable
 	static def deepcopy(orig) {
 	     def bos = new ByteArrayOutputStream()
@@ -121,7 +126,7 @@ class Utils {
 	// it works only for object that implements Serializable
 	static void saveObjectToBinaryFile(Object obj, String path) {
 		try(
-		    var fos = new FileOutputStream(new File(path), true)
+		    var fos = new FileOutputStream(new File(path), false)
 		    var oos = new MirObjectOutputStream(fos)
 		) {
 		    oos.writeObject(obj)
