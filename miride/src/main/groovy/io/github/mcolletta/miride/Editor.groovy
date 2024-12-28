@@ -33,6 +33,8 @@ import java.nio.file.Path
 import java.nio.file.Files
 import java.nio.file.LinkOption
 
+import java.io.BufferedReader
+
 import javax.sound.midi.Soundbank
 import javax.sound.midi.MidiSystem
 import javax.sound.midi.Synthesizer
@@ -469,9 +471,11 @@ public class Editor implements FolderTreeViewListener {
                 tab = newTabTextFile(path, mode, open)
                 break
             case "xml":
-            case "mxml":
                 mode = Mode.XML
                 tab = newTabTextFile(path, mode, open)
+                break
+            case "mxml":
+                tab = newTabScoreFile(path, open)
                 break
             case "mirgram":
                 mode = Mode.JSP
@@ -512,6 +516,24 @@ public class Editor implements FolderTreeViewListener {
         Tab tab = createTab()
         TextEditor editor
         if (open) {
+            if (mode == Mode.XML) {
+                BufferedReader br = new BufferedReader(new FileReader(path.toFile()))
+                String line
+                int i = 0
+                boolean iter_stop = false
+                while ((line = br.readLine()) != null && !iter_stop)
+                {
+                    if (i > 10)
+                        iter_stop = true
+                    else
+                        i++
+                    if (line.contains("<score-partwise")) {
+                        iter_stop = true
+                        return newTabScoreFile(path, open)
+                    }
+                }
+                br.close()
+            }
             editor = new TextEditor(path)
             setTabLabelText(tab, path.getFileName().toString())
         }
@@ -524,6 +546,18 @@ public class Editor implements FolderTreeViewListener {
         editor.setTheme(currentTextTheme)
         editor.addFolderTreeViewListener(this)
         tab.setContent(editor)
+        return tab
+    }
+
+    Tab newTabScoreFile(Path path, boolean open) {
+        if (!open)
+            throw new Exception("MusicXML file cannot be created in this context")
+        Tab tab = createTab()
+        ScoreViewer viewer = new ScoreViewer(synthManager.getSynthesizer())
+        setTabLabelText(tab, path.getFileName().toString())
+        viewer.addFolderTreeViewListener(this)
+        viewer.setFilePath(path)
+        tab.setContent(viewer)
         return tab
     }
 

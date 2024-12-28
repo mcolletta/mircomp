@@ -1,6 +1,10 @@
 apply plugin: 'groovy'
 apply plugin: 'application'
 
+dependencies {
+    implementation project(':mirfoldertreeview')
+    implementation project(':mirutils')
+}
 
 sourceSets {
     main {

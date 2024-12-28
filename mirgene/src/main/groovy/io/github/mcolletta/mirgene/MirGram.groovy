@@ -150,6 +150,8 @@ class MirGram  {
 
             if (((usedCodons % codons.size()) == 0) && (usedCodons > 0) && (choices.size() > 1))
                 wraps += 1
+            // if (wraps > 0)
+            //     println "wraps=$wraps"
             maxCycles -= 1
 
             while (scope.symToConsume == 0 && scopes.size() > 1) {

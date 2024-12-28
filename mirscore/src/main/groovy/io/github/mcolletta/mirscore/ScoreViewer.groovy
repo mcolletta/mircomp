@@ -23,6 +23,8 @@
 
 package io.github.mcolletta.mirscore
 
+import java.nio.file.Path
+
 import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeEvent
 
@@ -83,10 +85,16 @@ import com.xenoage.zong.renderer.javafx.JfxLayoutRenderer
 import com.xenoage.zong.renderer.awt.AwtLayoutRenderer
 import java.awt.image.BufferedImage
 
+import io.github.mcolletta.mirfoldertreeview.FolderTreeListenerList
+import io.github.mcolletta.mirfoldertreeview.FolderTreeViewEvent
+import io.github.mcolletta.mirfoldertreeview.PathRequestType
+
+import io.github.mcolletta.mirutils.TabContent
+
 
 enum ScoreMode { SELECT, PANNING }
 
-class ScoreViewer  extends VBox { 
+class ScoreViewer  extends VBox implements FolderTreeListenerList, TabContent {
 
     ScoreModel scoreModel
     WritableImage scoreImage = null
@@ -103,11 +111,20 @@ class ScoreViewer  extends VBox {
     @FXML private ToggleButton followPlaybackButton
     @FXML private ToggleButton metronomeButton
 
-    
+    ObjectProperty<Path> filePath = new SimpleObjectProperty<>()
+    Path getFilePath() {
+        return filePath.get()
+    }
+    void setFilePath(Path path) {
+        filePath.set(path)
+    }
+
     ObjectProperty<ScoreMode> mode = new SimpleObjectProperty<>()
     final ScoreMode getMode() { return mode.get() }
     final void setMode(ScoreMode value) { mode.set(value) }
     ObjectProperty<ScoreMode> modeProperty() { return mode }
+
+    String getTabType() { return "ScoreViewer"; }
 
 	public ScoreViewer(Synthesizer synthesizer=null) {
 		loadControl()
@@ -206,6 +223,19 @@ class ScoreViewer  extends VBox {
                 Bounds bounds = newVal as Bounds
                 scoreModel.viewRect = new Rectangle2i((int)bounds.getMinX(), (int)bounds.getMinY(), 
                                                       (int)bounds.getWidth(), (int)bounds.getHeight())
+            }
+        })
+
+        filePath.addListener(new ChangeListener(){
+            @Override public void changed(ObservableValue o,Object oldVal, Object newVal){
+                reloadfile() // TODO
+                if (newVal != null) {
+                    Path newPath = newVal as Path
+                    fireFolderTreeUpdated(new FolderTreeViewEvent([origin: this,
+                                                                   path: newPath,
+                                                                   requestType: PathRequestType.MODIFY,
+                                                                   fileType: ""]))
+                }
             }
         })
 	}
@@ -367,12 +397,28 @@ class ScoreViewer  extends VBox {
         File selectedFile = fileChooser.showOpenDialog(stage)
         if (selectedFile != null) {
             try {
+                setFilePath(selectedFile.toPath())
                 scoreModel.loadScore(selectedFile)
                 initScoreButtons()
              } catch(Exception ex) {
                 println "Exception: " + ex.getMessage()
             }
             draw()
+        }
+    }
+
+    public reloadfile() {
+        if (getFilePath() != null) {
+            File selectedFile = getFilePath().toFile()
+            if (selectedFile != null) {
+                try {
+                    scoreModel.loadScore(selectedFile)
+                    initScoreButtons()
+                 } catch(Exception ex) {
+                    println "Exception: " + ex.getMessage()
+                }
+                draw()
+            }
         }
     }
 
