@@ -1,12 +1,16 @@
-File f = new File( projectPath.resolve("musicxml").toString() )
+File f = new File( projectPath.resolve("musicxml/chroma").toString() )
 def reader = new MusicXmlLeadSheetReader()
 def chroma_subscr = new ChromaFeatures()
-def durations_subscr = new Durations()
 reader.addLeadSheetListener(chroma_subscr)
-reader.addLeadSheetListener(durations_subscr)
 reader.read(f)
-
 var chroma_compr = new Compressor<Integer>(chroma_subscr.features)
 saveObjectToBinaryFile(chroma_compr, projectPath.resolve("data/chroma.ser").toString() )
+
+
+f = new File( projectPath.resolve("musicxml/dur").toString() )
+reader = new MusicXmlLeadSheetReader()
+def durations_subscr = new Durations()
+reader.addLeadSheetListener(durations_subscr)
+reader.read(f)
 var durations_compr = new Compressor<Fraction>(durations_subscr.durations)
 saveObjectToBinaryFile(durations_compr, projectPath.resolve("data/durations.ser").toString() )

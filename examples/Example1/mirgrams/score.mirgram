@@ -25,7 +25,7 @@
 <declarations(n [gt 3])> ::= <declaration(3)> \s <declarations(n - 3)>
 
 <declaration(n)> ::= (def :<id>  \s { <octave> \s <notes(n)> })
-          <%+ 
+          <%+
           <notes(n [gt ${n}])> ::= :${id} \s <notes(n - ${n})>                      !35 |
                                    (<transform> \s :${id})  \s <notes(n - ${n})>)   !10
           %>
@@ -37,9 +37,9 @@
 
 <pitch> ::= c | d | e | f | g | a | b
 
-<accidental> ::= empty !90 |
-                 # !5 | 
-                 & !5
+<accidental> ::= empty !98 |
+                 # !1 |
+                 & !1
                  
 <note> ::= <pitch><accidental>
 
@@ -49,9 +49,9 @@
                         
 <notes(n [gt 1/2])> ::= <notes(1/2)>  \s <notes(n - 1/2)>      !10
                 
-<notes(n [gt 1/4])> ::= <notes(1/4)>  \s <notes(n - 1/4)>      !70
+<notes(n [gt 1/4])> ::= <notes(1/4)>  \s <notes(n - 1/4)>      !35
 
-<notes(n [gt 1/8])> ::= <notes(1/8)>  \s <notes(n - 1/8)>      !10
+<notes(n [gt 1/8])> ::= <notes(1/8)>  \s <notes(n - 1/8)>      !50
 
 <notes(1/8)>  ::=  <note>8
 <notes(1/4)>  ::=  <note>4

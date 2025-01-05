@@ -60,10 +60,12 @@ public class MelodyFitness extends FitnessFunction {
 def grammarText = getClass().getResourceAsStream("mirgrams/score.mirgram").getText()
 def gr = new MirGram(grammarText, "score", 3)
 def fit = new MelodyFitness(projectPath.resolve("data/chroma.ser").toString(), projectPath.resolve("data/durations.ser").toString())
-def ge = new MirGene(gr,fit,100L).with {
+def ge = new MirGene(gr,fit).with {
     populationSize = 50
     genomeSize = 400
     maxGenerations = 1
+    eliteSize = 15
+    mutationProbability = 0.05f
     it
 }
 

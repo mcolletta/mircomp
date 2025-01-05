@@ -401,7 +401,7 @@ class ChromaFeatures implements LeadSheetListener {
 
 	@Override
 	public void rest(Rest rest) {
-		features << 0
+		features << -1
 	}
 
 	@Override

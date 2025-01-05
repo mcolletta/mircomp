@@ -97,7 +97,8 @@ class MirChordProcessor extends AbstractProcessor {
 		"cc": "controlChange",
 		"call": "callSymbol", 
 		"expand": "callSymbol",
-		"*": "copyTimes"
+		"*": "copyTimes",
+		"ch": "chordSymElement"
 		]
 	
 	Map<String, Map<String, Object>> extMethods = [:]
@@ -583,6 +584,19 @@ class MirChordProcessor extends AbstractProcessor {
 			}
 		}
 		return newPhrase
+	}
+
+	@MirChord
+	public List<MusicElement> chordSymElement(int pos, ChordSymbol sym, Chord note) {
+		assert pos >= 1
+		assert note.unpitched
+		var chord = sym.getChord()
+		var pitches = chord.pitches;
+		int len = pitches.size()
+		int idx = Math.min(pos-1, len-1)
+		note.unpitched = false
+		note.setPitch(pitches[idx])
+		return [note]
 	}
 
 	// END COMMANDS

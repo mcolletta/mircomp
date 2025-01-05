@@ -168,6 +168,11 @@ class MirGene {
 		population[0..eliteSize-1].each {
 			newPopulation << it
 		}
+		int i = eliteSize
+		while(newPopulation.size() < populationSize) {
+			newPopulation << population[i]
+			i += 1
+		}
 		newPopulation.sort(byFitness)
 		if (newPopulation.size() > populationSize)
 			return newPopulation[0..populationSize-1]
@@ -217,6 +222,12 @@ class MirGene {
 			}.flatten() as List<IndividualFitness>
 		}
 		population = generationalReplacement(newPopulation)
+		println "========================================="
+		println "New generation Top 3:"
+		population[0..2].each { IndividualFitness it ->
+			println it.fitness
+		}
+		println "========================================="
 		IndividualFitness generationBest
 		if (best == null)
 			generationBest = population.first()
@@ -236,7 +247,7 @@ class MirGene {
 		if (population.size() == 0)
 			initPopulation()
 		else if (population.size() != populationSize)
-			throw new Exception("wrong population size")
+			throw new Exception("wrong population size:\n population.size=${population.size()}    populationSize=$populationSize")
 		for(int i=1; i <= maxGenerations && !checkTermination(); i++) {
 			best = step()
 			println "Generation: $i"
