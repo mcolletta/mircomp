@@ -187,11 +187,12 @@ class MirGram  {
 								if (lhs.attrValue >= _0 && nt.attrValue >= _0) {
 									// ex. <NT(3)> with <NT(3)> or <NT> with <NT>
 									if (lhs.attrValue == nt.attrValue) {
-										choices = rhs
-										break
+										choices = choices.plusAll(rhs)
+										// choices = rhs
+										// break
 									}
 								}
-								else {
+								//else {
 									if (lhs.isAllowed(nt.attrValue)) {
 										// ex. <NT(n)> with <NT(3)>
 										if (lhs.hasSymbolicAttribute() && nt.attrValue >= _0) {
@@ -199,7 +200,7 @@ class MirGram  {
 											choices = choices.plusAll(rhs)
 										}
 									}
-								}
+								//}
 							}
 						}
 

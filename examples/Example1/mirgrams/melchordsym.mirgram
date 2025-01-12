@@ -1,34 +1,39 @@
 <score> ::=  =1 ~1 (clef "treble") =2 ~1 (clef "bass") \n
-             <chords(16)>
+             <measures(16)>
 
-<chords> ::= empty
+<measures(0)> ::= empty
 
-<chords(n [gt 1])> ::=   <chords(1)>    \s <chords(n - 1)>        !30
-                        
-<chords(n [gt 1/2])> ::= <chords(1/2)>  \s <chords(n - 1/2)>      !40
-                
-<chords(n [gt 1/4])> ::= <chords(1/4)>  \s <chords(n - 1/4)>      !20
+<measures(n [gt 0])> ::= <measure> \s <measures(n - 1)>
 
-<chords(n [gt 1/8])> ::= <chords(1/8)>  \s <chords(n - 1/8)>      !10
+<measure> ::=  <chord(1)> | <chords(1)>
 
-<chords(1/8)>  ::=  =2 \s `1/8 \s <chord> \s =1 \s <notes(1/8)> <%/%>
-<chords(1/4)>  ::=  =2 \s `1/4 \s <chord> \s =1 \s <notes(1/4)> <%/%>
-<chords(1/2)>  ::=  =2 \s `1/2 \s <chord> \s =1 \s <notes(1/2)> <%/%>
-<chords(1)>    ::=  =2 \s `1/1 \s <chord> \s =1 \s <notes(1)> <%/%>
+<chords(0)> ::= empty
+
+<chords(n [gt 1/2])> ::= <chord(1/2)>  \s <chords(n - 1/2)>      !40
+<chords(n [gt 1/4])> ::= <chord(1/4)>  \s <chords(n - 1/4)>      !20
+<chords(n [gt 1/8])> ::= <chord(1/8)>  \s <chords(n - 1/8)>      !10
+
+<chords(1/2)>  ::=  <chord(1/2)>
+<chords(1/4)>  ::=  <chord(1/4)>
+<chords(1/8)>  ::=  <chord(1/8)>
+
+<chord(1/8)>  ::=  =2 \s `1/8 \s <chordsym> \s =1 \s <notes(1/8)> <%/%>
+<chord(1/4)>  ::=  =2 \s `1/4 \s <chordsym> \s =1 \s <notes(1/4)> <%/%>
+<chord(1/2)>  ::=  =2 \s `1/2 \s <chordsym> \s =1 \s <notes(1/2)> <%/%>
+<chord(1)>    ::=  =2 \s `1/1 \s <chordsym> \s =1 \s <notes(1)> <%/%>
 
 <sym> ::= I | IImin | IV | IV | VImin | VIIdim
 
-<chord> ::= ^3 \s <sym>
+<pos> ::= 1 | 2 | 3
+
+<notes> ::= empty
+<notes(n [gt 1/2])> ::= <notes(1/2)>  \s <notes(n - 1/2)>      !10
+<notes(n [gt 1/4])> ::= <notes(1/4)>  \s <notes(n - 1/4)>      !50
+<notes(n [gt 1/8])> ::= <notes(1/8)>  \s <notes(n - 1/8)>      !30
+
+<chordsym> ::= ^3 \s <sym>
             <%+
-                <notes> ::= empty
-                <notes(n [gt 1/2])> ::= <notes(1/2)>  \s <notes(n - 1/2)>      !10
-                <notes(n [gt 1/4])> ::= <notes(1/4)>  \s <notes(n - 1/4)>      !70
-                <notes(n [gt 1/8])> ::= <notes(1/8)>  \s <notes(n - 1/8)>      !10
-                <pos> ::= 1 | 2 | 3
                 <notes(1/8)>  ::=  (ch \s <pos> \s ${sym} \s x8)
                 <notes(1/4)>  ::=  (ch \s <pos> \s ${sym} \s x4)
                 <notes(1/2)>  ::=  (ch \s <pos> \s ${sym} \s x2)
             %>
-
-
-

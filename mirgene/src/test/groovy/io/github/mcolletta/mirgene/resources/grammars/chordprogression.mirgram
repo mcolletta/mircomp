@@ -8,33 +8,33 @@
 <vi(1)> 	::= <vi*>
 <vii°(1)> 	::= <vii°*>
 
-<I(n)> ::= <V(n-1)> \s <I*>
+<I(n [gt 1])> ::= <V(n-1)> \s <I*>
 
-<V(n)> ::= <ii(n-1)> \s <V*>	|
+<V(n [gt 1])> ::= <ii(n-1)> \s <V*>	|
 		   <IV(n-1)> \s <V*>	|
 		   <vi(n-1)> \s <V*>	|
 		   <I(n-1)> \s <V*>
-		
-<ii(n)> ::= <iii(n-1)> \s <ii*>	|
+
+<ii(n [gt 1])> ::= <iii(n-1)> \s <ii*>	|
 		 	<vi(n-1)> \s <ii*>	|
 		 	<I(n-1)> \s <ii*>
-		 
-<IV(n)> ::= <ii(n-1)> \s <IV*>	|
+
+<IV(n [gt 1])> ::= <ii(n-1)> \s <IV*>	|
 		 	<iii(n-1)> \s <IV*>	|
 		 	<vi(n-1)> \s <IV*>	|
 		 	<I(n-1)> \s <IV*>
-		 
-<iii(n)> ::= <IV(n-1)> \s <iii*>	|
+
+<iii(n [gt 1])> ::= <IV(n-1)> \s <iii*>	|
 		  	 <vii°(n-1)> \s <iii*>	|
 		     <I(n-1)> \s <iii*>
-		  
-<vi(n)> ::= <iii(n-1)> \s <vi*>	|
+
+<vi(n [gt 1])> ::= <iii(n-1)> \s <vi*>	|
 		 	<I(n-1)> \s <vi*>
-		 
-<vii°(n)> ::= <ii(n-1)> \s <vii°*>	|
+
+<vii°(n [gt 1])> ::= <ii(n-1)> \s <vii°*>	|
 		   	  <IV(n-1)> \s <vii°*>	|
 		   	  <I(n-1)> \s <vii°*>
-		   
+
 <I*> ::= C
 
 <ii*> ::= Dmin
@@ -48,5 +48,3 @@
 <vi*> ::= Amin
 
 <vii°*> ::= Bdim
-
-	   
