@@ -150,6 +150,35 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 		
 		fireEndReading()
 	}
+
+	// private Fraction getTypeNoteDuration(String t) {
+	// 	switch(t) {
+	// 		case "256th":
+	// 			return fr(1, 256)
+	// 		case "128th":
+	// 			return fr(1, 128)
+	// 		case "64th":
+	// 			return fr(1, 64)
+	// 		case "32nd":
+	// 			return fr(1, 32)
+	// 		case "16th":
+	// 			return fr(1, 16)
+	// 		case "eighth":
+	// 			return fr(1, 8)
+	// 		case "quarter":
+	// 			return fr(1, 4)
+	// 		case "half":
+	// 			return fr(1, 2)
+	// 		case "whole":
+	// 			return fr(1, 1)
+	// 		case "breve":
+	// 			return fr(1, 1)
+	// 		case "long":
+	// 			return fr(1, 1)
+	// 		default:
+	// 			throw new Exception("musicxml note type not recognized")
+	// 	}
+	// }
 	
 	void processXml(String xml) {
 
@@ -236,6 +265,17 @@ class MusicXmlLeadSheetReader implements LeadSheetReader, LeadSheetReaderTrait {
 									duration = duration.add(duration.mult(fr(1,2)))
 								}
 							}
+							// String noteType = elementText(item, "type")
+							// Fraction duration = getTypeNoteDuration(noteType)
+							// if (element(item, "dot") != null) {
+							// 	duration = duration.add(duration.mult(fr(1,2)))
+							// }
+							// Element tm = element(item, "time-modification")
+							// if (tm != null) {  // tuplet
+							// 	int actual_notes = Integer.parseInt(elementText(tm, "actual-notes"))
+							// 	int normal_notes = Integer.parseInt(elementText(tm, "normal-notes"))
+							// 	duration = duration.mult(fr(normal_notes, actual_notes))
+							// }
 							if (element(item, "rest") != null) {
 								def rest = new Rest()
 								rest.duration = duration

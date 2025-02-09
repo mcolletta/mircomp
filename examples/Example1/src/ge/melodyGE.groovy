@@ -2,13 +2,11 @@ public class MelodyFitness extends FitnessFunction {
 
     MirChordInterpreter interpreter
     Compressor<Integer> dict_chroma
-    Compressor<Fraction> dict_durations
 
-    MelodyFitness(String chromaPath, String durationsPath, FitnessType type=FitnessType.MIN) {
+    MelodyFitness(String chromaPath, FitnessType type=FitnessType.MIN) {
         this.type = type
         interpreter = new MirChordInterpreter([])
         dict_chroma = loadObjectFromBinaryFile( chromaPath ) as Compressor<Integer>
-        dict_durations = loadObjectFromBinaryFile( durationsPath ) as Compressor<Fraction>
     }
 
     float rate(Individual individual) {
@@ -29,20 +27,11 @@ public class MelodyFitness extends FitnessFunction {
                 def chroma = midiValue % 12
                 score_chroma <<  chroma
             }
-            var score_durations = [fr(-1)]
-            for(Chord item: chords) {
-               score_durations << item.duration
-            }
 
             var xy_c = new Compressor<Integer>(dict_chroma, score_chroma)
-            var xy_d = new Compressor<Fraction>(dict_durations, score_durations)
-
             var compr_chroma = new Compressor<Integer>(score_chroma)
-            var compr_durations = new Compressor<Fraction>(score_durations)
 
-            float NCD_c = (xy_c.len - Math.min(dict_chroma.len, compr_chroma.len)) / Math.max(dict_chroma.len, compr_chroma.len)
-            float NCD_d = (xy_d.len - Math.min(dict_durations.len, compr_durations.len)) / Math.max(dict_durations.len, compr_durations.len)
-            fitness = 0.85 * NCD_c + 0.15 * NCD_d
+            fitness = (xy_c.len - Math.min(dict_chroma.len, compr_chroma.len)) / Math.max(dict_chroma.len, compr_chroma.len)
             println "fitness=$fitness"
 
         } catch(Exception ex) {
@@ -59,13 +48,13 @@ public class MelodyFitness extends FitnessFunction {
 
 def grammarText = getClass().getResourceAsStream("mirgrams/score.mirgram").getText()
 def gr = new MirGram(grammarText, "score", 3)
-def fit = new MelodyFitness(projectPath.resolve("data/chroma.ser").toString(), projectPath.resolve("data/durations.ser").toString())
+def fit = new MelodyFitness(projectPath.resolve("data/chroma.ser").toString())
 def ge = new MirGene(gr,fit).with {
     populationSize = 50
     genomeSize = 400
     maxGenerations = 1
     eliteSize = 15
-    mutationProbability = 0.05f
+    mutationProbability = 0.1f
     it
 }
 

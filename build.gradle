@@ -15,7 +15,7 @@ if (currentOS.macOsX) {
 }
 def javaFXVersion = "21"
 
-def groovyVersion = "4.0.24"
+def groovyVersion = "4.0.25"
 
 
 subprojects {
