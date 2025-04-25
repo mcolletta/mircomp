@@ -586,20 +586,23 @@ class PianoRollEditor {
     }
 
     void mouseWheelMoved(ScrollEvent e) {
-        Boolean up = (e.getDeltaY() < 0)
-        int note_height = Math.max(1, midi.scaleY(1) - 1)
-        int units_to_scroll = 3
-        int scrollY = (int)( (note_height * units_to_scroll) / midi.getCurrentScaleY() )
-        int newViewY
-        if (up) 
-            newViewY = (midi.getVerticalOffset() - scrollY)
-        else
-            newViewY = (midi.getVerticalOffset() + scrollY)
-        int maxMoveY = (int)( midi.lengthY - canvas.getHeight() / midi.getCurrentScaleY() )
-        if (newViewY < 0) newViewY = 0
-        if (newViewY > maxMoveY) newViewY = maxMoveY
-        midi.setVerticalOffset(newViewY)
-        repaint()
+        var deltaY = e.getDeltaY()
+        if (deltaY != 0) {
+            Boolean up = (deltaY < 0)
+            int note_height = Math.max(1, midi.scaleY(1) - 1)
+            int units_to_scroll = 3
+            int scrollY = (int)( (note_height * units_to_scroll) / midi.getCurrentScaleY() )
+            int newViewY
+            if (up)
+                newViewY = (midi.getVerticalOffset() - scrollY)
+            else
+                newViewY = (midi.getVerticalOffset() + scrollY)
+            int maxMoveY = (int)( midi.lengthY - canvas.getHeight() / midi.getCurrentScaleY() )
+            if (newViewY < 0) newViewY = 0
+            if (newViewY > maxMoveY) newViewY = maxMoveY
+            midi.setVerticalOffset(newViewY)
+            repaint()
+        }
     }
 
     void playbackAtTick(long tick) {
