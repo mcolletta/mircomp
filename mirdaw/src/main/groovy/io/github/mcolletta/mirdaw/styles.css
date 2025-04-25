@@ -1,0 +1,167 @@
+/*
+ * Copyright (C) 2016-2025 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/**
+ * @author Mirco Colletta
+ */
+ 
+.newsequence-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/new_window.png');
+}
+.fileopen-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/fileopen.png');
+}
+.filesave-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_save.png');
+}
+.filesaveas-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_saveas.png');
+}
+.reloadfile-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/reload.png');
+}
+.addtrack-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/insert_table_row.png');
+}
+.replay-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/player_start.png');
+}
+.play-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/player_play.png');
+}
+.pause-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/player_pause.png');
+}
+.stop-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/player_stop.png');
+}
+.note-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/mix_midi.png');
+}
+.edit-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/color_line.png');
+}
+.eraser-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/eraser.png');
+}
+.hand-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/hand.png');
+}
+.move-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/move.png');
+}
+.select-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_selectobject.png');
+}
+.playbackpos-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_aligncenter.png');
+}
+.undo-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/undo.png');
+}
+.redo-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/redo.png');
+}
+.mute-icon {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/kmixdocked_mute.png');
+}
+.zoom100-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_zoom100percent.png');
+}
+.zoomin-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_zoomin.png');
+}
+.zoomout-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_zoomout.png');
+}
+.humanization-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/mini_autoform.png');
+}
+.quantization-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_autoformat.png');
+}
+
+.track-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/enumlist1.png');
+}
+.channel-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/colorman.png');
+}
+
+.table-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_selecttable.png');
+}
+.editcc-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_freeline.png');
+}
+.line-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_connectorline.png');
+}
+.curve-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_beziersmooth.png');
+}
+.spinner-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_spinbutton.png');
+}
+.axis-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/sc_toggleaxisdescr.png');
+}
+
+.instrument-button {
+    -fx-content-display: graphic-only;
+    -fx-graphic: url('resources/icons/kcmmidi.png');
+}
+
+
+#noteLabel, #trackLabel, #channelLabel, #controllerLabel, #instrumentLabel {
+    -fx-font-weight: bold;
+}

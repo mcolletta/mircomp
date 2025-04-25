@@ -1,0 +1,69 @@
+<!--
+ * Copyright (C) 2016-2025 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?> 
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.*?>
+<?import io.github.mcolletta.mirdaw.*?>
+<GridPane alignment="CENTER" hgap="10.0" vgap="10.0"
+    xmlns:fx="http://javafx.com/fxml"
+    fx:controller="io.github.mcolletta.mirdaw.MidiTableView" stylesheets="@styles.css">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+    <Label style="-fx-font: NORMAL 20 Tahoma;" text="MidiEvent Table" GridPane.columnIndex="0" GridPane.rowIndex="0">
+    </Label>
+    <TableView fx:id="tableView" GridPane.columnIndex="0" GridPane.rowIndex="1">
+    	<columns>
+          <TableColumn text="Tick" prefWidth="100">
+          	<cellValueFactory>
+          		<PropertyValueFactory property="tick" />
+        	</cellValueFactory>
+          </TableColumn>
+          <TableColumn text="Track" prefWidth="100">
+          	<cellValueFactory>
+          		<PropertyValueFactory property="track" />
+        	</cellValueFactory>
+          </TableColumn>
+          <TableColumn text="Channel" prefWidth="100">
+          	<cellValueFactory>
+          		<PropertyValueFactory property="channel" />
+        	</cellValueFactory>
+          </TableColumn>
+          <TableColumn text="Command" prefWidth="100">
+          	<cellValueFactory>
+          		<PropertyValueFactory property="command" />
+        	</cellValueFactory>
+          </TableColumn>
+          <TableColumn text="Data 1" prefWidth="100">
+          	<cellValueFactory>
+          		<PropertyValueFactory property="data1" />
+        	</cellValueFactory>
+          </TableColumn>
+          <TableColumn text="Data 2" prefWidth="100">
+          	<cellValueFactory>
+          		<PropertyValueFactory property="data2" />
+        	</cellValueFactory>
+          </TableColumn>
+     </columns> 
+    </TableView>
+</GridPane>

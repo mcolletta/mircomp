@@ -1,0 +1,182 @@
+/*
+ * Copyright (C) 2016-2025 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/**
+ * @author Mirco Colletta
+ */
+
+
+package io.github.mcolletta.mirdaw
+
+import javafx.fxml.FXML
+import javafx.scene.control.TableView
+
+import javafx.beans.property.StringProperty
+import javafx.beans.property.IntegerProperty
+import javafx.beans.property.LongProperty
+import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleLongProperty
+
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
+import javafx.collections.transformation.SortedList
+
+import javax.sound.midi.*
+
+import groovy.transform.Canonical
+
+class MidiEventItem {
+
+	LongProperty tick = new SimpleLongProperty(0L)
+    IntegerProperty track = new SimpleIntegerProperty(0)
+    IntegerProperty channel = new SimpleIntegerProperty(0)
+    StringProperty command = new SimpleStringProperty("")
+    IntegerProperty data1 = new SimpleIntegerProperty(0)
+    IntegerProperty data2 = new SimpleIntegerProperty(0)
+
+    public long getTick() {
+        return tick.get()
+    }
+
+    public void setTick(long tk) {
+        tick.set(tk);
+    }
+
+    public int getTrack() {
+        return track.get()
+    }
+
+    public void setTrack(int tr) {
+        track.set(tr)
+    }
+
+    public int getChannel() {
+        return channel.get()
+    }
+
+    public void setChannel(int ch) {
+        channel.set(ch)
+    }
+
+    public String getCommand() {
+        return command.get()
+    }
+
+    public void setCommand(String cmd) {
+        command.set(cmd)
+    }
+
+    public int getData1() {
+        return data1.get()
+    }
+
+    public void setData1(int data) {
+        data1.set(data);
+    }
+
+    public int getData2() {
+        return data2.get()
+    }
+
+    public void setData2(int data) {
+        data2.set(data);
+    }
+}
+
+class MidiTableView {
+
+	MidiView midi
+	long startTick = Long.MIN_VALUE
+	long endTick = Long.MAX_VALUE
+
+	@FXML private TableView<MidiEventItem> tableView
+	ObservableList<MidiEventItem> events
+    SortedList<MidiEventItem> sortedEvents
+    Comparator<MidiEventItem> sortByTickComparator = { MidiEventItem left, MidiEventItem right -> return (int)(left.getTick() - right.getTick())} as Comparator<MidiEventItem>
+
+	MidiTableView() {}
+
+	void setMidiView(MidiView midi) {
+		this.midi = midi
+
+		events = FXCollections.observableArrayList()
+		
+		Sequence sequence = midi.getSequence()
+		for(int idx = 0; idx < sequence.getTracks().size(); idx++) {
+            Track track = sequence.getTracks()[idx]
+            for(int i = 0; i < track.size(); i++) {
+            	MidiEventItem item = new MidiEventItem()
+                MidiEvent event = track.get(i)
+                long tick = event.getTick()
+                item.setTrack(idx)
+                item.setTick(tick)
+                
+                if (event.getMessage() instanceof ShortMessage) {
+                    ShortMessage message = event.getMessage() as ShortMessage
+                    int channel = message.getChannel()
+                    item.setChannel(channel)
+                    item.setData1((int)message.getData1())
+                    item.setData2((int)message.getData2())
+                    switch (message.getCommand()) {
+                        case ShortMessage.PROGRAM_CHANGE:   // 0xC0, 192
+                            item.setCommand("PROGRAM_CHANGE")
+                            break
+                        case ShortMessage.CONTROL_CHANGE:       // 0xB0, 176
+                            item.setCommand("CONTROL_CHANGE")
+                            break
+                        case ShortMessage.NOTE_ON:              // 0x90, 144
+                            item.setCommand("NOTE_ON")
+                            break;
+                        case ShortMessage.NOTE_OFF:    // 0x80, 128
+                            item.setCommand("NOTE_OFF")
+                            break;
+                        default : 
+                            item.setCommand("" + message.getCommand())
+                            break
+                    }
+                
+                    if (item.getTick() >= startTick && item.getTick() <= endTick)
+                    	events.add(item)
+                }
+                if (event.getMessage() instanceof MetaMessage) {
+                    MetaMessage message = event.getMessage() as MetaMessage
+                    switch (message.getType()) {
+                        case 0x51:
+                            item.setCommand("TEMPO_CHANGE")
+                            byte[] data = message.getData()
+                            // microseconds per quarter
+                            int mpq = (data[0] & 0xff) << 16 | (data[1] & 0xff) << 8 | (data[2] & 0xff)
+                            // beats per minute
+                            int bpm = (int) (60000000.0D / mpq)
+                            item.setData1(bpm)
+                            events.add(item)
+                            break
+                        default:
+                            break
+                    }
+                }
+            }
+        }
+        sortedEvents = new SortedList<>(events)
+        sortedEvents.comparatorProperty().set(sortByTickComparator)
+        tableView.setItems(sortedEvents)
+	}
+
+}

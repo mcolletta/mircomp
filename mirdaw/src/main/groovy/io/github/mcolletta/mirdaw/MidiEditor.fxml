@@ -1,0 +1,154 @@
+<!--
+ * Copyright (C) 2016-2025 Mirco Colletta
+ *
+ * This file is part of MirComp.
+ *
+ * MirComp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MirComp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.collections.*?>
+<?import io.github.mcolletta.mirdaw.*?>
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml" stylesheets="@styles.css">
+	<ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+        <items>
+            <Button fx:id="newsequenceButton"  onAction="#newsequence" styleClass="newsequence-button" text="New sequence" mnemonicParsing="false"/>
+            <Button fx:id="fileopenButton"  onAction="#fileopen" styleClass="fileopen-button" text="Open..." mnemonicParsing="false"/>
+            <Button fx:id="filesaveButton"  onAction="#filesave" styleClass="filesave-button" text="Save" mnemonicParsing="false"/>
+            <Button fx:id="filesaveasButton"  onAction="#filesaveas" styleClass="filesaveas-button" text="Save as..." mnemonicParsing="false"/>
+            <Button fx:id="reloadfileButton"  onAction="#reloadfile" styleClass="reloadfile-button" text="Reload file..." mnemonicParsing="false"/>
+            <Button fx:id="replayButton"  onAction="#replay" styleClass="replay-button" text="Replay" mnemonicParsing="false"/>
+            <Button fx:id="playButton" onAction="#play" styleClass="play-button" text="Play" mnemonicParsing="false"/>
+            <Button fx:id="playPause" onAction="#pause" styleClass="pause-button" text="Pause" mnemonicParsing="false"/>
+            <Button fx:id="stopButton" onAction="#stop" styleClass="stop-button" text="Stop" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="undoButton" onAction="#undo" styleClass="undo-button" text="Undo" mnemonicParsing="false"/>
+            <Button fx:id="redoButton" disable="true" onAction="#redo" styleClass="redo-button" text="Redo" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="zoom100Button" onAction="#zoom100" styleClass="zoom100-button" text="Zoom 1:1" mnemonicParsing="false"/>
+            <Button fx:id="zoomoutButton" onAction="#zoomout" styleClass="zoomout-button" text="Zoom out" mnemonicParsing="false"/>
+            <TextField fx:id="currentZoomField" prefWidth="50" /><Label text="\%" />
+            <Button fx:id="zoominButton" onAction="#zoomin" styleClass="zoomin-button" text="Zoom in" mnemonicParsing="false"/> 
+            <Separator orientation="VERTICAL" />
+            <Label text="Note:" />
+            <MenuButton fx:id="notesMenu" styleClass="note-button" text="Select..."/>
+            <Label fx:id="noteLabel" />
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="humanizationButton" onAction="#humanization" styleClass="humanization-button" text="Humanization" mnemonicParsing="false"/>
+            <Button fx:id="quantizationButton" onAction="#quantization" styleClass="quantization-button" text="Quantization" mnemonicParsing="false"/>
+        </items>
+    </ToolBar>
+    <ResizableRegion fx:id="pianoCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+    <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+        <items>
+            <Label text="Track:" />
+            <MenuButton fx:id="tracksMenu" styleClass="track-button" text="Select..."/>
+            <Label fx:id="trackLabel" />
+            <Button fx:id="addTrackButton" onAction="#addtrack" styleClass="addtrack-button" text="Add Track" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Label text="Mute:"/>
+            <MenuButton fx:id="muteTracksMenu" styleClass="mute-icon" text="Mute..."/>
+            <Separator orientation="VERTICAL" />
+            <Label text="Channel:" />
+            <MenuButton fx:id="channelsMenu" styleClass="channel-button" text="Select..."/>
+            <Label fx:id="channelLabel"/>
+            <Separator orientation="VERTICAL" />
+            <fx:define>
+              <ToggleGroup fx:id="editButtonsGroup"/>  
+            </fx:define>
+            <ToggleButton onAction="#panMode" toggleGroup="$editButtonsGroup" styleClass="move-button" text="Move" mnemonicParsing="false"/>
+            <ToggleButton onAction="#playbackPosMode" toggleGroup="$editButtonsGroup" styleClass="playbackpos-button" text="Playback Position" mnemonicParsing="false"/>
+            <ToggleButton onAction="#selectMode" toggleGroup="$editButtonsGroup" styleClass="select-button" text="Select" mnemonicParsing="false"/>
+            <ToggleButton onAction="#editMode" toggleGroup="$editButtonsGroup" styleClass="edit-button" text="Pencil" mnemonicParsing="false"/>
+            <Button fx:id="eraseButton" onAction="#erase" styleClass="eraser-button" text="Eraser" mnemonicParsing="false"/>
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="tableButton" onAction="#showMidiTable" styleClass="table-button" text="MidiEvent Table" mnemonicParsing="false"/>
+        </items>
+    </ToolBar>
+    <!-- Controller/Instruments -->
+    <TabPane fx:id="tabController" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" maxWidth="Infinity" maxHeight="Infinity">
+        <tabs>
+            <Tab text="Controller">
+              <content>
+                <VBox maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+                            <items>
+                                <Label text="Controller:" />
+                                <MenuButton fx:id="controllersMenu" styleClass="editcc-button" text="Select..."/>
+                                <Label fx:id="controllerLabel" text="Volume" />
+                                <Separator orientation="VERTICAL" />
+                                <Label text="Pencil Mode:" />
+                                <fx:define>
+                                  <ToggleGroup fx:id="pencilModeButtonsGroup"/>  
+                                </fx:define>
+                                <ToggleButton fx:id="lineButton" onAction="#lineMode" toggleGroup="$pencilModeButtonsGroup" styleClass="line-button" text="Line" mnemonicParsing="false"/>
+                                <ToggleButton fx:id="curveButton" onAction="#curveMode" toggleGroup="$pencilModeButtonsGroup" styleClass="curve-button" text="Curve" mnemonicParsing="false"/>
+                            </items>
+                        </ToolBar>
+                        <ResizableRegion fx:id="controllerCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+                    </children>
+                </VBox>
+              </content>
+            </Tab>
+            <Tab text="Instruments">
+              <content>
+                <VBox maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+                            <items>
+                                <Label text="Instrument:" />
+                                <MenuButton fx:id="instrumentsMenu" styleClass="instrument-button" text="Select..."/>
+                                <Label fx:id="instrumentLabel" text="default instrument" />
+                            </items>
+                        </ToolBar>
+                        <ResizableRegion fx:id="instrumentsCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+                    </children>
+                </VBox>
+              </content>
+            </Tab>
+            <Tab text="Tempo">
+              <content>
+                <VBox maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+                    <children>
+                        <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+                            <items>
+                                <Label text="Tempo:" />
+                                <Spinner fx:id="tempoSpinner">
+                                  <valueFactory>
+                                    <SpinnerValueFactory.IntegerSpinnerValueFactory min="24" max="300" initialValue="120"/>
+                                  </valueFactory>
+                                  <editable>true</editable>
+                                </Spinner>
+                                <Separator orientation="VERTICAL" />
+                                <Label text="Tempo Mode:" />
+                                <fx:define>
+                                  <ToggleGroup fx:id="tempoModeButtonsGroup"/>  
+                                </fx:define>
+                                <ToggleButton fx:id="tempoEditedButton" onAction="#tempoEditedMode" toggleGroup="$tempoModeButtonsGroup" styleClass="spinner-button" text="Spinner" mnemonicParsing="false"/>
+                                <ToggleButton fx:id="tempoAxisButton" onAction="#tempoAxisMode" toggleGroup="$tempoModeButtonsGroup" styleClass="axis-button" text="Axis" mnemonicParsing="false"/>
+                            </items>
+                        </ToolBar>
+                        <ResizableRegion fx:id="tempoCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+                    </children>
+                </VBox>
+              </content>
+            </Tab>
+        </tabs>
+    </TabPane>    
+    <ScrollBar fx:id="scrollBarX" orientation="HORIZONTAL" />
+</fx:root>

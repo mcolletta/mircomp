@@ -1,0 +1,152 @@
+plugins {
+    // id 'java'
+    id 'groovy'
+    id 'application'
+    // id("org.graalvm.python") version "24.1.2"
+    // id 'org.graalvm.buildtools.native' version '0.10.5'
+}
+
+def klassName = 'io.github.mcolletta.mirdaw.MirDAW'
+
+application {
+    mainClass = klassName
+}
+
+// graalPy { 
+//     packages = ["numpy==2.2.3"]
+// }
+
+
+def currentOS = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem()
+def platform = ""
+if (currentOS.macOsX) {
+    platform = "mac"
+} else if (currentOS.linux) {
+    platform = "linux"
+} else if (currentOS.windows) {
+    platform = "win"
+}
+def javaFXVersion = "23"
+
+def groovyVersion = "4.0.26"
+
+repositories {
+    flatDir {
+        dirs '../libs'
+    }
+    mavenCentral()
+}
+
+compileGroovy {
+    configure(groovyOptions) {
+        configurationScript = file("config/src/main/groovy/compiler-config.groovy")
+    }
+}
+
+configurations {
+    libs
+}
+
+// def graalpyVersion = "24.1.2"
+
+dependencies {
+    implementation("org.openjfx:javafx-base:${javaFXVersion}:${platform}")
+    implementation("org.openjfx:javafx-controls:${javaFXVersion}:${platform}")
+    implementation("org.openjfx:javafx-graphics:${javaFXVersion}:${platform}")
+    implementation("org.openjfx:javafx-fxml:${javaFXVersion}:${platform}")
+    implementation("org.openjfx:javafx-media:${javaFXVersion}:${platform}")
+    implementation("org.openjfx:javafx-swing:${javaFXVersion}:${platform}")
+
+    // implementation("org.graalvm.polyglot:polyglot:$graalpyVersion")
+    // implementation("org.graalvm.polyglot:python-community:$graalpyVersion")
+    // implementation("org.graalvm.python:python-embedding:$graalpyVersion")
+
+    implementation("org.apache.groovy:groovy:${groovyVersion}")
+    implementation("org.apache.groovy:groovy-nio:${groovyVersion}")
+    implementation("org.apache.groovy:groovy-xml:${groovyVersion}")
+    implementation("org.apache.groovy:groovy-json:${groovyVersion}")
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ["src/main/groovy", "src/main/resources"]
+        }
+    }
+}
+
+jar {
+    manifest.attributes 'Created-By': 'Mirco Colletta'
+}
+
+// graalvmNative {
+//     metadataRepository {
+//         uri(file("./src/main/resources/META-INF/native-image"))
+//     }
+// }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(23)
+    }
+}
+
+def jvmDefaultArgs = [ ]
+
+application {
+    mainModule = "io.github.mcolletta.mirdaw"
+    mainClass = klassName
+    applicationDefaultJvmArgs = jvmDefaultArgs
+}
+
+// task copyModules(type: Copy) {
+//     // from(configurations.runtimeClasspath).include("javafx-*.jar", "groovy-*.jar")
+//     from(configurations.runtimeClasspath).include("javafx-*.jar")
+//     into("$buildDir/modules")
+// }
+
+// task runMirDAW(type: JavaExec) {
+//     dependsOn build, copyModules
+//     // dependsOn build
+//     description 'Run MirDAW'
+//     // mainModule = "io.github.mcolletta.mirdaw"
+//     mainClass = klassName
+//     classpath = sourceSets.main.runtimeClasspath
+
+//     jvmArgs = [
+//         // "-agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image",
+//         "--module-path", "$buildDir/modules${File.pathSeparator}$buildDir/libs",
+//         // "--add-modules=io.github.mcolletta.mirdaw,javafx.graphics,javafx.fxml,javafx.swing,javafx.media",
+//         "--add-modules=javafx.graphics,javafx.fxml,javafx.swing,javafx.media",
+//         "--add-exports", "javafx.base/com.sun.javafx=ALL-UNNAMED",
+//         "--add-exports", "javafx.base/com.sun.javafx.binding=ALL-UNNAMED",
+//         "--add-exports", "javafx.base/com.sun.javafx.collections=ALL-UNNAMED",
+//         "--add-exports", "javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+//         "--add-exports", "javafx.base/com.sun.javafx.logging=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.application=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.tk.quantum=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
+//         "--add-exports", "javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+//         "--add-exports", "java.desktop/com.sun.media.sound=ALL-UNNAMED",
+//     ]
+
+//     if (project.hasProperty('custom_arg')) {
+//         args project.getProperty('custom_arg')
+//     }
+// }
+
+// defaultTasks 'runMirDAW'
