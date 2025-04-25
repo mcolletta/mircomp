@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2025 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -714,13 +714,14 @@ class MidiManager {
         @Override public void run() {
             try {
                 sequencer.setTickPosition(getPlaybackPosition())
-                while (!stop) {
+                while (sequencer.isRunning() && !stop) {
                     long tick = sequencer.getTickPosition()
                     for (MidiPlaybackListener listener : listeners) {
                         listener.playbackAtTick(tick)
                     }
                     Thread.sleep((int)(1000 / timerRate))
                 }
+                sequencer.stop()
             } catch (InterruptedException e) {
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2025 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -514,7 +514,9 @@ class PianoRollEditor {
 
             long newViewX = (midi.getHorizontalOffset() + scrollX)
             long totLength = midi.sequence.tickLength + (long)(MARGIN_RIGHT * midi.getResolution() / midi.getCurrentScaleX())
-            long maxMoveX = (long)( totLength - (canvas.getWidth() * midi.getResolution() / midi.getCurrentScaleX()) )
+            //long maxMoveX = (long)( totLength - (canvas.getWidth() * midi.getResolution() / midi.getCurrentScaleX()) )
+            long maxCanvasMoveX = (long)(canvas.getWidth() * midi.getResolution() / midi.getCurrentScaleX())
+            long maxMoveX = Math.max(totLength, (long)(totLength - maxCanvasMoveX))
             
             if (newViewX < 0) newViewX = 0
             if (newViewX > maxMoveX) newViewX = maxMoveX

@@ -1,2 +1,3 @@
 mode-mirchord.js linguist-vendored=false
 miride/src/main/groovy/io/github/mcolletta/miride/resources/themes/** linguist-vendored
+mirdaw/src/main/groovy/io/github/mcolletta/mirdaw/resources/themes/** linguist-vendored

@@ -67,7 +67,7 @@ MirSynth is a library for sound synthesis that allows to build virtual MIDI inst
 
 ## LICENSE
 
-Copyright (C) 2016-2024 Mirco Colletta
+Copyright (C) 2016-2025 Mirco Colletta
 
 MirComp is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -88,10 +88,10 @@ along with MirComp.  If not, see <http://www.gnu.org/licenses/>.
 Suggested BibTex entry:
 
 ```
-@misc{mcolletta2023,
+@misc{mcolletta2025,
   author = {Colletta, Mirco},
   title = {MirComp: a framework for assisted and algorithmic music composition},
-  year = {2016--2023},
+  year = {2016--2025},
   publisher = {GitHub},
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/mcolletta/mircomp}}
