@@ -49,6 +49,8 @@ import javafx.scene.input.KeyCombination
 import javafx.scene.input.KeyEvent
 
 import javafx.scene.layout.VBox
+import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
 import javafx.scene.layout.Pane
 
 import javafx.scene.control.TextField
@@ -148,11 +150,10 @@ class MidiEditor extends VBox implements MidiPlaybackListener {
     InstrumentsEditor instrumentsEditor
     TempoEditor tempoEditor
 
-    @FXML private ResizableRegion keyboardCanvas
-    @FXML private ResizableRegion pianoCanvas
-    @FXML private ResizableRegion controllerCanvas
-    @FXML private ResizableRegion instrumentsCanvas
-    @FXML private ResizableRegion tempoCanvas
+    @FXML private HBox pianoCanvas
+    @FXML private HBox controllerCanvas
+    @FXML private HBox instrumentsCanvas
+    @FXML private HBox tempoCanvas
 
     @FXML private MenuButton tracksMenu
     @FXML private Label trackLabel
@@ -200,11 +201,46 @@ class MidiEditor extends VBox implements MidiPlaybackListener {
 
         initMenus()
 
-        pianoKeyboard = new PianoKeyboard(midi, keyboardCanvas)
-        pianoRollEditor = new PianoRollEditor(midi, pianoCanvas)
-        controllerEditor = new ControllerEditor(midi, controllerCanvas)
-        instrumentsEditor = new InstrumentsEditor(midi, instrumentsCanvas)
-        tempoEditor = new TempoEditor(midi, tempoCanvas)
+        pianoKeyboard = new PianoKeyboard(midi)
+        pianoRollEditor = new PianoRollEditor(midi)
+        controllerEditor = new ControllerEditor(midi)
+        instrumentsEditor = new InstrumentsEditor(midi)
+        tempoEditor = new TempoEditor(midi)
+
+
+        pianoKeyboard.setPrefWidth(50.0)
+        pianoKeyboard.setMaxWidth(50.0)
+        pianoKeyboard.setPrefHeight(700.0)
+        pianoKeyboard.setMaxHeight(Double.POSITIVE_INFINITY)
+        pianoCanvas.getChildren().add(pianoKeyboard)
+
+        pianoRollEditor.setPrefWidth(550.0)
+        pianoRollEditor.setMaxWidth(Double.POSITIVE_INFINITY)
+        pianoRollEditor.setPrefHeight(700.0)
+        pianoRollEditor.setMaxHeight(Double.POSITIVE_INFINITY)
+        HBox.setHgrow(pianoRollEditor, Priority.ALWAYS)
+        pianoCanvas.getChildren().add(pianoRollEditor)
+
+        controllerEditor.setPrefWidth(550.0)
+        controllerEditor.setMaxWidth(Double.POSITIVE_INFINITY)
+        controllerEditor.setPrefHeight(700.0)
+        controllerEditor.setMaxHeight(Double.POSITIVE_INFINITY)
+        HBox.setHgrow(controllerEditor, Priority.ALWAYS)
+        controllerCanvas.getChildren().add(controllerEditor)
+
+        instrumentsEditor.setPrefWidth(550.0)
+        instrumentsEditor.setMaxWidth(Double.POSITIVE_INFINITY)
+        instrumentsEditor.setPrefHeight(700.0)
+        instrumentsEditor.setMaxHeight(Double.POSITIVE_INFINITY)
+        HBox.setHgrow(instrumentsEditor, Priority.ALWAYS)
+        instrumentsCanvas.getChildren().add(instrumentsEditor)
+
+        tempoEditor.setPrefWidth(550.0)
+        tempoEditor.setMaxWidth(Double.POSITIVE_INFINITY)
+        tempoEditor.setPrefHeight(700.0)
+        tempoEditor.setMaxHeight(Double.POSITIVE_INFINITY)
+        HBox.setHgrow(tempoEditor, Priority.ALWAYS)
+        tempoCanvas.getChildren().add(tempoEditor)
 
         currentZoomField.setText("" + 100)
         currentZoomField.setOnKeyPressed(new EventHandler<KeyEvent>() {

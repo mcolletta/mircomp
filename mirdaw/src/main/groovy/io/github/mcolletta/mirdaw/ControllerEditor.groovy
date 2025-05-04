@@ -49,7 +49,7 @@ import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
 
 
-class ControllerEditor {
+class ControllerEditor extends ResizableRegion {
 
     double clickX
     double clickY
@@ -58,7 +58,7 @@ class ControllerEditor {
     double endCurveX
     double endCurveY
 
-    Boolean isDragging
+    //Boolean isDragging
     Boolean isEditingCurve
 
     ControllerEditMode pencilMode = ControllerEditMode.LINE
@@ -66,22 +66,18 @@ class ControllerEditor {
     Rectangle selection
 
     MidiView midi
-    ResizableRegion region
-    GraphicsContext g
-    GraphicsContext gl
 
-    Cursor cursor	
+    //Cursor cursor	
 
-    ControllerEditor(MidiView midi, ResizableRegion region) {
+    ControllerEditor(MidiView midi) {
         this.midi = midi
-        setupRegion(region)
-		repaint()
+		//repaint()
     }
 
-    void setCursor(Cursor c) {
-        this.cursor = c 
-        repaint()
-    }
+    // void setCursor(Cursor c) {
+    //     this.cursor = c 
+    //     repaint()
+    // }
 
     /*
               y2 - y1
@@ -138,7 +134,7 @@ class ControllerEditor {
     B(t) = (1-t)^2*p0+2(1-t)t*p1+(t^2)*p2
     */
     void editCurve() {
-        double h = region.getHeight()
+        double h = getHeight()
         long startX = midi.fromX(clickX)
         long endX = midi.fromX(endCurveX)
 
@@ -198,7 +194,8 @@ class ControllerEditor {
                                    Math.abs(dragClickX - clickX), Math.abs(dragClickY - clickY) )
     }
 
-    void delete() {
+    @Override
+    protected void delete() {
         if (selection != null) {
             long startX = midi.fromX(selection.getX())
             long endX = midi.fromX(selection.getX() + selection.getWidth())
@@ -215,7 +212,8 @@ class ControllerEditor {
         }
     }
 
-    void mouseClicked(MouseEvent event) {
+    @Override
+    protected void mouseClicked(MouseEvent event) {
         if (midi.mode == Mode.SET_PLAYBACK_POSITION) {
             midi.setPlaybackPosition(midi.fromX(event.getX()))
             midi.sequencer.setTickPosition(midi.getPlaybackPosition())
@@ -235,24 +233,27 @@ class ControllerEditor {
         }
     }
 
-    void mousePressed(MouseEvent event) {
+    @Override
+    protected void mousePressed(MouseEvent event) {
         if (!isEditingCurve) {
             clickX = event.getX()
             clickY = event.getY()
         }
     }
 
-    void mouseDragged(MouseEvent event) {
+    @Override
+    protected void mouseDragged(MouseEvent event) {
         dragClickX = event.getX()
         dragClickY = event.getY()  
         isDragging = true  
         repaint()    
     }
 
-    void mouseReleased(MouseEvent event) {
+    @Override
+    protected void mouseReleased(MouseEvent event) {
         //isDragging = false
 
-        double h = region.getHeight()
+        double h = getHeight()
         long startX = midi.fromX(clickX)
         long endX = midi.fromX(dragClickX)
         int startY = (int)( 128 * (h - clickY) / h )
@@ -282,11 +283,14 @@ class ControllerEditor {
         }
     }
 
-    void mouseEntered(MouseEvent event) { }
+    @Override
+    protected void mouseEntered(MouseEvent event) { }
 
-    void mouseExited(MouseEvent event) { }
+    @Override
+    protected void mouseExited(MouseEvent event) { }
 
-    void mouseMoved(MouseEvent event) {
+    @Override
+    protected void mouseMoved(MouseEvent event) {
         if (isEditingCurve) {
             endCurveX = event.getX()
             endCurveY = event.getY() 
@@ -296,7 +300,7 @@ class ControllerEditor {
 
     void playbackAtTick(long tick) {
         midi.setPlaybackPosition(tick)
-        long right = (long)( midi.getHorizontalOffset() + region.getWidth() * midi.getResolution() / midi.getCurrentScaleX() )
+        long right = (long)( midi.getHorizontalOffset() + getWidth() * midi.getResolution() / midi.getCurrentScaleX() )
         if (midi.getPlaybackPosition() < midi.getHorizontalOffset() || midi.getPlaybackPosition() > right) {
             midi.setHorizontalOffset(midi.getPlaybackPosition())
             repaint()
@@ -305,118 +309,32 @@ class ControllerEditor {
 
     // Region
 
-    void setupRegion(ResizableRegion region) {
-        this.region = region
-        this.g = region.getGraphicsContext2D()
-        this.gl = region.getLayerGraphicsContext2D()
-
-        region.drawing.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })  
-        region.drawing.heightProperty().addListener(new ChangeListener<Number>() {
-	        @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })
-        region.layer.widthProperty().addListener(new ChangeListener<Number>() {
-                @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })  
-        region.layer.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })
-
-        region.setFocusTraversable(true)
-
-		region.addEventHandler(MouseEvent.MOUSE_CLICKED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				//if (e.getClickCount() == 1)
-				if (isDragging)
-					isDragging = false
-				else {
-					mouseClicked(e)
-				}
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_PRESSED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mousePressed(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_DRAGGED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseDragged(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_RELEASED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseReleased(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_MOVED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseMoved(e)
-			}
-		});
-
-        final KeyCombination keyCtrZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN)
-        final KeyCombination keyCtrY = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN)
-        region.setOnKeyPressed(
-        new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.DELETE) {
-                    delete()
-                } else if (keyCtrZ.match(keyEvent)) {
-                    midi.undo()
-                    repaint()
-                } else if (keyCtrY.match(keyEvent)) {
-                    midi.redo()
-                    repaint()
-                }
-            }
-        });
-
-        region.addEventFilter(MouseEvent.ANY, { region.requestFocus() })        
+    @Override
+    protected void undo() {
+        midi.undo()
     }
 
-    private void reset() {
-		// g.clearRect(0, 0, region.getWidth(), region.getHeight())
+    @Override
+    protected void redo() {
+        midi.redo()
+    }
+
+    @Override
+    protected void reset() {
+		// g.clearRect(0, 0, getWidth(), getHeight())
         // monokai bg
         g.setFill(Color.web("272822"))
-        g.fillRect(0, 0, region.getWidth(), region.getHeight())
+        g.fillRect(0, 0, getWidth(), getHeight())
 	}
 
+    @Override
     protected void repaint() {
-        region.setCursor(cursor)
+        // setCursor(cursor)
         reset()
 
         int resolution = midi.getResolution()
         long left = midi.getHorizontalOffset()
-        double w = region.getWidth()
+        double w = getWidth()
         long right = (long)( left + w * midi.getResolution() / midi.getCurrentScaleX() )
 
         //measures
@@ -437,7 +355,7 @@ class ControllerEditor {
                 } else {
                     g.setStroke(Color.color(0.55d, 0.55d, 0.55d))
                 }
-                g.strokeLine(tkToPx, 0, tkToPx, region.getHeight())
+                g.strokeLine(tkToPx, 0, tkToPx, getHeight())
             }
         }
 
@@ -469,7 +387,7 @@ class ControllerEditor {
             Color color =  midi.channelColor[channel]
             g.setFill(color)
 
-            double h = region.getHeight()
+            double h = getHeight()
             List<Long> keys = data.keySet() as List<Long>
             int lastIndex = keys.size() - 1
             //for(int i=0; i<keys.size(); i++) {
@@ -492,8 +410,8 @@ class ControllerEditor {
                     duration = midi.toX(nextKey)-midi.toX(key)
                     endLineX = screenX + duration
                 } else {
-                    duration = region.getWidth()-screenX
-                    endLineX = region.getWidth()
+                    duration = getWidth()-screenX
+                    endLineX = getWidth()
                 }
                 g.setStroke(Color.color(color.red, color.green, color.blue))
                 g.strokeLine(screenX, rectHeight, endLineX, rectHeight)
@@ -512,13 +430,14 @@ class ControllerEditor {
         repaintLayer()
     }
 
-    void repaintLayer() {
-        gl.clearRect(0, 0, region.getWidth(), region.getHeight())
+    @Override
+    protected void repaintLayer() {
+        gl.clearRect(0, 0, getWidth(), getHeight())
         double pbPos = midi.toX(midi.getPlaybackPosition())
         if (pbPos > 0) {
             gl.setStroke(Color.BLUE)
             gl.setLineWidth(2.0d)
-            gl.strokeLine(pbPos, 0, pbPos, region.layer.getHeight())
+            gl.strokeLine(pbPos, 0, pbPos, getHeight())
             gl.setLineWidth(1.0d)
         }
     }

@@ -56,29 +56,25 @@ import javafx.beans.value.ChangeListener
 import io.github.mcolletta.mirdaw.Instrument
 
 
-class InstrumentsEditor {
+class InstrumentsEditor extends ResizableRegion {
 
     MidiPC selectedItem
     Map<MidiPC,Rectangle> visibleRects
 
     MidiView midi
-    ResizableRegion region
-    GraphicsContext g
-    GraphicsContext gl
 
-    Cursor cursor	
+    // Cursor cursor	
 
-    InstrumentsEditor(MidiView midi, ResizableRegion region) {
+    InstrumentsEditor(MidiView midi) {
         this.midi = midi
-        setupRegion(region)
         visibleRects = [:]
 		repaint()
     }
 
-    void setCursor(Cursor c) {
-        this.cursor = c 
-        repaint()
-    }
+    // void setCursor(Cursor c) {
+    //     this.cursor = c 
+    //     repaint()
+    // }
 
     void edit(int channel, long tick, int program) {
     	ObservableMap<Long, MidiPC> data = midi.programs[channel]
@@ -95,7 +91,8 @@ class InstrumentsEditor {
         }
     }
 
-    void delete() {
+    @Override
+    protected void delete() {
         if (selectedItem != null) {
             int channel = selectedItem.getChannel()
             ObservableMap<Long, MidiPC> data = midi.programs[channel]
@@ -107,7 +104,8 @@ class InstrumentsEditor {
         }
     }
 
-    void mouseClicked(MouseEvent event) {
+    @Override
+    protected void mouseClicked(MouseEvent event) {
         if (midi.mode == Mode.SET_PLAYBACK_POSITION) {
             midi.setPlaybackPosition(midi.fromX(event.getX()))
             midi.sequencer.setTickPosition(midi.getPlaybackPosition())
@@ -115,7 +113,7 @@ class InstrumentsEditor {
         }
         if (midi.mode == Mode.EDIT || midi.mode == Mode.SELECT) {
         	long x = midi.fromX(event.getX())
-        	double h = region.getHeight()
+        	double h = getHeight()
             double rectHeight = h / 16
         	int channel = (int) (event.getY() / rectHeight)
             if (channel != 9) {
@@ -133,21 +131,10 @@ class InstrumentsEditor {
         }
     }
 
-    void mousePressed(MouseEvent event) { }
-
-    void mouseDragged(MouseEvent event) { }
-
-    void mouseReleased(MouseEvent event) { }
-
-    void mouseEntered(MouseEvent event) { }
-
-    void mouseExited(MouseEvent event) { }
-
-    void mouseMoved(MouseEvent event) { }
 
     void playbackAtTick(long tick) {
         midi.setPlaybackPosition(tick)
-        long right = (long)( midi.getHorizontalOffset() + region.getWidth() * midi.getResolution() / midi.getCurrentScaleX() )
+        long right = (long)( midi.getHorizontalOffset() + getWidth() * midi.getResolution() / midi.getCurrentScaleX() )
         if (midi.getPlaybackPosition() < midi.getHorizontalOffset() || midi.getPlaybackPosition() > right) {
             midi.setHorizontalOffset(midi.getPlaybackPosition())
             repaint()
@@ -156,114 +143,33 @@ class InstrumentsEditor {
 
     // Region
 
-    void setupRegion(ResizableRegion region) {
-        this.region = region
-        this.g = region.getGraphicsContext2D()
-        this.gl = region.getLayerGraphicsContext2D()
-
-        region.drawing.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })  
-        region.drawing.heightProperty().addListener(new ChangeListener<Number>() {
-	        @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })
-        region.layer.widthProperty().addListener(new ChangeListener<Number>() {
-                @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })  
-        region.layer.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })
-
-        region.setFocusTraversable(true)
-
-		region.addEventHandler(MouseEvent.MOUSE_CLICKED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseClicked(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_PRESSED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mousePressed(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_DRAGGED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseDragged(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_RELEASED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseReleased(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_MOVED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseMoved(e)
-			}
-		});
-
-        final KeyCombination keyCtrZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN)
-        final KeyCombination keyCtrY = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN)
-        region.setOnKeyPressed(
-        new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.DELETE) {
-                    delete()
-                } else if (keyCtrZ.match(keyEvent)) {
-                    midi.undo()
-                    repaint()
-                } else if (keyCtrY.match(keyEvent)) {
-                    midi.redo()
-                    repaint()
-                }
-            }
-        });
-
-        region.addEventFilter(MouseEvent.ANY, { region.requestFocus() })
+    @Override
+    protected void undo() {
+        midi.undo()
     }
 
-    private void reset() {
+    @Override
+    protected void redo() {
+        midi.redo()
+    }
+
+    @Override
+    protected void reset() {
         g.setFill(Color.web("272822"))
-        g.fillRect(0, 0, region.getWidth(), region.getHeight())
+        g.fillRect(0, 0, getWidth(), getHeight())
 	}
 
+    @Override
     protected void repaint() {
-        region.setCursor(cursor)
+        // setCursor(cursor)
         reset()
 
         int resolution = midi.getResolution()
         long left = midi.getHorizontalOffset()
-        double w = region.getWidth()
+        double w = getWidth()
         long right = (long)( left + w * midi.getResolution() / midi.getCurrentScaleX() )
 
-        double h = region.getHeight()
+        double h = getHeight()
         double rectHeight = h / 16
         int fontSize = (int) (rectHeight * 0.75)
 
@@ -275,7 +181,7 @@ class InstrumentsEditor {
                 g.setFill(color)
                 double lw = g.getLineWidth()
                 double screenY = (channel * rectHeight)
-                double default_instr_duration = region.getWidth()
+                double default_instr_duration = getWidth()
                 g.setStroke(Color.color(color.red, color.green, color.blue))
                 g.strokeRect(midi.toX(left), screenY+lw, default_instr_duration, rectHeight-lw)
                 g.setFill(Color.WHITE)              
@@ -311,8 +217,8 @@ class InstrumentsEditor {
                     duration = midi.toX(nextKey)-midi.toX(key)
                     endLineX = screenX + duration
                 } else {
-                    duration = region.getWidth()-screenX
-                    endLineX = region.getWidth()
+                    duration = getWidth()-screenX
+                    endLineX = getWidth()
                 }
                 // clear
                 g.setFill(Color.web("272822"))
@@ -337,7 +243,7 @@ class InstrumentsEditor {
                 visibleRects[pc] = pcShape
 
                 if (i == 0 && key > midi.getHorizontalOffset()) {
-                    double default_instr_duration = Math.min(screenX, region.getWidth())
+                    double default_instr_duration = Math.min(screenX, getWidth())
                     g.strokeRect(midi.toX(left), screenY+lw, default_instr_duration, rectHeight-lw)
                     g.fillText("default instrument", 0, screenY+fontSize, default_instr_duration)
                 }
@@ -347,13 +253,14 @@ class InstrumentsEditor {
         repaintLayer()
     }
 
-    void repaintLayer() {
-        gl.clearRect(0, 0, region.getWidth(), region.getHeight())
+    @Override
+    protected void repaintLayer() {
+        gl.clearRect(0, 0, getWidth(), getHeight())
         double pbPos = midi.toX(midi.getPlaybackPosition())
         if (pbPos > 0) {
             gl.setStroke(Color.BLUE)
             gl.setLineWidth(2.0d)
-            gl.strokeLine(pbPos, 0, pbPos, region.layer.getHeight())
+            gl.strokeLine(pbPos, 0, pbPos, getHeight())
             gl.setLineWidth(1.0d)
         }
     }

@@ -59,7 +59,7 @@ import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
 
 
-class PianoRollEditor {
+class PianoRollEditor extends ResizableRegion {
 
     double clickX
     double clickY
@@ -88,21 +88,17 @@ class PianoRollEditor {
     long MARGIN_RIGHT = 500
 
     MidiView midi
-    ResizableRegion region
-    GraphicsContext g
-    GraphicsContext gl
 
     Map<Integer, String> pitchNameMap = [:]
 
-    void setCursor(Cursor c) {
-        this.cursor = c 
-        repaint()
-    }
+    // void setCursor(Cursor c) {
+    //     this.cursor = c 
+    //     repaint()
+    // }
 
-    PianoRollEditor(MidiView midi, ResizableRegion region) {
+    PianoRollEditor(MidiView midi) {
     	
         this.midi = midi
-        setupRegion(region)
 
         visibleRects = [:]
         selectedNotes = []
@@ -169,8 +165,8 @@ class PianoRollEditor {
         return r
     }
 
-
-    void delete() {
+    @Override
+    protected void delete() {
         if (selectedNotes != null) {
             midi.startEdit()
             selectedNotes.each { note ->
@@ -179,7 +175,6 @@ class PianoRollEditor {
             midi.stopEdit()
             selectedNotes = []
             selection = null
-            repaint()
         }
     }
 
@@ -188,7 +183,7 @@ class PianoRollEditor {
         MidiNote picked = null
         //for(MidiNote note : midi.sortedByEndNotes) {
         long left = midi.getHorizontalOffset()
-        double w = region.getWidth()
+        double w = getWidth()
         long right = (long)( left + w * midi.getResolution() / midi.getCurrentScaleX() )
         int i = Math.abs(midi.getStartNoteIndex(left) + 1)
         long longestDuration = midi.getLongestDuration()
@@ -213,7 +208,8 @@ class PianoRollEditor {
         }
     }
 
-    void mouseClicked(MouseEvent e) { 
+    @Override
+    protected void mouseClicked(MouseEvent e) { 
         if (midi.mode == Mode.SET_PLAYBACK_POSITION) {
             midi.setPlaybackPosition(midi.fromX(e.getX()))
             midi.sequencer.setTickPosition(midi.getPlaybackPosition())
@@ -244,7 +240,8 @@ class PianoRollEditor {
         }
     }
 
-    void mousePressed(MouseEvent e) {
+    @Override
+    protected void mousePressed(MouseEvent e) {
         if (midi.mode == Mode.EDIT) {
             long posX = midi.fromX(e.getX())
             int posY = midi.fromY(e.getY())
@@ -278,7 +275,8 @@ class PianoRollEditor {
         }
     }
 
-    void mouseDragged(MouseEvent e) {
+    @Override
+    protected void mouseDragged(MouseEvent e) {
         if (midi.mode == Mode.EDIT) {
             if (resizingE || resizingW) {
                 dragClickX = e.getX()
@@ -302,7 +300,7 @@ class PianoRollEditor {
 
             long newViewX = (midi.getHorizontalOffset() + scrollX)
             long totLength = midi.getLength() + (long)(MARGIN_RIGHT * midi.getResolution() / midi.getCurrentScaleX())
-            long maxCanvasMoveX = (long)(region.getWidth() * midi.getResolution() / midi.getCurrentScaleX())
+            long maxCanvasMoveX = (long)(getWidth() * midi.getResolution() / midi.getCurrentScaleX())
             long maxMoveX = Math.max(totLength, (long)(totLength - maxCanvasMoveX))
 
             if (newViewX < 0) newViewX = 0
@@ -311,7 +309,7 @@ class PianoRollEditor {
 
             int newViewY = (midi.getVerticalOffset() - scrollY)
             // midi.lengthY is 127
-            int maxMoveY = (int)( midi.lengthY - region.getHeight() / midi.getCurrentScaleY() )
+            int maxMoveY = (int)( midi.lengthY - getHeight() / midi.getCurrentScaleY() )
             if (newViewY < 0) newViewY = 0
             if (newViewY > maxMoveY) newViewY = maxMoveY
             midi.setVerticalOffset(newViewY)
@@ -322,7 +320,8 @@ class PianoRollEditor {
         repaint()
     }
 
-    void mouseReleased(MouseEvent e) {
+    @Override
+    protected void mouseReleased(MouseEvent e) {
         if (midi.mode == Mode.EDIT) {
             if (resizingE || resizingW) {
                 midi.startEdit()
@@ -372,7 +371,8 @@ class PianoRollEditor {
         repaint()
     }
 
-    void mouseWheelMoved(ScrollEvent e) {
+    @Override
+    protected void mouseWheelMoved(ScrollEvent e) {
         double deltaY = e.getDeltaY()
         if (deltaY != 0) {
             if (midi.mode == Mode.PANNING)
@@ -398,7 +398,7 @@ class PianoRollEditor {
             newViewY = (midi.getVerticalOffset() - scrollY)
         else
             newViewY = (midi.getVerticalOffset() + scrollY)
-        int maxMoveY = (int)( midi.lengthY - region.getHeight() / midi.getCurrentScaleY() )
+        int maxMoveY = (int)( midi.lengthY - getHeight() / midi.getCurrentScaleY() )
         if (newViewY < 0) newViewY = 0
         if (newViewY > maxMoveY) newViewY = maxMoveY
         midi.setVerticalOffset(newViewY)
@@ -406,7 +406,7 @@ class PianoRollEditor {
 
     void playbackAtTick(long tick) {
         midi.setPlaybackPosition(tick)
-        long right = (long)( midi.getHorizontalOffset() + region.getWidth() * midi.getResolution() / midi.getCurrentScaleX() )
+        long right = (long)( midi.getHorizontalOffset() + getWidth() * midi.getResolution() / midi.getCurrentScaleX() )
         if (midi.getPlaybackPosition() < midi.getHorizontalOffset() || midi.getPlaybackPosition() > right) {
             midi.setHorizontalOffset(midi.getPlaybackPosition())
             repaint()
@@ -415,109 +415,24 @@ class PianoRollEditor {
 
     // Region
 
-    void setupRegion(ResizableRegion region) {
-        this.region = region
-    	this.g = region.getGraphicsContext2D()
-        this.gl = region.getLayerGraphicsContext2D()
-
-        region.drawing.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })  
-        region.drawing.heightProperty().addListener(new ChangeListener<Number>() {
-	        @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })
-        region.layer.widthProperty().addListener(new ChangeListener<Number>() {
-                @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })  
-        region.layer.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })
-
-        region.setFocusTraversable(true)
-
-        region.addEventHandler(MouseEvent.MOUSE_CLICKED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				// if (e.getClickCount() >1) { println "clicked" }
-				mouseClicked(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_PRESSED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mousePressed(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_DRAGGED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseDragged(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_RELEASED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseReleased(e)
-			}
-		});
-
-        region.setOnScroll(new EventHandler<ScrollEvent>() {
-            @Override
-            public void handle(ScrollEvent e) {
-                mouseWheelMoved(e)
-            }
-        });
-
-        final KeyCombination keyCtrZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN)
-        final KeyCombination keyCtrY = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN)
-        region.setOnKeyPressed(
-        new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.DELETE) {
-                    delete()
-                } else if (keyCtrZ.match(keyEvent)) {
-                    midi.undo()
-                    repaint()
-                } else if (keyCtrY.match(keyEvent)) {
-                    midi.redo()
-                    repaint()
-                }
-            }
-        });
-
-        region.addEventFilter(MouseEvent.ANY, { region.requestFocus() })
+    @Override
+    protected void undo() {
+        midi.undo()
     }
 
-    private void reset() {
-		g.clearRect(0, 0, region.getWidth(), region.getHeight())
-	}
+    @Override
+    protected void redo() {
+        midi.redo()
+    }
 
+    @Override
     protected void repaint() {
-        region.setCursor(cursor)
+        //println "Repaint PianoRollEditor with w=${getWidth()} and h=${getHeight()}"
+        //setCursor(cursor)
         reset()
 
         long left = midi.getHorizontalOffset()
-        double w = region.getWidth()
+        double w = getWidth()
         long right = (long)( left + w * midi.getResolution() / midi.getCurrentScaleX() )
 
         // Font
@@ -527,7 +442,7 @@ class PianoRollEditor {
         double note_height = Math.max(1, midi.scaleY(1) - 1)
         
         int screenX = (int)midi.toX(left)
-        double h = region.getHeight()
+        double h = getHeight()
 
         int up = midi.getVerticalOffset() 
         double down = up + h
@@ -543,25 +458,7 @@ class PianoRollEditor {
                 } else { 
                     g.setFill(Color.web("272822"))
                 }          
-                g.fillRect(screenX, y, w, note_height)
-                // String pitchStr = pitchNameMap[pitch] // "C5"
-                // g.setTextAlign(TextAlignment.CENTER)
-                // g.setTextBaseline(VPos.CENTER)
-                // if (isBlack) {
-                //     g.setFill(Color.BLACK)
-                //     g.fillRect(screenX, y, keyboardMargin, note_height)
-                //     // g.setStroke(Color.WHITE)
-                //     // g.strokeText(pitchStr, screenX, y)
-                //     g.setFill(Color.web("3e3d32"))
-                //     g.fillRect(screenX + keyboardMargin, y, w - keyboardMargin, note_height)
-                // } else {
-                //     g.setFill(Color.WHITE)
-                //     g.fillRect(screenX, y, keyboardMargin, note_height)
-                //     // g.setStroke(Color.BLACK)                    
-                //     // g.strokeText(pitchStr, screenX, y)
-                //     g.setFill(Color.web("272822"))
-                //     g.fillRect(screenX + keyboardMargin, y, w - keyboardMargin, note_height)
-                // }               
+                g.fillRect(screenX, y, w, note_height)              
             //}
         }
 
@@ -585,7 +482,7 @@ class PianoRollEditor {
                 } else {
                     g.setStroke(Color.color(0.55d, 0.55d, 0.55d))
                 }
-                g.strokeLine(tkToPx, 0, tkToPx, region.getHeight())
+                g.strokeLine(tkToPx, 0, tkToPx, getHeight())
             }
         }
         //---------
@@ -668,13 +565,14 @@ class PianoRollEditor {
         }
     }
 
-    void repaintLayer() {
-        gl.clearRect(0, 0, region.getWidth(), region.getHeight())
+    @Override
+    protected void repaintLayer() {
+        gl.clearRect(0, 0, getWidth(), getHeight())
         double pbPos = midi.toX(midi.getPlaybackPosition())
         if (pbPos > 0) {
             gl.setStroke(Color.BLUE)
             gl.setLineWidth(2.0d)
-            gl.strokeLine(pbPos, 0, pbPos, region.layer.getHeight())
+            gl.strokeLine(pbPos, 0, pbPos, getHeight())
             gl.setLineWidth(1.0d)
         }
     }

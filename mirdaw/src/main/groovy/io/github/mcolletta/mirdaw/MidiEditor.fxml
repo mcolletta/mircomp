@@ -52,12 +52,8 @@
             <Button fx:id="quantizationButton" onAction="#quantization" styleClass="quantization-button" text="Quantization" mnemonicParsing="false"/>
         </items>
     </ToolBar>
-    <HBox prefWidth="550.0" prefHeight="700.0" maxWidth="Infinity" maxHeight="Infinity" HBox.hgrow="ALWAYS">
-      <children>
-        <ResizableRegion fx:id="keyboardCanvas" prefWidth="50.0" maxWidth="50.0" maxHeight="Infinity"  prefHeight="700.0" />
-        <ResizableRegion fx:id="pianoCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" HBox.hgrow="ALWAYS" />
-      </children>
-    </HBox>
+    <HBox fx:id="pianoCanvas" minWidth="550.0" prefWidth="550.0" prefHeight="700.0" maxWidth="Infinity" maxHeight="Infinity" HBox.hgrow="ALWAYS" />
+
     <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
         <items>
             <Label text="Track:" />
@@ -105,14 +101,14 @@
                                 <ToggleButton fx:id="curveButton" onAction="#curveMode" toggleGroup="$pencilModeButtonsGroup" styleClass="curve-button" text="Curve" mnemonicParsing="false"/>
                             </items>
                         </ToolBar>
-                        <ResizableRegion fx:id="controllerCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+                        <HBox fx:id="controllerCanvas" minWidth="550.0" prefWidth="550.0" prefHeight="700.0" maxWidth="Infinity" maxHeight="Infinity" HBox.hgrow="ALWAYS" />
                     </children>
                 </VBox>
               </content>
             </Tab>
             <Tab text="Instruments">
               <content>
-                <VBox maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
+                <VBox  maxWidth="Infinity" maxHeight="Infinity" VBox.vgrow="ALWAYS">
                     <children>
                         <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
                             <items>
@@ -121,7 +117,7 @@
                                 <Label fx:id="instrumentLabel" text="default instrument" />
                             </items>
                         </ToolBar>
-                        <ResizableRegion fx:id="instrumentsCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+                        <HBox fx:id="instrumentsCanvas" minWidth="550.0" prefWidth="550.0" prefHeight="700.0" maxWidth="Infinity" maxHeight="Infinity" HBox.hgrow="ALWAYS" />
                     </children>
                 </VBox>
               </content>
@@ -148,7 +144,7 @@
                                 <ToggleButton fx:id="tempoAxisButton" onAction="#tempoAxisMode" toggleGroup="$tempoModeButtonsGroup" styleClass="axis-button" text="Axis" mnemonicParsing="false"/>
                             </items>
                         </ToolBar>
-                        <ResizableRegion fx:id="tempoCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+                        <HBox fx:id="tempoCanvas" minWidth="550.0" prefWidth="550.0" prefHeight="700.0" maxWidth="Infinity" maxHeight="Infinity" HBox.hgrow="ALWAYS" />
                     </children>
                 </VBox>
               </content>

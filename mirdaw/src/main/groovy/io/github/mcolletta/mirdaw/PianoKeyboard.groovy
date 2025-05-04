@@ -59,19 +59,15 @@ import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
 
 
-class PianoKeyboard {
+class PianoKeyboard extends ResizableRegion {
 
     MidiView midi
-    ResizableRegion region
-    GraphicsContext g
-    GraphicsContext gl
 
     Map<Integer, String> pitchNameMap = [:]
 
-    PianoKeyboard(MidiView midi, ResizableRegion region) {
+    PianoKeyboard(MidiView midi) {
     	
         this.midi = midi
-        setupRegion(region)
 
         // midi.mode = Mode.PANNING
 
@@ -92,90 +88,18 @@ class PianoKeyboard {
 
     // Region
 
-    void setupRegion(ResizableRegion region) {
-        this.region = region
-    	this.g = region.getGraphicsContext2D()
-        this.gl = region.getLayerGraphicsContext2D()
-
-        region.drawing.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })  
-        region.drawing.heightProperty().addListener(new ChangeListener<Number>() {
-	        @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })
-        region.layer.widthProperty().addListener(new ChangeListener<Number>() {
-                @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })  
-        region.layer.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })
-
-        region.setFocusTraversable(true)
-
-        // region.addEventHandler(MouseEvent.MOUSE_CLICKED,
-		// new EventHandler<MouseEvent>() {
-		// 	@Override
-		// 	public void handle(MouseEvent e) {
-		// 		mouseClicked(e)
-		// 	}
-		// });
-
-		// region.addEventHandler(MouseEvent.MOUSE_PRESSED,
-		// new EventHandler<MouseEvent>() {
-		// 	@Override
-		// 	public void handle(MouseEvent e) {
-		// 		mousePressed(e)
-		// 	}
-		// });
-
-		// region.addEventHandler(MouseEvent.MOUSE_DRAGGED,
-		// new EventHandler<MouseEvent>() {
-		// 	@Override
-		// 	public void handle(MouseEvent e) {
-		// 		mouseDragged(e)
-		// 	}
-		// });
-
-		// region.addEventHandler(MouseEvent.MOUSE_RELEASED,
-		// new EventHandler<MouseEvent>() {
-		// 	@Override
-		// 	public void handle(MouseEvent e) {
-		// 		mouseReleased(e)
-		// 	}
-		// });
-
-        // region.setOnScroll(new EventHandler<ScrollEvent>() {
-        //     @Override
-        //     public void handle(ScrollEvent e) {
-        //         mouseWheelMoved(e)
-        //     }
-        // });
-
-        region.addEventFilter(MouseEvent.ANY, { region.requestFocus() })
-    }
-
-    private void reset() {
-		g.clearRect(0, 0, region.getWidth(), region.getHeight())
+    @Override
+    protected void reset() {
+		g.clearRect(0, 0, getWidth(), getHeight())
 	}
 
+    @Override
     protected void repaint() {
         //println "repaint at " + midi.getVerticalOffset()
         reset()
 
-        double w = region.getWidth()
-        double h = region.getHeight()
+        double w = getWidth()
+        double h = getHeight()
 
         // Font
         int fontScale = (int)Math.max(1.0d, Math.floor(midi.getCurrentScaleY()))
@@ -212,7 +136,7 @@ class PianoKeyboard {
     }
 
     void repaintLayer() {
-        gl.clearRect(0, 0, region.getWidth(), region.getHeight())
+        gl.clearRect(0, 0, getWidth(), getHeight())
     }
 
 }

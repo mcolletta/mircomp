@@ -49,7 +49,7 @@ import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
 
 
-class TempoEditor {
+class TempoEditor extends ResizableRegion {
 
     final int MAX_BPM = 300
 
@@ -63,30 +63,26 @@ class TempoEditor {
     double endCurveX
     double endCurveY
 
-    Boolean isDragging
+    //Boolean isDragging
 
     Rectangle selection
 
     MidiView midi
-    ResizableRegion region
-    GraphicsContext g
-    GraphicsContext gl
 
-    Cursor cursor
+    // Cursor cursor
 
     TempoEditMode tempoMode = TempoEditMode.EDITED
 
-    TempoEditor(MidiView midi, ResizableRegion region) {
+    TempoEditor(MidiView midi) {
         this.midi = midi
         currentBPM = startBPM = (int) midi.getSequencerBPM()
-        setupRegion(region)
-		repaint()
+		// repaint()
     }
 
-    void setCursor(Cursor c) {
-        this.cursor = c 
-        repaint()
-    }
+    // void setCursor(Cursor c) {
+    //     this.cursor = c 
+    //     repaint()
+    // }
 
     void editTempo(long x, int y) {        
         ObservableMap<Long, MidiTempo> data = midi.tempi
@@ -99,7 +95,8 @@ class TempoEditor {
                                    Math.abs(dragClickX - clickX), Math.abs(dragClickY - clickY) )
     }
 
-    void delete() {
+    @Override
+    protected void delete() {
         if (selection != null) {
             long startX = midi.fromX(selection.getX())
             long endX = midi.fromX(selection.getX() + selection.getWidth())
@@ -116,7 +113,8 @@ class TempoEditor {
         }
     }
 
-    void mouseClicked(MouseEvent event) {
+    @Override
+    protected void mouseClicked(MouseEvent event) {
         if (midi.mode == Mode.SET_PLAYBACK_POSITION) {
             midi.setPlaybackPosition(midi.fromX(event.getX()))
             midi.sequencer.setTickPosition(midi.getPlaybackPosition())
@@ -124,21 +122,24 @@ class TempoEditor {
         }
     }
 
-    void mousePressed(MouseEvent event) {
+    @Override
+    protected void mousePressed(MouseEvent event) {
         clickX = event.getX()
         clickY = event.getY()
     }
 
-    void mouseDragged(MouseEvent event) {
+    @Override
+    protected void mouseDragged(MouseEvent event) {
         dragClickX = event.getX()
         dragClickY = event.getY()  
         isDragging = true  
         repaint()    
     }
 
-    void mouseReleased(MouseEvent event) {
+    @Override
+    protected void mouseReleased(MouseEvent event) {
         //isDragging = false
-        double h = region.getHeight()
+        double h = getHeight()
         long startX = midi.fromX(clickX)
         long endX = midi.fromX(dragClickX)
         int startY = (int)( MAX_BPM * (h - clickY) / h )
@@ -158,15 +159,9 @@ class TempoEditor {
         }
     }
 
-    void mouseEntered(MouseEvent event) { }
-
-    void mouseExited(MouseEvent event) { }
-
-    void mouseMoved(MouseEvent event) { }
-
     void playbackAtTick(long tick) {
         midi.setPlaybackPosition(tick)
-        long right = (long)( midi.getHorizontalOffset() + region.getWidth() * midi.getResolution() / midi.getCurrentScaleX() )
+        long right = (long)( midi.getHorizontalOffset() + getWidth() * midi.getResolution() / midi.getCurrentScaleX() )
         if (midi.getPlaybackPosition() < midi.getHorizontalOffset() || midi.getPlaybackPosition() > right) {
             midi.setHorizontalOffset(midi.getPlaybackPosition())
             repaint()
@@ -175,119 +170,33 @@ class TempoEditor {
 
     // Region
 
-    void setupRegion(ResizableRegion region) {
-        this.region = region
-        this.g = region.getGraphicsContext2D()
-        this.gl = region.getLayerGraphicsContext2D()
-
-        region.drawing.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })  
-        region.drawing.heightProperty().addListener(new ChangeListener<Number>() {
-	        @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaint()
-            }
-        })
-        region.layer.widthProperty().addListener(new ChangeListener<Number>() {
-                @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })  
-        region.layer.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                repaintLayer()
-            }
-        })
-
-        region.setFocusTraversable(true)
-
-		region.addEventHandler(MouseEvent.MOUSE_CLICKED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				//if (e.getClickCount() == 1)
-				if (isDragging)
-					isDragging = false
-				else {
-					mouseClicked(e)
-				}
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_PRESSED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mousePressed(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_DRAGGED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseDragged(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_RELEASED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseReleased(e)
-			}
-		});
-
-		region.addEventHandler(MouseEvent.MOUSE_MOVED,
-		new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				mouseMoved(e)
-			}
-		});
-
-        final KeyCombination keyCtrZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN)
-        final KeyCombination keyCtrY = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN)
-        region.setOnKeyPressed(
-        new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode() == KeyCode.DELETE) {
-                    delete()
-                } else if (keyCtrZ.match(keyEvent)) {
-                    midi.undo()
-                    repaint()
-                } else if (keyCtrY.match(keyEvent)) {
-                    midi.redo()
-                    repaint()
-                }
-            }
-        });
-
-        region.addEventFilter(MouseEvent.ANY, { region.requestFocus() })
+    @Override
+    protected void undo() {
+        midi.undo()
     }
 
-    private void reset() {
-		// g.clearRect(0, 0, region.getWidth(), region.getHeight())
+    @Override
+    protected void redo() {
+        midi.redo()
+    }
+
+    @Override
+    protected void reset() {
+		// g.clearRect(0, 0, getWidth(), getHeight())
         // monokai bg
         g.setFill(Color.web("272822"))
-        g.fillRect(0, 0, region.getWidth(), region.getHeight())
+        g.fillRect(0, 0, getWidth(), getHeight())
 	}
 
+    @Override
     protected void repaint() {
-        region.setCursor(cursor)
+        //setCursor(cursor)
         reset()
 
         int resolution = midi.getResolution()
         long left = midi.getHorizontalOffset()
-        double w = region.getWidth()
-        double h = region.getHeight()
+        double w = getWidth()
+        double h = getHeight()
         long right = (long)( left + w * midi.getResolution() / midi.getCurrentScaleX() )
 
         //measures
@@ -308,7 +217,7 @@ class TempoEditor {
                 } else {
                     g.setStroke(Color.color(0.55d, 0.55d, 0.55d))
                 }
-                g.strokeLine(tkToPx, 0, tkToPx, region.getHeight())
+                g.strokeLine(tkToPx, 0, tkToPx, getHeight())
             }
         }
 
@@ -348,8 +257,8 @@ class TempoEditor {
                 duration = midi.toX(nextKey)-midi.toX(key)
                 endLineX = screenX + duration
             } else {
-                duration = region.getWidth()-screenX
-                endLineX = region.getWidth()
+                duration = getWidth()-screenX
+                endLineX = getWidth()
             }
             g.setStroke(Color.WHITE)
             g.strokeLine(screenX, rectHeight, endLineX, rectHeight)
@@ -363,7 +272,7 @@ class TempoEditor {
             if (i == 0 && key > midi.getHorizontalOffset()) {
                 int default_val = startBPM
                 if (default_val > 0) {
-                    double default_tempo_duration = Math.min(screenX, region.getWidth())                
+                    double default_tempo_duration = Math.min(screenX, getWidth())                
                     label = default_val.toString()
                     rectHeight = ((default_val * -h) / MAX_BPM) + h
                     // Line
@@ -384,7 +293,7 @@ class TempoEditor {
                 double rectHeight = ((default_val * -h) / MAX_BPM) + h
                 // Line
                 g.setStroke(Color.WHITE)
-                g.strokeLine(leftX, rectHeight, region.getWidth(), rectHeight)
+                g.strokeLine(leftX, rectHeight, getWidth(), rectHeight)
                 // Text
                 g.setStroke(Color.color(0.4d, 0.4d, 0.4d))
                 double y = rectHeight - 1
@@ -395,13 +304,14 @@ class TempoEditor {
         repaintLayer()
     }
 
-    void repaintLayer() {
-        gl.clearRect(0, 0, region.getWidth(), region.getHeight())
+    @Override
+    protected void repaintLayer() {
+        gl.clearRect(0, 0, getWidth(), getHeight())
         double pbPos = midi.toX(midi.getPlaybackPosition())
         if (pbPos > 0) {
             gl.setStroke(Color.BLUE)
             gl.setLineWidth(2.0d)
-            gl.strokeLine(pbPos, 0, pbPos, region.layer.getHeight())
+            gl.strokeLine(pbPos, 0, pbPos, getHeight())
             gl.setLineWidth(1.0d)
         }
     }
