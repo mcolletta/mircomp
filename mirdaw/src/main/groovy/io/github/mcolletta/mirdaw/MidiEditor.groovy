@@ -142,11 +142,13 @@ class MidiEditor extends VBox implements MidiPlaybackListener {
     ObservableList<MidiControllerInfo> controllers
     ObservableList<MidiInstrument> instruments
 
+    PianoKeyboard pianoKeyboard
     PianoRollEditor pianoRollEditor
     ControllerEditor controllerEditor
     InstrumentsEditor instrumentsEditor
     TempoEditor tempoEditor
 
+    @FXML private ResizableRegion keyboardCanvas
     @FXML private ResizableRegion pianoCanvas
     @FXML private ResizableRegion controllerCanvas
     @FXML private ResizableRegion instrumentsCanvas
@@ -198,6 +200,7 @@ class MidiEditor extends VBox implements MidiPlaybackListener {
 
         initMenus()
 
+        pianoKeyboard = new PianoKeyboard(midi, keyboardCanvas)
         pianoRollEditor = new PianoRollEditor(midi, pianoCanvas)
         controllerEditor = new ControllerEditor(midi, controllerCanvas)
         instrumentsEditor = new InstrumentsEditor(midi, instrumentsCanvas)
@@ -235,17 +238,40 @@ class MidiEditor extends VBox implements MidiPlaybackListener {
 
         updateScrollBar()
         Bindings.bindBidirectional(scrollBarX.valueProperty(), midi.horizontalOffsetProperty())
-        scrollBarX.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
-                draw()
-            }
-        })
+        // scrollBarX.valueProperty().addListener(new ChangeListener<Number>() {
+        //     public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+        //         draw()
+        //     }
+        // })
 
         midi.playbackPositionProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
                 draw()
             }
         })
+
+        // re-draw on every midiview property change
+        midi.horizontalOffsetProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+                draw()
+            }
+        })
+        midi.verticalOffsetProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+                draw()
+            }
+        })
+        midi.currentScaleXProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+                draw()
+            }
+        })
+        midi.currentScaleYProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+                draw()
+            }
+        })
+        // -------------------------------
 
         filesaveButton.disableProperty().bind(midi.cleanProperty())
 
@@ -581,6 +607,7 @@ class MidiEditor extends VBox implements MidiPlaybackListener {
     }
 
     void draw() {
+        pianoKeyboard.repaint()
         pianoRollEditor.repaint()
         controllerEditor.repaint()
         instrumentsEditor.repaint()
@@ -588,6 +615,7 @@ class MidiEditor extends VBox implements MidiPlaybackListener {
     }
 
     void drawPlayback() {
+        pianoKeyboard.repaintLayer()
         pianoRollEditor.repaintLayer()
         controllerEditor.repaintLayer()
         instrumentsEditor.repaintLayer()

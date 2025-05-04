@@ -23,7 +23,7 @@
 <?import javafx.collections.*?>
 <?import io.github.mcolletta.mirdaw.*?>
 <fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml" stylesheets="@styles.css">
-	<ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
+	  <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
         <items>
             <Button fx:id="newsequenceButton"  onAction="#newsequence" styleClass="newsequence-button" text="New sequence" mnemonicParsing="false"/>
             <Button fx:id="fileopenButton"  onAction="#fileopen" styleClass="fileopen-button" text="Open..." mnemonicParsing="false"/>
@@ -52,7 +52,12 @@
             <Button fx:id="quantizationButton" onAction="#quantization" styleClass="quantization-button" text="Quantization" mnemonicParsing="false"/>
         </items>
     </ToolBar>
-    <ResizableRegion fx:id="pianoCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" />
+    <HBox prefWidth="550.0" prefHeight="700.0" maxWidth="Infinity" maxHeight="Infinity" HBox.hgrow="ALWAYS">
+      <children>
+        <ResizableRegion fx:id="keyboardCanvas" prefWidth="50.0" maxWidth="50.0" maxHeight="Infinity"  prefHeight="700.0" />
+        <ResizableRegion fx:id="pianoCanvas" maxWidth="Infinity" maxHeight="Infinity" prefWidth="500.0" prefHeight="700.0" HBox.hgrow="ALWAYS" />
+      </children>
+    </HBox>
     <ToolBar styleClass="top-toolbar" maxWidth="Infinity" maxHeight="Infinity">
         <items>
             <Label text="Track:" />
