@@ -32,6 +32,7 @@ import groovy.json.JsonBuilder
 import java.util.stream.Collectors
 
 
+@groovy.transform.CompileDynamic
 public class Compressor<T> implements Serializable  {
     
     PList<List<T>> dict

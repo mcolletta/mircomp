@@ -62,7 +62,9 @@ class IncrementalParser<T> {
 
     TreeDictionary<T,List<Continuation<T>>> continuationDictionary() {
         TreeDictionary<T,List<Continuation<T>>> dict2 = new TreeDictionary<>(comparator)
-        for(Map.Entry<List<T>,Integer> e: dict) {
+        // for(Map.Entry<List<T>,Integer> e: dict) {
+        for(Iterator<Map.Entry<List<T>,Integer>> iter = dict.iterator(); iter.hasNext(); ) {
+            var e = iter.next()
             List<T> key = e.getKey()
             int counter = e.getValue()
             List<T> W = key.take(key.size()-1)
@@ -79,7 +81,9 @@ class IncrementalParser<T> {
     }
 
     void normalize(TreeDictionary<T,List<Continuation<T>>> dictionary) {
-        for(Map.Entry<List<T>,List<Continuation>> e: dictionary) {
+        // for(Map.Entry<List<T>,List<Continuation>> e: dictionary) {
+        for(Iterator<Map.Entry<List<T>,List<Continuation>>> iter = dictionary.iterator(); iter.hasNext(); ) {
+            var e = iter.next()
             List<T> key = e.getKey()
             List<Continuation<T>> continuations = e.getValue()
             float total = (int) continuations.prob?.sum()
@@ -92,7 +96,9 @@ class IncrementalParser<T> {
     TreeDictionaryNode<T, PList<Continuation>> generateTree() {
         var con_dictionary = continuationDictionary()
         var root = new TreeDictionaryNode<T,List<Continuation>>()
-        for(Map.Entry<List<T>,List<Continuation>> e: con_dictionary) {
+        // for(Map.Entry<List<T>,List<Continuation>> e: con_dictionary) {
+        for(Iterator<Map.Entry<List<T>,List<Continuation>>> iter = con_dictionary.iterator(); iter.hasNext(); ) {
+            var e = iter.next()
             List<T> motif = e.getKey()
             List<Continuation> continuations = e.getValue()
             var pointer = root

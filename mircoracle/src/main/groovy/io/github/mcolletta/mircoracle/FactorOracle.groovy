@@ -27,6 +27,7 @@ import com.xenoage.utils.pdlib.PList
 import com.xenoage.utils.pdlib.PMap
 
 
+@groovy.transform.CompileDynamic
 class FactorOracle<T> {
     PList<T> sequence
     private int i = 0

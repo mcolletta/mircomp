@@ -129,7 +129,9 @@ class TreeDictionary<K, V> implements Iterable<Map.Entry<K, V>> {
     }
     
     void each(Closure clos) {
-        for (Map.Entry<List<K>, V> item: this) {
+        // for (Map.Entry<List<K>, V> item: this) {
+        for(Iterator<Map.Entry<List<K>, V>> iter = this.iterator(); iter.hasNext(); ) {
+            var item = iter.next()
             clos(item.key, item.value)
         }
     }
@@ -139,7 +141,9 @@ class TreeDictionary<K, V> implements Iterable<Map.Entry<K, V>> {
     }
     
     String toString() {
-        for (Map.Entry<List<K>, V> item: this) {
+        // for (Map.Entry<List<K>, V> item: this) {
+        for(Iterator<Map.Entry<List<K>, V>> iter = this.iterator(); iter.hasNext(); ) {
+            var item = iter.next()
             println "${item.key} = ${item.value}"
         }
     }
