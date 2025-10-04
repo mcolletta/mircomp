@@ -65,7 +65,7 @@ import javafx.scene.image.WritableImage
 import javafx.concurrent.Task
 
 
-public class FolderTreeView extends VBox implements FolderTreeListenerList {
+final public class FolderTreeView extends VBox implements FolderTreeListenerList {
 
 	@FXML private TreeView<Path> treeView
 	private Task watchTask

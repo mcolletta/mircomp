@@ -26,9 +26,9 @@ if (currentOS.macOsX) {
 } else if (currentOS.windows) {
     platform = "win"
 }
-def javaFXVersion = "23"
+def javaFXVersion = "25"
 
-def groovyVersion = "4.0.26"
+def groovyVersion = "5.0.1"
 
 repositories {
     flatDir {
@@ -93,7 +93,7 @@ jar {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 

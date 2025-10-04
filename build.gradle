@@ -13,9 +13,9 @@ if (currentOS.macOsX) {
 } else if (currentOS.windows) {
     platform = "win"
 }
-def javaFXVersion = "21"
+def javaFXVersion = "25"
 
-def groovyVersion = "4.0.25"
+def groovyVersion = "5.0.1"
 
 
 subprojects {
@@ -29,7 +29,7 @@ subprojects {
 
         compileGroovy {
             configure(groovyOptions) {
-                configurationScript = file("config/src/main/groovy/compiler-config.groovy")
+                configurationScript = file("../config/src/main/groovy/compiler-config.groovy")
             }
         }
 

@@ -93,8 +93,7 @@ import io.github.mcolletta.mirfoldertreeview.PathRequestType
 import io.github.mcolletta.mirutils.TabContent
 
 
-//@CompileDynamic
-class TextEditor extends VBox implements FolderTreeListenerList, TabContent  {
+final class TextEditor extends VBox implements FolderTreeListenerList, TabContent  {
 
     ObjectProperty<Path> filePath = new SimpleObjectProperty<>()
     Path getFilePath() {

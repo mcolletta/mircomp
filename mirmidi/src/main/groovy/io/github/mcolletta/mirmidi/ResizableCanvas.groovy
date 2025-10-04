@@ -32,7 +32,7 @@ import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
 
 
-class ResizableCanvas extends Region {  
+final class ResizableCanvas extends Region {
   
     Canvas canvas = new Canvas()
     Canvas layer = new Canvas()

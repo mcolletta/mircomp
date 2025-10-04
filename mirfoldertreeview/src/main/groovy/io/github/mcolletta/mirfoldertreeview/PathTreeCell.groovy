@@ -62,7 +62,8 @@ import javafx.scene.control.Dialog
 import javafx.scene.control.DialogPane
 import javafx.scene.control.ButtonType
 
-public class PathTreeCell extends TreeCell<Path> {
+
+final public class PathTreeCell extends TreeCell<Path> {
 
     FolderTreeView owner
 

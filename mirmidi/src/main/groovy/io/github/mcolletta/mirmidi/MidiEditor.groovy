@@ -140,7 +140,7 @@ class ChannelItem {
     }
 }
 
-class MidiEditor extends VBox implements MidiPlaybackListener, FolderTreeListenerList, TabContent {
+final class MidiEditor extends VBox implements MidiPlaybackListener, FolderTreeListenerList, TabContent {
 
     MidiView midi
     

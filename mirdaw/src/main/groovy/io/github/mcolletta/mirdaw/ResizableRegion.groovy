@@ -42,7 +42,8 @@ import javafx.beans.value.ObservableValue
 import javafx.beans.value.ChangeListener
 
 
-abstract class ResizableRegion extends Region {
+// @Sealed(permittedSubclasses=[PianoRollEditor, PianoKeyboard, ControllerEditor, InstrumentsEditor, TempoEditor])
+sealed abstract class ResizableRegion extends Region permits PianoRollEditor, PianoKeyboard, ControllerEditor, InstrumentsEditor, TempoEditor {
 
     final KeyCombination keyCtrZ = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN)
     final KeyCombination keyCtrY = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN)

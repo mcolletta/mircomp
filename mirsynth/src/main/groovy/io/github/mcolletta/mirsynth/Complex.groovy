@@ -52,7 +52,7 @@ class Complex {
     }
     
     float abs() {
-		return Math.sqrt((float) (Re ** 2 + Im ** 2))
+		return (float)Math.sqrt((float) (Re ** 2 + Im ** 2))
 	}
 
     String toString() { 

@@ -112,7 +112,7 @@ class CosineSignal extends DigitalSignal {
 	CosineSignal() { process() }
 
 	float sample(int n) { 
-		return A * cos( 2*PI*f * n*Ts + phi)
+		return (float) ( A * cos( 2*PI*f * n*Ts + phi) )
     }
 }
 
@@ -126,7 +126,7 @@ class WindowedCosineSignal extends DigitalSignal {
 
 	float sample(int n) {    
 		if (n <= (N/2))
-            return A * cos( 2*PI*f * n*Ts + phi) 
+            return (float) ( A * cos( 2*PI*f * n*Ts + phi) )
         else
             return 0
     }
@@ -144,7 +144,7 @@ class HannWindowedCosineSignal extends DigitalSignal {
 		// Hann window: 0.5 (cos(\frac{2\pi n}{N-1}))
         float w = 0.5 * (1 - cos( (2 * PI * n) / (N/2) - 1))
         if (n <= (N/2)) {
-            return A * cos( 2*PI*f * n*Ts + phi) * w
+            return (float) ( A * cos( 2*PI*f * n*Ts + phi) * w )
         }
         else
             return 0.0f

@@ -94,7 +94,7 @@ import io.github.mcolletta.mirutils.TabContent
 
 enum ScoreMode { SELECT, PANNING }
 
-class ScoreViewer  extends VBox implements FolderTreeListenerList, TabContent {
+final class ScoreViewer  extends VBox implements FolderTreeListenerList, TabContent {
 
     ScoreModel scoreModel
     WritableImage scoreImage = null

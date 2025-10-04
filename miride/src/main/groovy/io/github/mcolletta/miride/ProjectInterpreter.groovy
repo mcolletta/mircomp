@@ -51,7 +51,7 @@ import io.github.mcolletta.mirchord.interpreter.MirChordInterpreter
 import com.xenoage.zong.core.Score
 
 
-protected class ProjectInterpreter {
+class ProjectInterpreter {
 
     boolean PRINT_STACKTRACE = true
 

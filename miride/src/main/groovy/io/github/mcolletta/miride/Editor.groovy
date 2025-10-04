@@ -189,18 +189,12 @@ public class Editor implements FolderTreeViewListener {
         treeMenu.selectedProperty().bindBidirectional(treeButton.selectedProperty())
         consoleMenu.selectedProperty().bindBidirectional(consoleButton.selectedProperty())
         typecheckMenu.selectedProperty().bindBidirectional(typecheckButton.selectedProperty())
-        BooleanBinding fileExists = new BooleanBinding() {
-            {
-                super.bind(projectFolder)
-            }
 
-            @Override
-            protected boolean computeValue() {
-                return (projectFolder.get() != null && projectFolder.get().exists())
-            }
-        }
-        propertiesButton.disableProperty().bind(fileExists.not())
-        propertiesMenu.disableProperty().bind(fileExists.not())
+        BooleanBinding fileNotExists = Bindings.createBooleanBinding({
+            !( (projectFolder.get() != null && projectFolder.get().exists()) )
+        });
+        propertiesButton.disableProperty().bind(fileNotExists)
+        propertiesMenu.disableProperty().bind(fileNotExists)
         showtree()
 
         runMenu.disableProperty().bind(runButton.disableProperty())

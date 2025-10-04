@@ -43,7 +43,7 @@ import groovy.xml.MarkupBuilder
 import static io.github.mcolletta.miride.Utils.*
 
 
-class NewProjectDialog extends VBox {
+final class NewProjectDialog extends VBox {
 
     TextField projectNameField
     Label projectFolderLabel

@@ -29,7 +29,7 @@ import java.nio.file.Path
 
 //import java.security.MessageDigest
 
-protected class Utils {
+class Utils {
 
     protected static final File makeDir(File parentFolder, String name) {
         File folder

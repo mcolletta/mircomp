@@ -984,7 +984,7 @@ class MirChordProcessor extends AbstractProcessor {
 			if (obj instanceof MusicElement) {
 				elements << (MusicElement)obj
 			}
-			else if (obj instanceof List<MusicElement>) {
+			else if (obj instanceof List<?>) {
 				List<MusicElement> phrase = (List<MusicElement>)getResult(m)
 				for(MusicElement element : phrase) {
 					elements << element
@@ -1052,7 +1052,7 @@ class MirChordProcessor extends AbstractProcessor {
 			// _1 `5/8 G `1/4 E
 			def obj = getResult(m)
 			if (m.getFirstChild().parser == grammar.scorePosition) {
-				Map pos = (Map)obj
+				var pos = (Map<String, Integer>)obj
 				// set correct position on score object
 				if (pos.containsKey('part'))
 					setCurrentPart(pos['part'])
@@ -1067,7 +1067,7 @@ class MirChordProcessor extends AbstractProcessor {
 				else if (obj instanceof MusicElement) {
 					addToScore( (MusicElement)obj )
 				}
-				else if (obj instanceof List<MusicElement>) {
+				else if (obj instanceof List<?>) {
 					List<MusicElement> phrase = (List<MusicElement>)getResult(m)
 					for(MusicElement element : phrase) {
 						addToScore( element )

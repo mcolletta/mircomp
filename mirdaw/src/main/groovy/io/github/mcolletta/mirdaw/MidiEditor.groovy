@@ -135,7 +135,7 @@ class ChannelItem {
     }
 }
 
-class MidiEditor extends VBox implements MidiPlaybackListener {
+final class MidiEditor extends VBox implements MidiPlaybackListener {
 
     MidiView midi
     
