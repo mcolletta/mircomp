@@ -48,7 +48,10 @@ public class MirComposer extends Application {
         Scene scene = new Scene(root, 1000, 700)
         stage.setScene(scene)
         //stage.setFullScreen(true)
-        stage.show()        
+        stage.show()
+
+        //default theme
+        editor.setNordDark()
 
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override

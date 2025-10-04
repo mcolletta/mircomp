@@ -52,7 +52,7 @@ import groovy.xml.StreamingMarkupBuilder
 import static io.github.mcolletta.mircomposer.Utils.*
 
 
-class ConfigEditor extends VBox {
+final class ConfigEditor extends VBox {
 
     Path dataPath
 	Map<String,Path> config = [:]

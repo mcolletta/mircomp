@@ -153,6 +153,15 @@ public class Editor implements FolderTreeViewListener {
     private ObjectProperty<File> dataFolder = new SimpleObjectProperty<>()
     private Map<String,Path> config = [:]
 
+    // private Theme currentTextTheme = Theme.Nord_Dark
+    protected String currentThemeUrl;
+    private String cupertinoLightUrl = getClass().getResource("resources/themes/cupertino-light.css").toExternalForm();
+    private String cupertinoDarkUrl = getClass().getResource("resources/themes/cupertino-dark.css").toExternalForm();
+    private String nordLightUrl = getClass().getResource("resources/themes/nord-light.css").toExternalForm();
+    private String nordDarkUrl = getClass().getResource("resources/themes/nord-dark.css").toExternalForm();
+    private String primerLightUrl = getClass().getResource("resources/themes/primer-light.css").toExternalForm();
+    private String primerDarkUrl = getClass().getResource("resources/themes/primer-dark.css").toExternalForm();
+
     private boolean needAgreement = true
     
 
@@ -681,6 +690,92 @@ public class Editor implements FolderTreeViewListener {
     void unIinstallInterceptor() {
         systemOutInterceptor.stop()
         systemErrorInterceptor.stop()
+    }
+
+    // Theme
+
+    // void updateTextTheme() {
+    //     for(Tab tab : tabPane.getTabs()) {
+    //         if (tab != null) {
+    //             TabContent tabContent = (TabContent) tab.getContent()
+    //             if (tabContent.getTabType() == "TextEditor")
+    //                 ((TextEditor)tabContent).setTheme(currentTextTheme)
+    //             if (tabContent.getTabType() == "MirChordEditor")
+    //                 ((MirChordEditor)tabContent).editor.setTheme(currentTextTheme)
+    //         }
+    //     }
+    // }
+
+    void setCupertinoLight() {
+        Scene scene = getScene()
+        if (currentThemeUrl != null && !currentThemeUrl.isEmpty())
+            scene.getStylesheets().remove(currentThemeUrl)
+        if (!scene.getStylesheets().contains(cupertinoLightUrl)) {
+            scene.getStylesheets().add(cupertinoLightUrl)
+            currentThemeUrl = cupertinoLightUrl
+            // currentTextTheme = Theme.Clouds
+            // updateTextTheme()
+        }
+    }
+
+    void setCupertinoDark() {
+        Scene scene = getScene()
+        if (currentThemeUrl != null && !currentThemeUrl.isEmpty())
+            scene.getStylesheets().remove(currentThemeUrl)
+        if (!scene.getStylesheets().contains(cupertinoDarkUrl)) {
+            scene.getStylesheets().add(cupertinoDarkUrl)
+            currentThemeUrl = cupertinoDarkUrl
+            // currentTextTheme = Theme.Terminal
+            // updateTextTheme()
+        }
+    }
+
+    void setNordLight() {
+        Scene scene = getScene()
+        if (currentThemeUrl != null && !currentThemeUrl.isEmpty())
+            scene.getStylesheets().remove(currentThemeUrl)
+        if (!scene.getStylesheets().contains(nordLightUrl)) {
+            scene.getStylesheets().add(nordLightUrl)
+            currentThemeUrl = nordLightUrl
+            // currentTextTheme = Theme.Clouds
+            // updateTextTheme()
+        }
+    }
+
+    void setNordDark() {
+        Scene scene = getScene()
+        if (currentThemeUrl != null && !currentThemeUrl.isEmpty())
+            scene.getStylesheets().remove(currentThemeUrl)
+        if (!scene.getStylesheets().contains(nordDarkUrl)) {
+            scene.getStylesheets().add(nordDarkUrl)
+            currentThemeUrl = nordDarkUrl
+            // currentTextTheme = Theme.Nord_Dark
+            // updateTextTheme()
+        }
+    }
+
+    void setPrimerLight() {
+        Scene scene = getScene()
+        if (currentThemeUrl != null && !currentThemeUrl.isEmpty())
+            scene.getStylesheets().remove(currentThemeUrl)
+        if (!scene.getStylesheets().contains(primerLightUrl)) {
+            scene.getStylesheets().add(primerLightUrl)
+            currentThemeUrl = primerLightUrl
+            // currentTextTheme = Theme.Clouds
+            // updateTextTheme()
+        }
+    }
+
+    void setPrimerDark() {
+        Scene scene = getScene()
+        if (currentThemeUrl != null && !currentThemeUrl.isEmpty())
+            scene.getStylesheets().remove(currentThemeUrl)
+        if (!scene.getStylesheets().contains(primerDarkUrl)) {
+            scene.getStylesheets().add(primerDarkUrl)
+            currentThemeUrl = primerDarkUrl
+            // currentTextTheme = Theme.Vibrant_Ink
+            // updateTextTheme()
+        }
     }
 
     // Exit

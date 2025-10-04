@@ -92,7 +92,7 @@ public class MirChordSyntaxHighlighter implements SyntaxHighlighter {
     private static final String[] KEYWORDS = new String[] {
             "def", "define", "key", "mode", "clef", "time", "tempo", "keySignature",
             "tp", "tuplet", "unpitched", "stemUp", "stemDown", "stemAuto",
-            "instr", "instrument", 
+            "instr", "instrument", "chordsMode",
             "call", "relative", 
             "transpose", "transposeDiatonic", "invert", "invertDiatonic",
             "augment", "diminuition", "retrograde",
@@ -106,8 +106,8 @@ public class MirChordSyntaxHighlighter implements SyntaxHighlighter {
     private static final String NUMBER_PATTERN =  /[0-9]+/   //  /\s[0-9]+\s/    
     private static final String OPERATOR_PATTERN = /[!|\$|%|\*|\-|\+|=|<|>|^|~]+/
     private static final String IDENTIFIER_PATTERN = /:[^()\[\]{}'"\^%`,;\s]+/
-    private static final String NOTE_PATTERN = /\b[a-grxo]{1}[\#|\&]*/
-    private static final String CHORD_PATTERN = /[A-G]{1}[\#\&]*(M|maj|m|min|mM|minMaj|\+|aug|°|dim|sus){0,1}[0-9]{0,2}[\(]{0,1}(add|sub){0,1}[\#\&]*[0-9]{0,2}[\)]{0,1}/
+    private static final String NOTE_PATTERN = /\b(do|re|mi|fa|so|sol|la|si|ti|a|b|c|d|e|f|g|_|x|o){1}[\#|\&|§]*[,|']*[1-9]{0,2}(?![\dA-Za-z\#\&§,'])/
+    private static final String CHORD_PATTERN = /\b(I|II|III|IV|V|VI|VII|A|B|C|D|E|F|G){1}[\#|\&|§]*(M|maj|m|min|mM|minMaj|\+|aug|°|dim|sus){0,1}[0-9]{0,2}[\(]{0,1}(add|sub){0,1}[\#\&§]*[0-9]{0,2}[\)]{0,1}(?![\dA-Za-z\#\&,'])/
     private static final String COMMENT_PATTERN = /;[^\n]*/;
 
     // Multiline
@@ -1179,7 +1179,7 @@ public class MirChordSyntaxHighlighter implements SyntaxHighlighter {
         while(matcher.find()) {
             String styleClass =
                     matcher.group("KEYWORD") != null ? "keyword" :
-                    matcher.group("FUNCTION") != null ? "type" :
+                    matcher.group("FUNCTION") != null ? "function" :
                     matcher.group("STRING") != null ? "string" :
                     matcher.group("NUMBER") != null ? "numeric" :
                     matcher.group("OPERATOR") != null ? "parameter" :

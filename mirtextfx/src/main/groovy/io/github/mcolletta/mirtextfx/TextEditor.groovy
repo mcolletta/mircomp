@@ -110,7 +110,7 @@ import io.github.mcolletta.mirfoldertreeview.PathRequestType
 import io.github.mcolletta.mirutils.TabContent
 
 
-public class TextEditor extends VBox implements FolderTreeListenerList, TabContent {
+final public class TextEditor extends VBox implements FolderTreeListenerList, TabContent {
 
     ObjectProperty<Path> filePath = new SimpleObjectProperty<>()
     Path getFilePath() {
@@ -373,29 +373,48 @@ public class TextEditor extends VBox implements FolderTreeListenerList, TabConte
                         });
     }
 
+    final class SnippetListCell extends ListCell<Snippet> {
+        @Override
+        protected void updateItem(Snippet item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null) {
+                setText(item.getSuggestion());
+            } else {
+                setText(null);
+            }
+        }
+    }
+
     private initAutoComplete() {
         autocompletePopup = new Popup();
         autocompletePopup.setAutoHide(true);
         
         listView = new ListView<Snippet>(codeSyntax.getSnippets());
-        
+
         listView.setCellFactory(new Callback<ListView<Snippet>, ListCell<Snippet>>() {
             @Override
             public ListCell<Snippet> call(ListView<Snippet> snippets) {
-                ListCell listCell =  new ListCell<Snippet>() {
-                    @Override
-                    protected void updateItem(Snippet item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item != null) {
-                            setText(item.getSuggestion());
-                        } else {
-                            setText(null);
-                        }
-                    }
-                };
-                return listCell;
+                return new SnippetListCell();
            }
         });
+        
+        // listView.setCellFactory(new Callback<ListView<Snippet>, ListCell<Snippet>>() {
+        //     @Override
+        //     public ListCell<Snippet> call(ListView<Snippet> snippets) {
+        //         ListCell listCell =  new ListCell<Snippet>() {
+        //             @Override
+        //             protected void updateItem(Snippet item, boolean empty) {
+        //                 super.updateItem(item, empty);
+        //                 if (item != null) {
+        //                     setText(item.getSuggestion());
+        //                 } else {
+        //                     setText(null);
+        //                 }
+        //             }
+        //         };
+        //         return listCell;
+        //    }
+        // });
 
         listView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override

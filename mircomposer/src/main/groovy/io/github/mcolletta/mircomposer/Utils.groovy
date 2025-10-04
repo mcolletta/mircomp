@@ -28,7 +28,7 @@ import java.io.IOException
 import java.nio.file.Path
 
 
-protected class Utils {
+class Utils {
 
     protected static final File makeDir(File parentFolder, String name) {
         File folder

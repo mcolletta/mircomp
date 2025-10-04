@@ -1,0 +1,105 @@
+
+.code-area {
+  -fx-background-color: #2e3440;
+}
+
+.code-area .text {
+    -fx-fill: #d8dee9;
+}
+
+.code-area .lineno {
+    -fx-background-color: #2e3440;
+    -fx-text-fill: #616e88;
+}
+
+.code-area .tagmark,
+.code-area .keyword {
+    -fx-fill: #d8dee9;
+    -fx-font-weight: bold;
+}
+
+.code-area .semicolon {
+    -fx-font-weight: bold;
+}
+
+.code-area .paren {
+    -fx-fill: #d8dee9;
+    -fx-font-weight: bold;
+}
+
+.code-area .bracket {
+    -fx-fill: #d8dee9;
+    -fx-font-weight: bold;
+}
+
+.code-area .brace {
+    -fx-fill: #d8dee9;
+    -fx-font-weight: bold;
+}
+
+.code-area .punctuation {
+    -fx-fill: #fff;
+}
+
+.code-area .anytag,
+.code-area .function {
+    -fx-fill: #8fbcbb;
+}
+
+.code-area .attribute,
+.code-area .type {
+    -fx-fill: #8fbcbb;
+}
+
+.code-area .alphabetic,
+.code-area .parameter {
+    -fx-fill: #8fbcbb;
+}
+
+.code-area .numeric {
+    -fx-fill: #b48ead;
+}
+
+.code-area .avalue,
+.code-area .string {
+    -fx-fill: #bf616a;
+}
+
+.code-area .comment {
+	-fx-fill: #616e88;
+}
+
+.code-area .accidental {
+    -fx-fill: #d8dee9;
+}
+
+.code-area .paragraph-box {
+    -fx-background-color: #434c5ecc;
+    -fx-text-fill: #d8dee9
+}
+
+.code-area .paragraph-box:has-caret {
+    -fx-background-color: #434c5ecc;
+    -fx-text-fill: #d8dee9
+}
+
+.code-area:focused {
+    -fx-background-color: #434c5ecc;
+    -fx-text-fill: #d8dee9
+}
+
+.code-area .caret {
+    -fx-stroke: #F8F8F0;
+}
+
+.code-area .searched {
+    -rtfx-border-stroke-color: fff;
+    -rtfx-border-stroke-width: 1;
+    -rtfx-border-stroke-type: centered;
+}
+
+.code-folded {
+    visibility: hidden;
+    -fx-background-color: #E69500;
+}
+

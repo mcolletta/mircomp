@@ -42,7 +42,7 @@ import io.github.mcolletta.mirscore.ScoreViewer
 import io.github.mcolletta.mirmidi.MidiEditor
 
 
-class MirChordEditor extends VBox implements TabContent {
+final class MirChordEditor extends VBox implements TabContent {
 
 	SplitPane splitPane
     TextEditor editor

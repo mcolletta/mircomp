@@ -35,13 +35,14 @@ class Theme {
 		return name
 	}
 
+    static final Theme NordDark = new Theme("NordDark", "nord-dark")
+
     static final Theme Monokai = new Theme("Monokai", "monokai")
 
-    static final Theme Bright = new Theme("Bright", "bright")
-    
+    static final Theme Bright = new Theme("Bright", "bright")    
 
     static final Theme[] AVAILABLE_THEMES = [
-        Monokai, Bright
+        NordDark, Monokai, Bright
 	]
 
 }
