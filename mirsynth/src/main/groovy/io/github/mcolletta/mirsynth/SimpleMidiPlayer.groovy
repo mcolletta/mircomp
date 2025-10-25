@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Mirco Colletta
+ * Copyright (C) 2016-2025 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -32,6 +32,7 @@ public class SimpleMidiPlayer {
     private static int A4_KEY = 69
 
     private Synthesizer synthesizer
+    MidiChannel[] channels
     private Sequencer sequencer
     private int resolution
     private float bpm
@@ -39,6 +40,7 @@ public class SimpleMidiPlayer {
 
     public SimpleMidiPlayer(Synthesizer synth, int res=480) {
         synthesizer = synth;
+        channels = synth.getChannels();
         sequencer = MidiSystem.getSequencer(false);
         sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
         resolution = res;
@@ -90,6 +92,59 @@ public class SimpleMidiPlayer {
         sequencer.setSequence(sequence);
         sequencer.start();
         println("SimpleMidiPlayer.playFrequencies started");
+    }
+
+    public void changeInstrument(int channel, int bank, int patch) {
+        var ch = channels[channel]
+        if (ch != null) {
+            ch.programChange(bank, patch);
+        }
+    }
+
+    public void sendControlChange(int data1, int data2, int channel=0) {
+        // MIDI CC 64 is the "sustain pedal" controller.
+        // When its value is between 64 and 127,
+        // it's "on" (sustain is active), and when it's 0 to 63,
+        // it's "off" (sustain is inactive)
+        var ch = channels[channel]
+        if (ch != null) {
+            ch.controlChange(data1, data2)
+        }
+    }
+
+    public void playChord(List<Integer> keys, int velocity=90, int channel=0, float ms=-1) {
+        // ShortMessage noteOn = new ShortMessage(ShortMessage.NOTE_ON, channel, key, velocity);
+        // Receiver recv = synthesizer.getReceiver();
+        // recv.send(noteOn, -1);  // no time stamp
+        // if (duration > 0) {
+        //     Thread.sleep(duration)
+        //     ShortMessage noteOff = new ShortMessage(ShortMessage.NOTE_OFF, channel, key, 0);
+        //     recv.send(noteOff, -1);
+        // }
+        // bypassing messaging layer
+        var ch = channels[channel]
+        if (ch != null) {
+            for(int key: keys)
+                ch.noteOn(key, velocity)
+            if (ms > 0) {
+                long duration = convertMsToTicks(ms)
+                try {
+                    Thread.sleep(duration); // wait time in milliseconds
+                } catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
+                for(int key: keys)
+                    ch.noteOff(key)
+            }
+        }
+    }
+
+    public void stopChord(List<Integer> keys, int channel=0) {
+        var ch = channels[channel]
+        if (ch != null) {
+            for(int key: keys)
+                ch.noteOff(key)
+        }
     }
 
     void stop() {

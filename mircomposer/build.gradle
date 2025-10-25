@@ -19,6 +19,7 @@ dependencies {
     implementation project(':mirsynth')
     implementation project(':mirutils')
     implementation project(':mirfoldertreeview')
+    implementation project(':mirtrainer')
     implementation name: 'richtextfx-fat-0.11.6'
 }
 

@@ -1,0 +1,27 @@
+plugins {
+    id 'groovy'
+    id 'application'
+}
+
+application {
+    mainClass = 'io.github.mcolletta.mirtrainer'
+}
+
+
+dependencies {
+    implementation project(':mirchord')
+    implementation project(':mirconverter')
+    implementation project(':mirsynth')
+    implementation project(':mirutils')
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+        resources {
+            srcDir 'resources'
+        }
+    }
+}

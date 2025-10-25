@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Mirco Colletta
+ * Copyright (C) 2016-2025 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -34,6 +34,7 @@ import javafx.scene.control.TextField
 import javafx.scene.control.Label
 
 import javafx.beans.binding.BooleanBinding
+import javafx.beans.binding.Bindings
 
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
@@ -92,20 +93,24 @@ final class NewProjectDialog extends VBox {
         })
         this.getChildren().add(createProjectBtn)
 
-        BooleanBinding bb = new BooleanBinding() {
-            {
-                super.bind(projectNameField.textProperty(),
-                           projectFolderLabel.textProperty());
-            }
+        // BooleanBinding bb = new BooleanBinding() {
+        //     {
+        //         super.bind(projectNameField.textProperty(),
+        //                    projectFolderLabel.textProperty());
+        //     }
 
-            @Override
-            protected boolean computeValue() {
-                return (projectNameField.getText().isEmpty()
-                        || projectFolderLabel.getText().isEmpty())
-            }
-        }
+        //     @Override
+        //     protected boolean computeValue() {
+        //         return (projectNameField.getText().isEmpty()
+        //                 || projectFolderLabel.getText().isEmpty())
+        //     }
+        // }
+        BooleanBinding bb = Bindings.createBooleanBinding({
+            (projectNameField.getText().isEmpty() || projectFolderLabel.getText().isEmpty())
+        });
 
-        createProjectBtn.disableProperty().bind(bb)
+        // TODO
+        //createProjectBtn.disableProperty().bind(bb)
     }
 
     void createProject() {

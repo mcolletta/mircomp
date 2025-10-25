@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Mirco Colletta
+ * Copyright (C) 2016-2025 Mirco Colletta
  *
  * This file is part of MirComp.
  *
@@ -106,6 +106,8 @@ import io.github.mcolletta.mirchord.core.Score as MirScore
 import io.github.mcolletta.mirchord.interpreter.MirChordInterpreter
 
 import io.github.mcolletta.mirchord.core.ScoreBuilder
+
+import io.github.mcolletta.mirtrainer.EarTrainer
 
 import io.github.mcolletta.mirsynth.SynthManager
 import io.github.mcolletta.mirsynth.SimpleMidiPlayer
@@ -450,6 +452,9 @@ public class Editor implements FolderTreeViewListener {
             case "mid":
                 tab = newTabMidi(path, open)
                 break
+            case "ear":
+                tab = newTabTrainer(path, open)
+                break
             default:
                 showAlert(AlertType.ERROR, "File not supported")
                 break
@@ -499,6 +504,13 @@ public class Editor implements FolderTreeViewListener {
         }
         midiEditor.addFolderTreeViewListener(this)  
         tab.setContent(midiEditor)
+        return tab
+    }
+
+    Tab newTabTrainer(Path path, boolean open) {
+        Tab tab = createTab()
+        EarTrainer earTrainer = new EarTrainer(midiPlayer)
+        tab.setContent(earTrainer)
         return tab
     }
 
@@ -553,6 +565,11 @@ public class Editor implements FolderTreeViewListener {
     void newmidifile() {
         File suggestedDir = new File(System.getProperty("user.home"))
         openNewTab(suggestedDir.toPath(), "mid", false)
+    }
+
+    void neweartrainerfile() {
+        File suggestedDir = new File(System.getProperty("user.home"))
+        openNewTab(suggestedDir.toPath(), "ear", false)
     }
 
     void openfile() {
